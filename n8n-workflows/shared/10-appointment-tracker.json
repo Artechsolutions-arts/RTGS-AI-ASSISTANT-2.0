@@ -1,0 +1,100 @@
+{
+  "name": "10 - Appointment Tracker",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const text = $json.message_text;\nconst parts = text.match(/^\\/approve_(\\d+)_([\\d\\-T:\\+\\.]+)/);\nconst userId = parts[1];\nconst startTime = parts[2];\nconst parseData = $('Parse Telegram Message').item.json;\n\nconst start = new Date(startTime);\nconst end = new Date(start);\nend.setHours(end.getHours() + 1);\n\n// Extract citizen details from the original message history\nconst citizenName = parseData.sender_name || 'Citizen';\nconst messageText = parseData.message_text || '';\n\n// Try to extract name and reason from message\nconst nameMatch = messageText.match(/name:\\s*([^,\\n]+)/i);\nconst reasonMatch = messageText.match(/reason:\\s*([^,\\n]+)/i);\n\nreturn {\n  appointment_id: `appt_${userId}_${Date.now()}`,\n  citizen_telegram_id: userId,\n  citizen_name: nameMatch ? nameMatch[1].trim() : citizenName,\n  reason: reasonMatch ? reasonMatch[1].trim() : 'Meeting with Collector',\n  start_time: start.toISOString(),\n  end_time: end.toISOString(),\n  status: 'approved',\n  approved_by: 'Collector',\n  approved_at: new Date().toISOString(),\n  district: 'ntr-district',\n  created_via: 'telegram_bot',\n  google_calendar_event_id: null\n};"
+      },
+      "id": "extract-appointment-data",
+      "name": "Extract Appointment Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1000, 300]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "collection": "appointments",
+        "fields": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "store-appointment",
+      "name": "Store Appointment",
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.1,
+      "position": [1200, 300],
+      "credentials": {
+        "mongoDb": {
+          "id": "YJ4wyhn68TKaChpn",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "appointments-approved",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-appointments",
+      "name": "Webhook - Get Appointments",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [250, 500],
+      "webhookId": "appointments-approved"
+    },
+    {
+      "parameters": {
+        "operation": "find",
+        "collection": "appointments",
+        "options": {
+          "queryParameters": "={ \"district\": \"{{ $json.query.district || 'ntr-district' }}\", \"status\": \"approved\" }",
+          "sort": "{ \"start_time\": -1 }",
+          "limit": 100
+        }
+      },
+      "id": "mongodb-get-appointments",
+      "name": "MongoDB - Get Appointments",
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.1,
+      "position": [450, 500],
+      "credentials": {
+        "mongoDb": {
+          "id": "YJ4wyhn68TKaChpn",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => ({\n  id: item.json._id,\n  citizen_name: item.json.citizen_name,\n  reason: item.json.reason,\n  start: item.json.start_time,\n  end: item.json.end_time,\n  status: item.json.status,\n  approved_at: item.json.approved_at,\n  telegram_id: item.json.citizen_telegram_id\n}));"
+      },
+      "id": "format-appointments",
+      "name": "Format Appointments",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [650, 500]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $input.all().map(i => i.json) }}",
+        "options": {}
+      },
+      "id": "respond-appointments",
+      "name": "Respond Appointments",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [850, 500]
+    }
+  ],
+  "connections": {
+    "Extract Appointment Data": { "main": [[{ "node": "Store Appointment", "type": "main", "index": 0 }]] },
+    "Webhook - Get Appointments": { "main": [[{ "node": "MongoDB - Get Appointments", "type": "main", "index": 0 }]] },
+    "MongoDB - Get Appointments": { "main": [[{ "node": "Format Appointments", "type": "main", "index": 0 }]] },
+    "Format Appointments": { "main": [[{ "node": "Respond Appointments", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}

@@ -20,7 +20,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Parse Telegram message format\nconst inputData = $input.first().json;\nconst update = inputData.body || inputData; // Handle n8n 'body' wrapper\n\n// HANDLE CALLBACK QUERY (BUTTON CLICKS)\nif (update.callback_query) {\n  const cb = update.callback_query;\n  return {\n    message_id: cb.message.message_id,\n    message_text: cb.data,\n    sender_id: cb.from.id,\n    sender_name: cb.from.first_name,\n    sender_role: cb.from.username ? '@' + cb.from.username : 'Telegram User',\n    platform: 'telegram',\n    telegram_chat_id: cb.message.chat.id,\n    telegram_user_id: cb.from.id,\n    timestamp: new Date().toISOString(),\n    raw_data: update,\n    is_callback: true\n  };\n}\n\nconst message = update.message || update;\nconst from = message.from || {};\nconst chat = message.chat || {};\n\n// Extract message text\nconst messageText = message.text || message.caption || message.message_text || '';\n\n// IGNORE EMPTY MESSAGES OR BOT SYSTEM UPDATES\nif (!messageText || messageText.trim() === '') {\n  return [];\n}\n\n// Build user identifier\nconst userId = from.id || chat.id || 'unknown';\nconst userName = from.first_name || from.username || 'Unknown User';\nconst userRole = from.username ? '@' + from.username : 'Telegram User';\n\nreturn {\n  message_id: message.message_id || '',\n  message_text: messageText,\n  sender_id: userId,\n  sender_name: userName,\n  sender_role: userRole,\n  platform: 'telegram',\n  // RESTORED FIELDS:\n  telegram_chat_id: chat.id,\n  telegram_message_id: message.message_id,\n  telegram_user_id: userId,\n  timestamp: message.date ? new Date(message.date * 1000).toISOString() : new Date().toISOString(),\n  raw_data: update\n};"
+        "jsCode": "// Parse Telegram message format\nconst inputData = $input.first().json;\nconst update = inputData.body || inputData; // Handle n8n 'body' wrapper\n\n// HANDLE CALLBACK QUERY (BUTTON CLICKS)\nif (update.callback_query) {\n  const cb = update.callback_query;\n  return {\n    message_id: cb.message.message_id,\n    message_text: cb.data,\n    sender_id: cb.from.id,\n    sender_name: cb.from.first_name,\n    sender_role: cb.from.username ? '@' + cb.from.username : 'Telegram User',\n    platform: 'telegram',\n    telegram_chat_id: cb.message.chat.id,\n    telegram_user_id: cb.from.id,\n    timestamp: new Date().toISOString(),\n    raw_data: update,\n    is_callback: true,\n    callback_original_text: cb.message.text || cb.message.caption || ''\n  };\n}\n\nconst message = update.message || update;\nconst from = message.from || {};\nconst chat = message.chat || {};\n\n// Extract message text\nconst messageText = message.text || message.caption || message.message_text || '';\n\n// IGNORE EMPTY MESSAGES OR BOT SYSTEM UPDATES\nif (!messageText || messageText.trim() === '') {\n  return [];\n}\n\n// Build user identifier\nconst userId = from.id || chat.id || 'unknown';\nconst userName = from.first_name || from.username || 'Unknown User';\nconst userRole = from.username ? '@' + from.username : 'Telegram User';\n\nreturn {\n  message_id: message.message_id || '',\n  message_text: messageText,\n  sender_id: userId,\n  sender_name: userName,\n  sender_role: userRole,\n  platform: 'telegram',\n  // RESTORED FIELDS:\n  telegram_chat_id: chat.id,\n  telegram_message_id: message.message_id,\n  telegram_user_id: userId,\n  timestamp: message.date ? new Date(message.date * 1000).toISOString() : new Date().toISOString(),\n  raw_data: update\n};"
       },
       "id": "ba3cc41e-6ec2-4ac7-85fb-684f6dc46150",
       "name": "Parse Telegram Message",
@@ -596,7 +596,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const text = $json.message_text;\nconst parts = text.match(/^\\/approve_(\\d+)_([\\d\\-T:\\+\\.]+)/);\nconst userId = parts[1];\nconst startTime = parts[2];\n\nconst start = new Date(startTime);\nconst end = new Date(start);\nend.setHours(end.getHours() + 1);\n\nreturn {\n  summary: 'Appointment with Citizen',\n  description: 'Approved via Telegram Intake',\n  start: start.toISOString(),\n  end: end.toISOString(),\n  colorId: '2',\n  userChatId: userId\n};"
+        "jsCode": "const text = $json.message_text;\nconst originalText = $json.callback_original_text || '';\nconst parts = text.match(/^\\/approve_(\\d+)_([\\d\\-T:\\+\\.]+)/);\nconst userId = parts[1];\nconst startTime = parts[2];\n\n// Extract name and reason from original request message\nconst nameMatch = originalText.match(/Applicant:\\*?\\s*([^\\n]+)/i);\nconst reasonMatch = originalText.match(/Reason:\\*?\\s*([^\\n]+)/i);\n\nconst applicantName = nameMatch ? nameMatch[1].trim() : 'Citizen';\nconst meetingReason = reasonMatch ? reasonMatch[1].trim() : 'Approved via Telegram Intake';\n\nconst start = new Date(startTime);\nconst end = new Date(start);\nend.setHours(end.getHours() + 1);\n\nreturn {\n  summary: `Appointment with ${applicantName}`,\n  description: meetingReason,\n  start: start.toISOString(),\n  end: end.toISOString(),\n  colorId: '2',\n  userChatId: userId,\n  applicantName: applicantName,\n  meetingReason: meetingReason\n};"
       },
       "id": "parse-approve-123",
       "name": "Parse Approve",
@@ -758,6 +758,28 @@
       "notesInFlow": true,
       "notes": "Fetches recent context",
       "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "collection": "appointments",
+        "fields": "={{ JSON.stringify({\n  appointment_id: 'appt_' + $('Parse Approve').item.json.userChatId + '_' + Date.now(),\n  citizen_telegram_id: $('Parse Approve').item.json.userChatId,\n  citizen_name: $('Parse Telegram Message').item.json.sender_name || 'Citizen',\n  reason: $('Parse Approve').item.json.description || 'Meeting with Collector',\n  start_time: $('Parse Approve').item.json.start,\n  end_time: $('Parse Approve').item.json.end,\n  status: 'approved',\n  approved_by: 'Collector',\n  approved_at: new Date().toISOString(),\n  district: 'ntr-district',\n  created_via: 'telegram_bot',\n  google_calendar_event_id: $json.id\n}) }}",
+        "options": {}
+      },
+      "id": "store-appointment-db",
+      "name": "Store Appointment in DB",
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.1,
+      "position": [
+        11400,
+        1500
+      ],
+      "credentials": {
+        "mongoDb": {
+          "id": "YJ4wyhn68TKaChpn",
+          "name": "MongoDB account"
+        }
+      }
     }
   ],
   "connections": {
@@ -856,7 +878,7 @@
       "main": [
         [
           {
-            "node": "Notify User Approve",
+            "node": "Store Appointment in DB",
             "type": "main",
             "index": 0
           }
@@ -1073,6 +1095,17 @@
         [
           {
             "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Appointment in DB": {
+      "main": [
+        [
+          {
+            "node": "Notify User Approve",
             "type": "main",
             "index": 0
           }

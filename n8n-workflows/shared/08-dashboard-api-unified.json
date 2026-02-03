@@ -1,0 +1,187 @@
+{
+  "name": "Dashboard API - Unified",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "dashboard-data",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-unified",
+      "name": "Webhook - Dashboard Data",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [250, 400],
+      "webhookId": "dashboard-data"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "string": [
+                  {
+                    "value1": "={{ $json.query.type }}",
+                    "value2": "messages"
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "string": [
+                  {
+                    "value1": "={{ $json.query.type }}",
+                    "value2": "calendar"
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "string": [
+                  {
+                    "value1": "={{ $json.query.type }}",
+                    "value2": "appointments"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "switch-type",
+      "name": "Switch by Type",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [450, 400]
+    },
+    {
+      "parameters": {
+        "operation": "find",
+        "collection": "messages",
+        "options": {
+          "queryParameters": "={ \"district\": \"{{ $json.query.district || 'ntr-district' }}\", \"message_text\": { \"$exists\": true, \"$ne\": \"\", \"$not\": { \"$regex\": \"^\\\\s*$\" } }, \"ai_analysis.intent\": { \"$exists\": true, \"$ne\": null, \"$nin\": [\"view_calendar\", \"general\"] } }",
+          "sort": "{ \"timestamp\": -1 }",
+          "limit": 50
+        }
+      },
+      "id": "mongodb-messages",
+      "name": "Get Messages",
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.1,
+      "position": [650, 250],
+      "credentials": {
+        "mongoDb": {
+          "id": "YJ4wyhn68TKaChpn",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "find",
+        "collection": "calendar_events",
+        "options": {
+          "queryParameters": "={ \"district\": \"{{ $json.query.district || 'ntr-district' }}\" }"
+        }
+      },
+      "id": "mongodb-calendar",
+      "name": "Get Calendar",
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.1,
+      "position": [650, 400],
+      "credentials": {
+        "mongoDb": {
+          "id": "YJ4wyhn68TKaChpn",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "find",
+        "collection": "appointments",
+        "options": {
+          "queryParameters": "={ \"district\": \"{{ $json.query.district || 'ntr-district' }}\", \"status\": \"approved\" }",
+          "sort": "{ \"start_time\": -1 }",
+          "limit": 100
+        }
+      },
+      "id": "mongodb-appointments",
+      "name": "Get Appointments",
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.1,
+      "position": [650, 550],
+      "credentials": {
+        "mongoDb": {
+          "id": "YJ4wyhn68TKaChpn",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => ({\n  id: item.json._id,\n  summary: item.json.message_text,\n  from: item.json.sender_name,\n  location: item.json.ai_analysis?.entities?.location?.[0]?.value || 'Unknown',\n  timestamp: item.json.timestamp,\n  priority: item.json.ai_analysis?.priority,\n  department: item.json.department\n}));"
+      },
+      "id": "format-messages",
+      "name": "Format Messages",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 250]
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => ({\n  id: item.json._id,\n  title: item.json.title,\n  start: item.json.start_time,\n  end: item.json.end_time,\n  location: item.json.location,\n  description: item.json.description\n}));"
+      },
+      "id": "format-calendar",
+      "name": "Format Calendar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => ({\n  id: item.json._id,\n  citizen_name: item.json.citizen_name,\n  reason: item.json.reason,\n  start: item.json.start_time,\n  end: item.json.end_time,\n  status: item.json.status,\n  approved_at: item.json.approved_at,\n  telegram_id: item.json.citizen_telegram_id\n}));"
+      },
+      "id": "format-appointments",
+      "name": "Format Appointments",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 550]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $input.all().map(i => i.json) }}",
+        "options": {}
+      },
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1050, 400]
+    }
+  ],
+  "connections": {
+    "Webhook - Dashboard Data": { "main": [[{ "node": "Switch by Type", "type": "main", "index": 0 }]] },
+    "Switch by Type": { 
+      "main": [
+        [{ "node": "Get Messages", "type": "main", "index": 0 }],
+        [{ "node": "Get Calendar", "type": "main", "index": 0 }],
+        [{ "node": "Get Appointments", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get Messages": { "main": [[{ "node": "Format Messages", "type": "main", "index": 0 }]] },
+    "Get Calendar": { "main": [[{ "node": "Format Calendar", "type": "main", "index": 0 }]] },
+    "Get Appointments": { "main": [[{ "node": "Format Appointments", "type": "main", "index": 0 }]] },
+    "Format Messages": { "main": [[{ "node": "Respond", "type": "main", "index": 0 }]] },
+    "Format Calendar": { "main": [[{ "node": "Respond", "type": "main", "index": 0 }]] },
+    "Format Appointments": { "main": [[{ "node": "Respond", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}

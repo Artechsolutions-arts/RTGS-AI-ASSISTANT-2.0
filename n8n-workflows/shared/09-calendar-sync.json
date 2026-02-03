@@ -63,7 +63,7 @@
     },
     {
       "parameters": {
-        "jsCode": "try {\n  const items = $input.all();\n  if (!Array.isArray(items) || items.length === 0) return [];\n  \n  const results = [];\n  for (const item of items) {\n    if (!item || !item.json) continue;\n    results.push({\n      json: {\n        event_id: item.json.id,\n        title: item.json.summary || 'Untitled Event',\n        start_time: item.json.start?.dateTime || item.json.start?.date,\n        end_time: item.json.end?.dateTime || item.json.end?.date,\n        location: item.json.location || 'Unknown',\n        description: item.json.description || '',\n        meeting_link: item.json.hangoutLink || '',\n        district: 'ntr-district',\n        status: 'confirmed',\n        updated_at: new Date().toISOString()\n      }\n    });\n  }\n  return results;\n} catch (e) {\n  return [];\n}"
+        "jsCode": "try {\n  const items = $input.all();\n  if (!Array.isArray(items) || items.length === 0) return [];\n  \n  const results = [];\n  for (const item of items) {\n    if (!item || !item.json) continue;\n    const desc = item.json.description || '';\n    results.push({\n      json: {\n        event_id: item.json.id,\n        title: item.json.summary || 'Untitled Event',\n        start_time: item.json.start?.dateTime || item.json.start?.date,\n        end_time: item.json.end?.dateTime || item.json.end?.date,\n        location: item.json.location || 'Unknown',\n        description: desc,\n        meeting_link: item.json.hangoutLink || '',\n        district: 'ntr-district',\n        status: 'confirmed',\n        updated_at: new Date().toISOString()\n      }\n    });\n  }\n  return results;\n} catch (e) {\n  return [];\n}"
       },
       "id": "format-for-db",
       "name": "Format for DB",

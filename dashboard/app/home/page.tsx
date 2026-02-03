@@ -16,6 +16,7 @@ export default function HomePage() {
   
   const [messages, setMessages] = useState<N8nMessage[]>([]);
   const [calendar, setCalendar] = useState<N8nCalendarEvent[]>([]);
+  const [appointments, setAppointments] = useState<N8nCalendarEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [lastSync, setLastSync] = useState<Date | null>(null);
   const [isOnline, setIsOnline] = useState(true);
@@ -27,7 +28,7 @@ export default function HomePage() {
   const [modalTitle, setModalTitle] = useState('');
 
   // Local Filter State
-  const [activeFilter, setActiveFilter] = useState<'active' | 'meetings_today' | 'meetings_pending' | 'meetings_completed'>('active');
+  const [activeFilter, setActiveFilter] = useState<'active' | 'meetings_today' | 'meetings_pending' | 'meetings_completed' | 'appointments_approved'>('active');
 
   // Time Filters
   // Time Filters
@@ -66,14 +67,16 @@ export default function HomePage() {
     if (!district) return;
     try {
       const districtContext = { district: district.name, slug: district.id };
-      const [msgs, cal] = await Promise.all([
+      const [msgs, cal, appts] = await Promise.all([
         n8nClient.getMessages(districtContext),
-        n8nClient.getCalendar(districtContext)
+        n8nClient.getCalendar(districtContext),
+        n8nClient.getAppointments(districtContext)
       ]);
       
-      // Ensure msgs and cal are arrays
+      // Ensure all are arrays
       setMessages(Array.isArray(msgs) ? msgs : []);
       setCalendar(Array.isArray(cal) ? cal : []);
+      setAppointments(Array.isArray(appts) ? appts : []);
       setLastSync(new Date());
       setIsOnline(true);
     } catch (error) {
@@ -87,7 +90,7 @@ export default function HomePage() {
   useEffect(() => {
     if (!district) return;
     fetchData();
-    const interval = setInterval(fetchData, 5000); // 5s polling for ultra-responsive live updates
+    const interval = setInterval(fetchData, 30000); // 30s polling to reduce n8n executions
     return () => clearInterval(interval);
   }, [district]);
 
@@ -101,7 +104,18 @@ export default function HomePage() {
       const dateMatch = day === selectedDate;
       const hourMatch = selectedHour === 'all' || hour === selectedHour;
       
-      return dateMatch && hourMatch;
+      // Exclude meeting and appointment requests from Operational Communications
+      const summary = (m.summary || '').toLowerCase();
+      const isMeetingRequest = summary.includes('meeting') || summary.includes('today meetings') || summary.includes('tomorrow meetings');
+      const isAppointmentRequest = summary.includes('appointment') || summary.includes('/approve_') || summary.includes('/reject_');
+      
+      // Also exclude appointment details (Name: X, Reason: Y format)
+      const hasNameReason = (summary.includes('name:') && summary.includes('reason:')) || 
+                           (summary.includes('name') && summary.includes('raason')) || // typo variant
+                           summary.includes('full name:');
+      
+      // Only show messages that are NOT meeting/appointment requests or appointment details
+      return dateMatch && hourMatch && !isMeetingRequest && !isAppointmentRequest && !hasNameReason;
     });
   }, [messages, selectedDate, selectedHour]);
 
@@ -142,12 +156,23 @@ export default function HomePage() {
       pendingMeetings = filteredCalendar.filter(e => new Date(e.end) >= now).length;
       completedMeetings = filteredCalendar.filter(e => new Date(e.end) < now).length;
     }
+
+    // Count appointments from dedicated collection
+    const approvedAppointments = appointments.filter(a => {
+      const apptDate = new Date(a.start);
+      const day = apptDate.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+      const hour = apptDate.getHours().toString();
+      const dateMatch = day === selectedDate;
+      const hourMatch = selectedHour === 'all' || hour === selectedHour;
+      return dateMatch && hourMatch;
+    }).length;
     
     return [
       { id: 'active', label: 'Active Messages', value: totalMsgs, border: 'border-blue-600', color: 'text-blue-600' },
       { id: 'meetings_today', label: 'Today Meetings & Schedule', value: todayMeetings, border: 'border-red-600', color: 'text-red-600' },
       { id: 'meetings_pending', label: 'Pending Meetings', value: pendingMeetings, border: 'border-amber-600', color: 'text-amber-600' },
       { id: 'meetings_completed', label: 'Completed Meetings', value: completedMeetings, border: 'border-emerald-600', color: 'text-emerald-600' },
+      { id: 'appointments_approved', label: 'Approved Appointments', value: approvedAppointments, border: 'border-purple-600', color: 'text-purple-600' },
     ];
   }, [filteredMessages, filteredCalendar, selectedDate]);
 
@@ -158,6 +183,17 @@ export default function HomePage() {
     const isFutureDate = selectedDate > msgDateStr;
     const isCurrentDate = selectedDate === msgDateStr;
 
+    if (activeFilter === 'appointments_approved') {
+      // Return appointments from dedicated collection
+      return appointments.filter(a => {
+        const apptDate = new Date(a.start);
+        const day = apptDate.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+        const hour = apptDate.getHours().toString();
+        const dateMatch = day === selectedDate;
+        const hourMatch = selectedHour === 'all' || hour === selectedHour;
+        return dateMatch && hourMatch;
+      });
+    }
     if (activeFilter === 'meetings_today') return filteredCalendar;
     if (activeFilter === 'meetings_pending') {
       // Shows upcoming AND ongoing meetings
@@ -281,7 +317,7 @@ export default function HomePage() {
 
         <main className="max-w-[1600px] mx-auto p-4 md:p-6 lg:p-8 space-y-6">
           {/* KPI Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {stats.map((stat) => (
               <div 
                 key={stat.id} 
@@ -484,12 +520,13 @@ export default function HomePage() {
           <div className="grid grid-cols-12 gap-6 lg:gap-8">
             <div className="col-span-12 lg:col-span-7 xl:col-span-8 space-y-6">
               {/* Communication Center moved to top primary position */}
-              <div id="operational-center" className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+              <div id="operational-center" className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden scroll-mt-[200px]">
                  <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                     <h2 className="text-xs font-black text-black uppercase tracking-widest">
                       {activeFilter === 'active' ? 'Operational Communications' : 
                        activeFilter === 'meetings_today' ? 'Full Schedule Review' :
-                       activeFilter === 'meetings_pending' ? 'Upcoming Sessions' : 'Completed Briefings'}
+                       activeFilter === 'meetings_pending' ? 'Upcoming Sessions' :
+                       activeFilter === 'appointments_approved' ? 'Verified Citizen Appointments' : 'Completed Briefings'}
                     </h2>
                     <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full">
                       {activeFilter.replace('_', ' ').toUpperCase()}
@@ -522,12 +559,28 @@ export default function HomePage() {
                                 <div className="space-y-0.5 mt-1.5">
                                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center">
                                     <span className="w-1 h-1 bg-slate-300 rounded-full mr-2"></span>
-                                    {item.from ? `FROM: CITIZEN` : `LOC: ${item.location || 'Hall'}`} • {new Date(item.timestamp || item.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    {item.from || activeFilter === 'appointments_approved' ? `FROM: ${item.title || 'CITIZEN'}` : item.location ? `LOC: ${item.location}` : ''} 
+                                    {((item.timestamp || item.start) && !isNaN(new Date(item.timestamp || item.start).getTime())) ? ` • ${new Date(item.timestamp || item.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}
                                   </p>
+                                  {item.description && activeFilter === 'appointments_approved' && (
+                                    <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest flex items-center">
+                                      <span className="w-1 h-1 bg-slate-400 rounded-full mr-2"></span>
+                                      REASON: {item.description}
+                                    </p>
+                                  )}
                                   {!activeFilter.includes('meetings') && (
                                     <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest flex items-center">
-                                      <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
-                                      FORWARDED TO: {item.department || 'RTGS'}
+                                      {activeFilter === 'appointments_approved' ? (
+                                        <>
+                                          <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
+                                          STATUS: VERIFIED BY RTGS
+                                        </>
+                                      ) : item.department ? (
+                                        <>
+                                          <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
+                                          FORWARDED TO: {item.department}
+                                        </>
+                                      ) : null}
                                     </p>
                                   )}
                                 </div>
@@ -535,7 +588,7 @@ export default function HomePage() {
                           </div>
                           <span className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border ${
                             item.priority?.toLowerCase() === 'high' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-slate-50 text-slate-500 border-slate-100'
-                          }`}>{item.priority || 'Normal'}</span>
+                          }`}>{item.priority || ''}</span>
                         </div>
                       ))
                     ) : (

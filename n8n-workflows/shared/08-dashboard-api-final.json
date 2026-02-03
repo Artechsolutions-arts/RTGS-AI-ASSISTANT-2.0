@@ -1,19 +1,19 @@
 {
-  "name": "08 - Dashboard API",
+  "name": "Dashboard API - Final",
   "nodes": [
     {
       "parameters": {
         "httpMethod": "GET",
-        "path": "messages-recent",
+        "path": "api/messages",
         "responseMode": "responseNode",
         "options": {}
       },
       "id": "webhook-messages",
-      "name": "Webhook - Messages",
+      "name": "API - Messages",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1.1,
       "position": [250, 300],
-      "webhookId": "messages-recent"
+      "webhookId": "api-messages"
     },
     {
       "parameters": {
@@ -25,8 +25,8 @@
           "limit": 50
         }
       },
-      "id": "mongodb-get-messages",
-      "name": "MongoDB - Get Messages",
+      "id": "mongodb-messages",
+      "name": "Get Messages",
       "type": "n8n-nodes-base.mongoDb",
       "typeVersion": 1.1,
       "position": [450, 300],
@@ -54,7 +54,7 @@
         "options": {}
       },
       "id": "respond-messages",
-      "name": "Respond Messages",
+      "name": "Respond",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [850, 300]
@@ -62,16 +62,16 @@
     {
       "parameters": {
         "httpMethod": "GET",
-        "path": "calendar-today",
+        "path": "api/calendar",
         "responseMode": "responseNode",
         "options": {}
       },
       "id": "webhook-calendar",
-      "name": "Webhook - Calendar",
+      "name": "API - Calendar",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1.1,
       "position": [250, 500],
-      "webhookId": "calendar-today"
+      "webhookId": "api-calendar"
     },
     {
       "parameters": {
@@ -81,8 +81,8 @@
           "queryParameters": "={ \"district\": \"{{ $json.query.district || 'ntr-district' }}\" }"
         }
       },
-      "id": "mongodb-get-calendar",
-      "name": "MongoDB - Get Calendar",
+      "id": "mongodb-calendar",
+      "name": "Get Calendar",
       "type": "n8n-nodes-base.mongoDb",
       "typeVersion": 1.1,
       "position": [450, 500],
@@ -110,7 +110,7 @@
         "options": {}
       },
       "id": "respond-calendar",
-      "name": "Respond Calendar",
+      "name": "Respond",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [850, 500]
@@ -118,16 +118,16 @@
     {
       "parameters": {
         "httpMethod": "GET",
-        "path": "appointments-approved",
+        "path": "api/appointments",
         "responseMode": "responseNode",
         "options": {}
       },
       "id": "webhook-appointments",
-      "name": "Webhook - Appointments",
+      "name": "API - Appointments",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1.1,
       "position": [250, 700],
-      "webhookId": "appointments-approved"
+      "webhookId": "api-appointments"
     },
     {
       "parameters": {
@@ -139,8 +139,8 @@
           "limit": 100
         }
       },
-      "id": "mongodb-get-appointments",
-      "name": "MongoDB - Get Appointments",
+      "id": "mongodb-appointments",
+      "name": "Get Appointments",
       "type": "n8n-nodes-base.mongoDb",
       "typeVersion": 1.1,
       "position": [450, 700],
@@ -168,23 +168,23 @@
         "options": {}
       },
       "id": "respond-appointments",
-      "name": "Respond Appointments",
+      "name": "Respond",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [850, 700]
     }
   ],
   "connections": {
-    "Webhook - Messages": { "main": [[{ "node": "MongoDB - Get Messages", "type": "main", "index": 0 }]] },
-    "MongoDB - Get Messages": { "main": [[{ "node": "Format Messages", "type": "main", "index": 0 }]] },
-    "Format Messages": { "main": [[{ "node": "Respond Messages", "type": "main", "index": 0 }]] },
-    "Webhook - Calendar": { "main": [[{ "node": "MongoDB - Get Calendar", "type": "main", "index": 0 }]] },
-    "MongoDB - Get Calendar": { "main": [[{ "node": "Format Calendar", "type": "main", "index": 0 }]] },
-    "Format Calendar": { "main": [[{ "node": "Respond Calendar", "type": "main", "index": 0 }]] },
-    "Webhook - Appointments": { "main": [[{ "node": "MongoDB - Get Appointments", "type": "main", "index": 0 }]] },
-    "MongoDB - Get Appointments": { "main": [[{ "node": "Format Appointments", "type": "main", "index": 0 }]] },
-    "Format Appointments": { "main": [[{ "node": "Respond Appointments", "type": "main", "index": 0 }]] }
+    "API - Messages": { "main": [[{ "node": "Get Messages", "type": "main", "index": 0 }]] },
+    "Get Messages": { "main": [[{ "node": "Format Messages", "type": "main", "index": 0 }]] },
+    "Format Messages": { "main": [[{ "node": "Respond", "type": "main", "index": 0 }]] },
+    "API - Calendar": { "main": [[{ "node": "Get Calendar", "type": "main", "index": 0 }]] },
+    "Get Calendar": { "main": [[{ "node": "Format Calendar", "type": "main", "index": 0 }]] },
+    "Format Calendar": { "main": [[{ "node": "Respond", "type": "main", "index": 0 }]] },
+    "API - Appointments": { "main": [[{ "node": "Get Appointments", "type": "main", "index": 0 }]] },
+    "Get Appointments": { "main": [[{ "node": "Format Appointments", "type": "main", "index": 0 }]] },
+    "Format Appointments": { "main": [[{ "node": "Respond", "type": "main", "index": 0 }]] }
   },
-  "active": true,
+  "active": false,
   "settings": { "executionOrder": "v1" }
 }
