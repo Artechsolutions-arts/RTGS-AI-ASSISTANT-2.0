@@ -1,0 +1,465 @@
+{
+    "name": "04 - Task Creation and Follow-up",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": "runOnceForAllItems",
+                "values": {
+                    "interval": [
+                        {
+                            "field": "cronExpression",
+                            "expression": "*/10 * * * *"
+                        }
+                    ]
+                }
+            },
+            "id": "schedule-task-check",
+            "name": "Schedule Task Check",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1.2,
+            "position": [
+                250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "find",
+                "collection": "messages",
+                "options": {
+                    "limit": 100,
+                    "queryParameters": "{ \"ai_analysis.intent\": \"instruction\", \"status\": \"routed\" }"
+                }
+            },
+            "id": "get-instruction-messages",
+            "name": "Get Instruction Messages",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                450,
+                300
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const tasks = [];\n\nfor (const item of $input.all()) {\n  const msg = item.json;\n  const analysis = msg.ai_analysis;\n  const entities = analysis.entities || {};\n  \n  let deadline = null;\n  if (entities.date && entities.date.length > 0) {\n    deadline = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();\n  } else {\n    const days = analysis.priority === 'high' ? 2 : (analysis.priority === 'medium' ? 7 : 14);\n    deadline = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();\n  }\n  \n  tasks.push({\n    task_id: `task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,\n    source_message_id: msg.message_id,\n    title: msg.message_text.substring(0, 100),\n    description: msg.message_text,\n    department: msg.routing?.department || 'General Administration',\n    owner_role: msg.routing?.assigned_to || 'Officer',\n    priority: analysis.priority,\n    deadline: deadline,\n    status: 'pending',\n    reminders_sent: 0,\n    escalated: false,\n    escalation_level: 0,\n    created_at: new Date().toISOString(),\n    updated_at: new Date().toISOString()\n  });\n}\n\nreturn tasks;"
+            },
+            "id": "create-tasks",
+            "name": "Create Tasks",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "insert",
+                "collection": "tasks",
+                "options": {}
+            },
+            "id": "save-tasks",
+            "name": "Save Tasks to DB",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                850,
+                300
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "msg_id",
+                            "name": "message_id",
+                            "value": "={{ $('Get Instruction Messages').item.json.message_id }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "status",
+                            "name": "status",
+                            "value": "completed",
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            "id": "prepare-completion",
+            "name": "Prepare Completion",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.3,
+            "position": [
+                1050,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "update",
+                "collection": "messages",
+                "updateKey": "message_id",
+                "options": {}
+            },
+            "id": "mark-message-completed",
+            "name": "Mark Message Completed",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                1250,
+                300
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "find",
+                "collection": "tasks",
+                "options": {
+                    "queryParameters": "{ \"status\": { \"$in\": [\"pending\", \"in_progress\"] } }"
+                }
+            },
+            "id": "get-active-tasks",
+            "name": "Get Active Tasks",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                450,
+                500
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const now = new Date();\nconst results = [];\n\nfor (const item of $input.all()) {\n  const task = item.json;\n  const deadline = new Date(task.deadline);\n  const hoursUntilDeadline = (deadline - now) / (1000 * 60 * 60);\n  \n  if (hoursUntilDeadline < 0) {\n    results.push({...task, status: 'overdue', hours_overdue: Math.abs(hoursUntilDeadline)});\n  } else if (hoursUntilDeadline < 24 && task.reminders_sent === 0) {\n    results.push({...task, reminder_type: 'deadline_approaching', hours_remaining: hoursUntilDeadline});\n  } else if (hoursUntilDeadline < 6 && task.reminders_sent < 2) {\n    results.push({...task, reminder_type: 'urgent_deadline', hours_remaining: hoursUntilDeadline});\n  }\n}\n\nreturn results;"
+            },
+            "id": "check-deadlines",
+            "name": "Check Deadlines",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                650,
+                500
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "const notifications = [];\n\nfor (const item of $input.all()) {\n  const task = item.json;\n  let message = '';\n  \n  if (task.status === 'overdue') {\n    message = `⚠️ OVERDUE TASK\\n\\nTask: ${task.title}\\nDepartment: ${task.department}\\nDeadline was: ${new Date(task.deadline).toLocaleString()}\\nOverdue by: ${Math.floor(task.hours_overdue)} hours\\n\\nPlease complete immediately.`;\n  } else if (task.reminder_type === 'urgent_deadline') {\n    message = `🔴 URGENT: Task deadline in ${Math.floor(task.hours_remaining)} hours\\n\\nTask: ${task.title}\\nDepartment: ${task.department}\\nDeadline: ${new Date(task.deadline).toLocaleString()}`;\n  } else {\n    message = `⏰ Task Reminder\\n\\nTask: ${task.title}\\nDepartment: ${task.department}\\nDeadline: ${new Date(task.deadline).toLocaleString()}`;\n  }\n  \n  notifications.push({\n    task_id: task.task_id,\n    recipient: task.owner_role,\n    department: task.department,\n    message: message,\n    sent_at: new Date().toISOString()\n  });\n}\n\nreturn notifications;"
+            },
+            "id": "send-reminders",
+            "name": "Send Reminders",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                850,
+                500
+            ]
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "tid",
+                            "name": "task_id",
+                            "value": "={{ $json.task_id }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "rem",
+                            "name": "reminders_sent",
+                            "value": "={{ $('Check Deadlines').item.json.reminders_sent + 1 }}",
+                            "type": "number"
+                        },
+                        {
+                            "id": "upd",
+                            "name": "updated_at",
+                            "value": "={{ $now.toISO() }}",
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            "id": "prepare-reminder-update",
+            "name": "Prepare Reminder Update",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.3,
+            "position": [
+                1050,
+                500
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "update",
+                "collection": "tasks",
+                "updateKey": "task_id",
+                "options": {}
+            },
+            "id": "update-reminder-count",
+            "name": "Update Reminder Count",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                1250,
+                500
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "number": [
+                        {
+                            "value1": "={{ $('Check Deadlines').item.json.reminders_sent }}",
+                            "operation": "largerEqual",
+                            "value2": 3
+                        }
+                    ]
+                }
+            },
+            "id": "check-escalation",
+            "name": "Check if Escalation Needed",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                1450,
+                500
+            ]
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "tid2",
+                            "name": "task_id",
+                            "value": "={{ $('Check Deadlines').item.json.task_id }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "esc",
+                            "name": "escalated",
+                            "value": "true",
+                            "type": "boolean"
+                        },
+                        {
+                            "id": "lvl",
+                            "name": "escalation_level",
+                            "value": "1",
+                            "type": "number"
+                        }
+                    ]
+                }
+            },
+            "id": "prepare-escalation",
+            "name": "Prepare Escalation",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.3,
+            "position": [
+                1650,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "update",
+                "collection": "tasks",
+                "updateKey": "task_id",
+                "options": {}
+            },
+            "id": "escalate-task",
+            "name": "Escalate Task",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                1850,
+                400
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Schedule Task Check": {
+            "main": [
+                [
+                    {
+                        "node": "Get Instruction Messages",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Get Active Tasks",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Instruction Messages": {
+            "main": [
+                [
+                    {
+                        "node": "Create Tasks",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Create Tasks": {
+            "main": [
+                [
+                    {
+                        "node": "Save Tasks to DB",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Save Tasks to DB": {
+            "main": [
+                [
+                    {
+                        "node": "Prepare Completion",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Prepare Completion": {
+            "main": [
+                [
+                    {
+                        "node": "Mark Message Completed",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Active Tasks": {
+            "main": [
+                [
+                    {
+                        "node": "Check Deadlines",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Check Deadlines": {
+            "main": [
+                [
+                    {
+                        "node": "Send Reminders",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Send Reminders": {
+            "main": [
+                [
+                    {
+                        "node": "Prepare Reminder Update",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Prepare Reminder Update": {
+            "main": [
+                [
+                    {
+                        "node": "Update Reminder Count",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Update Reminder Count": {
+            "main": [
+                [
+                    {
+                        "node": "Check if Escalation Needed",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Check if Escalation Needed": {
+            "main": [
+                [
+                    {
+                        "node": "Prepare Escalation",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Prepare Escalation": {
+            "main": [
+                [
+                    {
+                        "node": "Escalate Task",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": true,
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "versionId": "4",
+    "id": "4",
+    "meta": {
+        "instanceId": "gov-ai-assistant"
+    },
+    "tags": []
+}

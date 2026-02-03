@@ -1,0 +1,62 @@
+{
+    "department_heads": {
+        "+919876543210": {
+            "name": "Pava",
+            "role": "Disaster Management Head",
+            "department": "disaster_management",
+            "whatsapp_group_id": "DISASTER_GROUP_ID",
+            "priority_default": "high"
+        },
+        "+919876543211": {
+            "name": "Santosh",
+            "role": "Electricity Department Head",
+            "department": "electricity",
+            "whatsapp_group_id": "ELECTRICITY_GROUP_ID",
+            "priority_default": "medium"
+        },
+        "+919876543212": {
+            "name": "Ramya",
+            "role": "Infrastructure Department Head",
+            "department": "infrastructure",
+            "whatsapp_group_id": "INFRASTRUCTURE_GROUP_ID",
+            "priority_default": "medium"
+        }
+    },
+    "collector": {
+        "name": "Murali",
+        "role": "District Collector",
+        "phone": "+919876543213",
+        "receives_all": true,
+        "notification_type": "summary"
+    },
+    "whatsapp_groups": {
+        "disaster_management": {
+            "name": "Disaster Management Group",
+            "group_id": "DISASTER_GROUP_ID",
+            "webhook_url": "https://graph.facebook.com/v18.0/DISASTER_GROUP_ID/messages",
+            "description": "Emergency and disaster response coordination"
+        },
+        "electricity": {
+            "name": "Electricity Department Group",
+            "group_id": "ELECTRICITY_GROUP_ID",
+            "webhook_url": "https://graph.facebook.com/v18.0/ELECTRICITY_GROUP_ID/messages",
+            "description": "Power supply and electrical infrastructure"
+        },
+        "infrastructure": {
+            "name": "Infrastructure Department Group",
+            "group_id": "INFRASTRUCTURE_GROUP_ID",
+            "webhook_url": "https://graph.facebook.com/v18.0/INFRASTRUCTURE_GROUP_ID/messages",
+            "description": "Roads, buildings, and public infrastructure"
+        }
+    },
+    "message_templates": {
+        "group_update": "📢 *INCIDENT UPDATE - {{PRIORITY}}*\\n\\n*From:* {{NAME}} ({{ROLE}})\\n*Department:* {{DEPARTMENT}}\\n*Time:* {{TIMESTAMP}}\\n\\n*Message:*\\n{{MESSAGE}}\\n\\n---\\n*AI Analysis:*\\n• Priority: {{PRIORITY}}\\n• Intent: {{INTENT}}\\n• Entities: {{ENTITIES}}",
+        "collector_summary": "📊 *DEPARTMENT UPDATE*\\n\\n{{NAME}} ({{DEPT_SHORT}}) sent update to {{GROUP_NAME}}\\nPriority: {{PRIORITY}} | Intent: {{INTENT}}\\n\\nView full details in dashboard."
+    },
+    "routing_rules": {
+        "auto_escalate_to_collector": true,
+        "notify_on_high_priority": true,
+        "store_all_messages": true,
+        "enable_ai_analysis": true
+    }
+}

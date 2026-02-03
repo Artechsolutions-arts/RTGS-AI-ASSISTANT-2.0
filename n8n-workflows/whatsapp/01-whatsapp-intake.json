@@ -1,0 +1,345 @@
+{
+    "name": "01 - WhatsApp Message Intake",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "whatsapp-intake",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "id": "webhook-intake",
+            "name": "Webhook - WhatsApp Intake",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1.1,
+            "position": [
+                250,
+                300
+            ],
+            "webhookId": "whatsapp-intake"
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "msg_id",
+                            "name": "message_id",
+                            "value": "={{ $now.toISO() }}-{{ $json.forwarded_from }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "msg_text",
+                            "name": "message_text",
+                            "value": "={{ $json.message_text }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "ts",
+                            "name": "timestamp",
+                            "value": "={{ $json.timestamp }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "fwd_from",
+                            "name": "forwarded_from",
+                            "value": "={{ $json.forwarded_from }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "role",
+                            "name": "sender_role",
+                            "value": "={{ $json.sender_role }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "stat",
+                            "name": "status",
+                            "value": "new",
+                            "type": "string"
+                        },
+                        {
+                            "id": "attach",
+                            "name": "attachments",
+                            "value": "={{ $json.attachments || [] }}",
+                            "type": "array"
+                        },
+                        {
+                            "id": "created",
+                            "name": "created_at",
+                            "value": "={{ $now.toISO() }}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "id": "set-message-data",
+            "name": "Set Message Data",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.3,
+            "position": [
+                450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "insert",
+                "collection": "messages",
+                "options": {}
+            },
+            "id": "save-to-mongodb",
+            "name": "Save to MongoDB",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                650,
+                300
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "url": "http://host.docker.internal:8000/analyze",
+                "method": "POST",
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ { \"message_text\": $json.message_text, \"metadata\": { \"message_id\": $json.message_id, \"sender_role\": $json.sender_role } } }}",
+                "options": {
+                    "timeout": 30000
+                }
+            },
+            "id": "call-ai-service",
+            "name": "Call AI Service",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                850,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "ai_data",
+                            "name": "ai_analysis",
+                            "value": "={{ $json.analysis }}",
+                            "type": "object"
+                        },
+                        {
+                            "id": "msg_id2",
+                            "name": "message_id",
+                            "value": "={{ $('Set Message Data').item.json.message_id }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "stat2",
+                            "name": "status",
+                            "value": "processed",
+                            "type": "string"
+                        },
+                        {
+                            "id": "upd",
+                            "name": "updated_at",
+                            "value": "={{ $now.toISO() }}",
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            "id": "prepare-update",
+            "name": "Prepare Update Data",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.3,
+            "position": [
+                1050,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "update",
+                "collection": "messages",
+                "updateKey": "message_id",
+                "options": {}
+            },
+            "id": "update-with-ai-analysis",
+            "name": "Update with AI Analysis",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                1250,
+                300
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "string": [
+                        {
+                            "value1": "={{ $json.ai_analysis.priority }}",
+                            "operation": "equals",
+                            "value2": "high"
+                        }
+                    ]
+                }
+            },
+            "id": "check-priority",
+            "name": "Check Priority",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                1450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ { \"status\": \"success\", \"message_id\": $json.message_id, \"priority\": $json.ai_analysis.priority, \"intent\": $json.ai_analysis.intent } }}"
+            },
+            "id": "respond-success",
+            "name": "Respond Success",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                1650,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Trigger high priority alert\nreturn {\n  message_id: $input.item.json.message_id,\n  message_text: $('Set Message Data').item.json.message_text,\n  priority: $input.item.json.ai_analysis.priority,\n  intent: $input.item.json.ai_analysis.intent,\n  entities: $input.item.json.ai_analysis.entities,\n  alert_type: 'high_priority',\n  timestamp: new Date().toISOString()\n};"
+            },
+            "id": "trigger-high-priority-alert",
+            "name": "Trigger High Priority Alert",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1650,
+                200
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook - WhatsApp Intake": {
+            "main": [
+                [
+                    {
+                        "node": "Set Message Data",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Set Message Data": {
+            "main": [
+                [
+                    {
+                        "node": "Save to MongoDB",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Save to MongoDB": {
+            "main": [
+                [
+                    {
+                        "node": "Call AI Service",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Call AI Service": {
+            "main": [
+                [
+                    {
+                        "node": "Prepare Update Data",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Prepare Update Data": {
+            "main": [
+                [
+                    {
+                        "node": "Update with AI Analysis",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Update with AI Analysis": {
+            "main": [
+                [
+                    {
+                        "node": "Check Priority",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Check Priority": {
+            "main": [
+                [
+                    {
+                        "node": "Trigger High Priority Alert",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Respond Success",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Trigger High Priority Alert": {
+            "main": [
+                [
+                    {
+                        "node": "Respond Success",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": true,
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "versionId": "1",
+    "id": "1",
+    "meta": {
+        "instanceId": "gov-ai-assistant"
+    },
+    "tags": []
+}

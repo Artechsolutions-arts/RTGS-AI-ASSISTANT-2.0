@@ -1,0 +1,63 @@
+{
+  "name": "Debug Calendar",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "debug-calendar",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [250, 300],
+      "webhookId": "debug-calendar"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "artechnical707@gmail.com",
+          "mode": "id"
+        },
+        "timeMin": "={{ $now.set({ hour: 0, minute: 0, second: 0 }).toISO() }}",
+        "timeMax": "={{ $now.plus({ days: 7 }).toISO() }}",
+        "options": {
+          "fields": "items(id,summary,start,end,location,description,hangoutLink,conferenceData)",
+          "orderBy": "startTime"
+        }
+      },
+      "id": "fetch-google-calendar",
+      "name": "Fetch Google Calendar",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "9OFA49clggNMm5lk",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [650, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "Fetch Google Calendar", "type": "main", "index": 0 }]] },
+    "Fetch Google Calendar": { "main": [[{ "node": "Respond", "type": "main", "index": 0 }]] }
+  },
+  "active": true
+}

@@ -1,0 +1,339 @@
+{
+    "name": "05 - Calendar Management",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": "runOnceForAllItems",
+                "values": {
+                    "interval": [
+                        {
+                            "field": "cronExpression",
+                            "expression": "*/15 * * * *"
+                        }
+                    ]
+                }
+            },
+            "id": "schedule-calendar-check",
+            "name": "Schedule Calendar Check",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1.2,
+            "position": [
+                250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "find",
+                "collection": "messages",
+                "options": {
+                    "limit": 50,
+                    "queryParameters": "{ \"ai_analysis.intent\": \"meeting\", \"status\": \"routed\" }"
+                }
+            },
+            "id": "get-meeting-messages",
+            "name": "Get Meeting Messages",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                450,
+                300
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const events = [];\n\nfor (const item of $input.all()) {\n  const msg = item.json;\n  const analysis = msg.ai_analysis;\n  const entities = analysis.entities || {};\n  \n  let startTime = new Date(Date.now() + 24 * 60 * 60 * 1000);\n  if (entities.date && entities.date.length > 0) {\n    startTime = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);\n  }\n  if (entities.time && entities.time.length > 0) {\n    startTime.setHours(10, 0, 0, 0);\n  }\n  \n  const endTime = new Date(startTime.getTime() + 60 * 60 * 1000);\n  let location = 'Conference Hall';\n  if (entities.district && entities.district.length > 0) {\n    location = entities.district[0].value + ' Office';\n  }\n  \n  events.push({\n    event_id: `event-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,\n    source_message_id: msg.message_id,\n    title: msg.message_text.substring(0, 100),\n    description: msg.message_text,\n    start_time: startTime.toISOString(),\n    end_time: endTime.toISOString(),\n    location: location,\n    attendees: [],\n    conflict_detected: false,\n    conflicting_events: [],\n    status: 'scheduled',\n    reminder_sent: false,\n    created_at: new Date().toISOString(),\n    updated_at: new Date().toISOString()\n  });\n}\n\nreturn events;"
+            },
+            "id": "create-calendar-events",
+            "name": "Create Calendar Events",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "find",
+                "collection": "calendar_events",
+                "options": {
+                    "queryParameters": "{ \"status\": { \"$in\": [\"scheduled\", \"confirmed\"] } }"
+                }
+            },
+            "id": "get-existing-events",
+            "name": "Get Existing Events",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                850,
+                300
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const newEvent = $input.first().json;\nconst existingEvents = $input.all().slice(1).map(item => item.json);\n\nconst newEventStart = new Date(newEvent.start_time);\nconst newEventEnd = new Date(newEvent.end_time);\nconst conflicts = [];\n\nfor (const existing of existingEvents) {\n  const existingStart = new Date(existing.start_time);\n  const existingEnd = new Date(existing.end_time);\n  \n  if ((newEventStart >= existingStart && newEventStart < existingEnd) ||\n      (newEventEnd > existingStart && newEventEnd <= existingEnd) ||\n      (newEventStart <= existingStart && newEventEnd >= existingEnd)) {\n    conflicts.push(existing.event_id);\n  }\n}\n\nreturn [{...newEvent, conflict_detected: conflicts.length > 0, conflicting_events: conflicts}];"
+            },
+            "id": "detect-conflicts",
+            "name": "Detect Conflicts",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1050,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "boolean": [
+                        {
+                            "value1": "={{ $json.conflict_detected }}",
+                            "value2": true
+                        }
+                    ]
+                }
+            },
+            "id": "check-conflicts",
+            "name": "Check if Conflicts",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                1250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "const event = $input.first().json;\nconst startTime = new Date(event.start_time);\nconst alternates = [];\n\nfor (let i = 1; i <= 3; i++) {\n  const altStart = new Date(startTime.getTime() + i * 60 * 60 * 1000);\n  const altEnd = new Date(altStart.getTime() + 60 * 60 * 1000);\n  alternates.push({start: altStart.toISOString(), end: altEnd.toISOString()});\n}\n\nreturn [{...event, suggested_alternates: alternates, notification_message: `⚠️ SCHEDULING CONFLICT\\n\\nRequested meeting time conflicts with existing events.\\n\\nSuggested alternate times:\\n1. ${new Date(alternates[0].start).toLocaleString()}\\n2. ${new Date(alternates[1].start).toLocaleString()}\\n3. ${new Date(alternates[2].start).toLocaleString()}\\n\\nPlease confirm preferred time.`}];"
+            },
+            "id": "suggest-alternates",
+            "name": "Suggest Alternate Times",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1450,
+                200
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "insert",
+                "collection": "calendar_events",
+                "options": {}
+            },
+            "id": "save-event",
+            "name": "Save Event to DB",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                1450,
+                400
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "msg_id",
+                            "name": "message_id",
+                            "value": "={{ $('Get Meeting Messages').item.json.message_id }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "status",
+                            "name": "status",
+                            "value": "completed",
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            "id": "prepare-completion",
+            "name": "Prepare Completion",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.3,
+            "position": [
+                1650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "update",
+                "collection": "messages",
+                "updateKey": "message_id",
+                "options": {}
+            },
+            "id": "mark-message-completed",
+            "name": "Mark Message Completed",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                1850,
+                300
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const event = $input.first().json;\nlet message = '';\n\nif (event.conflict_detected) {\n  message = event.notification_message;\n} else {\n  message = `📅 MEETING SCHEDULED\\n\\nTitle: ${event.title}\\nDate & Time: ${new Date(event.start_time).toLocaleString()}\\nLocation: ${event.location}\\nDuration: 1 hour\\n\\nEvent added to calendar.`;\n}\n\nreturn [{event_id: event.event_id, message: message, sent_at: new Date().toISOString()}];"
+            },
+            "id": "send-confirmation",
+            "name": "Send Confirmation",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1650,
+                450
+            ]
+        }
+    ],
+    "connections": {
+        "Schedule Calendar Check": {
+            "main": [
+                [
+                    {
+                        "node": "Get Meeting Messages",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Meeting Messages": {
+            "main": [
+                [
+                    {
+                        "node": "Create Calendar Events",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Create Calendar Events": {
+            "main": [
+                [
+                    {
+                        "node": "Get Existing Events",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Existing Events": {
+            "main": [
+                [
+                    {
+                        "node": "Detect Conflicts",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Detect Conflicts": {
+            "main": [
+                [
+                    {
+                        "node": "Check if Conflicts",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Check if Conflicts": {
+            "main": [
+                [
+                    {
+                        "node": "Suggest Alternate Times",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Save Event to DB",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Suggest Alternate Times": {
+            "main": [
+                [
+                    {
+                        "node": "Save Event to DB",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Save Event to DB": {
+            "main": [
+                [
+                    {
+                        "node": "Prepare Completion",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Send Confirmation",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Prepare Completion": {
+            "main": [
+                [
+                    {
+                        "node": "Mark Message Completed",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": true,
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "versionId": "5",
+    "id": "5",
+    "meta": {
+        "instanceId": "gov-ai-assistant"
+    },
+    "tags": []
+}

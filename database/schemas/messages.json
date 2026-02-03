@@ -1,0 +1,147 @@
+{
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": [
+            "message_id",
+            "message_text",
+            "timestamp",
+            "forwarded_from",
+            "sender_role",
+            "created_at"
+        ],
+        "properties": {
+            "message_id": {
+                "bsonType": "string",
+                "description": "Unique message identifier"
+            },
+            "message_text": {
+                "bsonType": "string",
+                "description": "Original message text"
+            },
+            "timestamp": {
+                "bsonType": "date",
+                "description": "Message timestamp"
+            },
+            "forwarded_from": {
+                "bsonType": "string",
+                "description": "Phone number of sender"
+            },
+            "sender_role": {
+                "bsonType": "string",
+                "description": "Role of the sender"
+            },
+            "attachments": {
+                "bsonType": "array",
+                "description": "List of attachment URLs",
+                "items": {
+                    "bsonType": "string"
+                }
+            },
+            "ai_analysis": {
+                "bsonType": "object",
+                "properties": {
+                    "language": {
+                        "bsonType": "string",
+                        "enum": [
+                            "english",
+                            "telugu",
+                            "mixed",
+                            "unknown"
+                        ]
+                    },
+                    "language_confidence": {
+                        "bsonType": "double"
+                    },
+                    "intent": {
+                        "bsonType": "string",
+                        "enum": [
+                            "disaster_alert",
+                            "meeting",
+                            "instruction",
+                            "status_update",
+                            "fyi",
+                            "unknown"
+                        ]
+                    },
+                    "intent_confidence": {
+                        "bsonType": "double"
+                    },
+                    "priority": {
+                        "bsonType": "string",
+                        "enum": [
+                            "high",
+                            "medium",
+                            "low"
+                        ]
+                    },
+                    "priority_confidence": {
+                        "bsonType": "double"
+                    },
+                    "entities": {
+                        "bsonType": "object"
+                    },
+                    "corrected_text": {
+                        "bsonType": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "keywords": {
+                        "bsonType": "array",
+                        "items": {
+                            "bsonType": "string"
+                        }
+                    },
+                    "sentiment": {
+                        "bsonType": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "routing": {
+                "bsonType": "object",
+                "properties": {
+                    "department": {
+                        "bsonType": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "assigned_to": {
+                        "bsonType": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "routed_at": {
+                        "bsonType": [
+                            "date",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "status": {
+                "bsonType": "string",
+                "enum": [
+                    "new",
+                    "processed",
+                    "routed",
+                    "completed",
+                    "archived"
+                ],
+                "description": "Processing status"
+            },
+            "created_at": {
+                "bsonType": "date",
+                "description": "Record creation timestamp"
+            },
+            "updated_at": {
+                "bsonType": "date",
+                "description": "Record update timestamp"
+            }
+        }
+    }
+}

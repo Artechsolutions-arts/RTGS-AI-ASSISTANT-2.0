@@ -1,0 +1,43 @@
+{
+    "bot_token": "8360642437:AAHCj2KamG8W8J5hsUcvmR3SFbftXKtgh8Y",
+    "webhook_url": "http://localhost:5678/webhook/telegram-intake",
+    "use_polling": true,
+    "polling_interval": 1000,
+    "department_groups": {
+        "disaster_management": {
+            "chat_id": "-1001234567890",
+            "name": "AP Gov - Disaster Management",
+            "description": "Disaster and emergency management updates"
+        },
+        "electricity": {
+            "chat_id": "-1001234567891",
+            "name": "AP Gov - Electricity Department",
+            "description": "Power supply and electricity issues"
+        },
+        "infrastructure": {
+            "chat_id": "-1001234567892",
+            "name": "AP Gov - Infrastructure",
+            "description": "Roads, buildings, and infrastructure projects"
+        }
+    },
+    "collector": {
+        "chat_id": "123456789",
+        "name": "Murali (Collector)",
+        "username": "murali_collector"
+    },
+    "allowed_users": [
+        123456789
+    ],
+    "message_templates": {
+        "group_update": "🚨 *{{PRIORITY}} PRIORITY UPDATE*\n\n👤 *From:* {{NAME}}\n💼 *Role:* {{ROLE}}\n🏛️ *Department:* {{DEPARTMENT}}\n🕐 *Time:* {{TIMESTAMP}}\n\n📝 *Message:*\n{{MESSAGE}}\n\n🤖 *AI Analysis:*\n• Priority: {{PRIORITY}}\n• Intent: {{INTENT}}\n• Entities: {{ENTITIES}}",
+        "collector_summary": "📊 *Department Update Summary*\n\n👤 {{NAME}} ({{DEPT_SHORT}})\n📍 Sent to: {{GROUP_NAME}}\n⚡ Priority: {{PRIORITY}}\n🎯 Intent: {{INTENT}}",
+        "welcome": "Welcome to AP Government AI Assistant! 🏛️\n\nI can help you:\n✅ Analyze and prioritize messages\n✅ Route to appropriate departments\n✅ Create tasks and calendar events\n✅ Send automated follow-ups\n\nJust send me a message to get started!",
+        "help": "🤖 *AI Assistant Commands*\n\n/start - Start the assistant\n/help - Show this help message\n/status - Check system status\n\nSimply send any message and I'll analyze it automatically!",
+        "status": "✅ *System Status*\n\n🤖 AI Service: Online\n💾 Database: Connected\n🔄 Workflows: Active\n\nReady to process messages!"
+    },
+    "bot_settings": {
+        "parse_mode": "Markdown",
+        "disable_web_page_preview": true,
+        "disable_notification": false
+    }
+}

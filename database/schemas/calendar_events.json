@@ -1,0 +1,110 @@
+{
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": [
+            "event_id",
+            "source_message_id",
+            "title",
+            "start_time",
+            "status",
+            "created_at"
+        ],
+        "properties": {
+            "event_id": {
+                "bsonType": "string",
+                "description": "Unique event identifier"
+            },
+            "source_message_id": {
+                "bsonType": "string",
+                "description": "ID of the message that created this event"
+            },
+            "title": {
+                "bsonType": "string",
+                "description": "Event title"
+            },
+            "description": {
+                "bsonType": "string",
+                "description": "Event description"
+            },
+            "start_time": {
+                "bsonType": "date",
+                "description": "Event start time"
+            },
+            "end_time": {
+                "bsonType": [
+                    "date",
+                    "null"
+                ],
+                "description": "Event end time"
+            },
+            "location": {
+                "bsonType": [
+                    "string",
+                    "null"
+                ],
+                "description": "Event location/venue"
+            },
+            "attendees": {
+                "bsonType": "array",
+                "description": "List of attendees",
+                "items": {
+                    "bsonType": "object",
+                    "properties": {
+                        "name": {
+                            "bsonType": "string"
+                        },
+                        "role": {
+                            "bsonType": "string"
+                        },
+                        "phone": {
+                            "bsonType": "string"
+                        },
+                        "status": {
+                            "bsonType": "string",
+                            "enum": [
+                                "invited",
+                                "accepted",
+                                "declined",
+                                "tentative"
+                            ]
+                        }
+                    }
+                }
+            },
+            "conflict_detected": {
+                "bsonType": "bool",
+                "description": "Whether a scheduling conflict was detected"
+            },
+            "conflicting_events": {
+                "bsonType": "array",
+                "description": "List of conflicting event IDs",
+                "items": {
+                    "bsonType": "string"
+                }
+            },
+            "status": {
+                "bsonType": "string",
+                "enum": [
+                    "scheduled",
+                    "confirmed",
+                    "cancelled",
+                    "completed",
+                    "rescheduled"
+                ],
+                "description": "Event status"
+            },
+            "reminder_sent": {
+                "bsonType": "bool",
+                "description": "Whether reminder has been sent"
+            },
+            "created_at": {
+                "bsonType": "date",
+                "description": "Event creation timestamp"
+            },
+            "updated_at": {
+                "bsonType": "date",
+                "description": "Last update timestamp"
+            }
+        }
+    }
+}

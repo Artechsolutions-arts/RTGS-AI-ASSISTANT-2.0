@@ -1,0 +1,93 @@
+version: "3.8"
+
+services:
+  # n8n Workflow Orchestration
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: ai-assist-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=admin123
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=https://hyetological-fumblingly-eliseo.ngrok-free.dev
+      - GENERIC_TIMEZONE=Asia/Kolkata
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=n8n
+      # MongoDB Atlas connection (for workflows)
+      - MONGODB_URI=mongodb+srv://artechnical707_db_user:NiGA7hwIIUjgXWiD@rtgsai.pjyqjep.mongodb.net/
+      - MONGODB_DATABASE=gov_ai_assistant
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n-workflows:/workflows:ro
+    networks:
+      - ai-assist-network
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5678/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PostgreSQL for n8n
+  postgres:
+    image: postgres:15-alpine
+    container_name: ai-assist-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: n8n
+      POSTGRES_PASSWORD: n8n
+      POSTGRES_DB: n8n
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ai-assist-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U n8n"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # AI Service for NLP Analysis
+  ai-service:
+    build: ./ai-service
+    container_name: ai-assist-ai-service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ai-service/dictionaries:/app/dictionaries:ro
+    networks:
+      - ai-assist-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import requests; requests.get('http://localhost:8000/health')",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  postgres_data:
+    driver: local
+  n8n_data:
+    driver: local
+
+networks:
+  ai-assist-network:
+    driver: bridge

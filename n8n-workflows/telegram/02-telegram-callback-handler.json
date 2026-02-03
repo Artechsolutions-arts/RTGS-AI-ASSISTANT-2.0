@@ -1,0 +1,231 @@
+{
+    "name": "02-telegram-callback-handler",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "telegram-callback",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "id": "webhook-telegram-callback",
+            "name": "Webhook - Telegram Callback",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1.1,
+            "position": [
+                240,
+                300
+            ],
+            "webhookId": "telegram-callback-webhook"
+        },
+        {
+            "parameters": {
+                "jsCode": "// Parse incoming callback query\nconst body = $input.first().json.body;\n\n// Check if this is a callback query\nif (!body.callback_query) {\n  return [];\n}\n\nconst callbackQuery = body.callback_query;\nconst callbackData = callbackQuery.data;\nconst chatId = callbackQuery.message.chat.id;\nconst messageId = callbackQuery.message.message_id;\nconst userId = callbackQuery.from.id;\nconst userName = callbackQuery.from.first_name + (callbackQuery.from.last_name ? ' ' + callbackQuery.from.last_name : '');\n\n// Parse callback data format: status_STATUS_MESSAGEID\nconst parts = callbackData.split('_');\nif (parts.length < 3 || parts[0] !== 'status') {\n  return [];\n}\n\nconst newStatus = parts[1]; // IN_PROGRESS or CLOSED\nconst originalMessageId = parts.slice(2).join('_'); // Rejoin in case message ID contains underscores\n\nreturn [{\n  callback_query_id: callbackQuery.id,\n  chat_id: chatId,\n  telegram_message_id: messageId,\n  user_id: userId,\n  user_name: userName,\n  new_status: newStatus,\n  message_id: originalMessageId,\n  timestamp: new Date().toISOString()\n}];"
+            },
+            "id": "parse-callback-query",
+            "name": "Parse Callback Query",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                460,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "update",
+                "collection": "messages",
+                "updateKey": "message_id",
+                "fieldsUi": {
+                    "fieldValues": [
+                        {
+                            "fieldId": "={{ $json.message_id }}",
+                            "fieldValue": "={{ $json.message_id }}"
+                        }
+                    ]
+                },
+                "options": {
+                    "upsert": false
+                },
+                "updateFields": {
+                    "customFieldsUi": {
+                        "fieldValues": [
+                            {
+                                "fieldId": "status",
+                                "fieldValue": "={{ $json.new_status }}"
+                            },
+                            {
+                                "fieldId": "status_updated_at",
+                                "fieldValue": "={{ $json.timestamp }}"
+                            },
+                            {
+                                "fieldId": "status_updated_by",
+                                "fieldValue": "={{ $json.user_name }}"
+                            }
+                        ]
+                    }
+                }
+            },
+            "id": "update-mongodb-status",
+            "name": "Update MongoDB Status",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1,
+            "position": [
+                680,
+                300
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "mongodb-credentials",
+                    "name": "MongoDB"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// Load Telegram config\nconst fs = require('fs');\nconst configPath = 'd:/AI Assist/n8n-workflows/telegram_config.json';\nconst config = JSON.parse(fs.readFileSync(configPath, 'utf8'));\n\nconst data = $input.first().json;\nconst callbackData = $('Parse Callback Query').item.json;\n\n// Create status badge based on new status\nlet statusBadge = '';\nlet statusText = '';\n\nswitch(callbackData.new_status) {\n  case 'IN_PROGRESS':\n    statusBadge = '⏳';\n    statusText = 'In Progress';\n    break;\n  case 'CLOSED':\n    statusBadge = '✅';\n    statusText = 'Closed';\n    break;\n  default:\n    statusBadge = '🆕';\n    statusText = 'New';\n}\n\n// Format updated message text\nconst updatedText = `${statusBadge} *Status Updated: ${statusText}*\\n\\n` +\n  `Updated by: ${callbackData.user_name}\\n` +\n  `Time: ${new Date(callbackData.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`;\n\nreturn [{\n  bot_token: config.bot_token,\n  callback_query_id: callbackData.callback_query_id,\n  chat_id: callbackData.chat_id,\n  message_id: callbackData.telegram_message_id,\n  text: updatedText,\n  parse_mode: 'Markdown'\n}];"
+            },
+            "id": "format-callback-response",
+            "name": "Format Callback Response",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                900,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "url": "=https://api.telegram.org/bot{{ $json.bot_token }}/answerCallbackQuery",
+                "method": "POST",
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={\n  \"callback_query_id\": \"{{ $json.callback_query_id }}\",\n  \"text\": \"Status updated successfully!\",\n  \"show_alert\": false\n}",
+                "options": {}
+            },
+            "id": "answer-callback-query",
+            "name": "Answer Callback Query",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1120,
+                200
+            ]
+        },
+        {
+            "parameters": {
+                "url": "=https://api.telegram.org/bot{{ $json.bot_token }}/editMessageText",
+                "method": "POST",
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={\n  \"chat_id\": {{ $json.chat_id }},\n  \"message_id\": {{ $json.message_id }},\n  \"text\": \"{{ $json.text }}\",\n  \"parse_mode\": \"{{ $json.parse_mode }}\"\n}",
+                "options": {}
+            },
+            "id": "edit-message-text",
+            "name": "Edit Message Text",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1120,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={ \"ok\": true }",
+                "options": {}
+            },
+            "id": "respond-to-webhook",
+            "name": "Respond to Webhook",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                1340,
+                300
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook - Telegram Callback": {
+            "main": [
+                [
+                    {
+                        "node": "Parse Callback Query",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Parse Callback Query": {
+            "main": [
+                [
+                    {
+                        "node": "Update MongoDB Status",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Update MongoDB Status": {
+            "main": [
+                [
+                    {
+                        "node": "Format Callback Response",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format Callback Response": {
+            "main": [
+                [
+                    {
+                        "node": "Answer Callback Query",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Edit Message Text",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Answer Callback Query": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Edit Message Text": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [],
+    "triggerCount": 0,
+    "updatedAt": "2026-01-16T11:30:00.000Z",
+    "versionId": "1"
+}

@@ -1,0 +1,1088 @@
+{
+  "name": "01 - Telegram Message Intake",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "telegram-intake",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "c2664b36-58a8-4efd-800f-912b4f1e6744",
+      "name": "Webhook - Telegram Intake",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        9936,
+        1856
+      ],
+      "webhookId": "telegram-intake"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Telegram message format\nconst inputData = $input.first().json;\nconst update = inputData.body || inputData; // Handle n8n 'body' wrapper\n\n// HANDLE CALLBACK QUERY (BUTTON CLICKS)\nif (update.callback_query) {\n  const cb = update.callback_query;\n  return {\n    message_id: cb.message.message_id,\n    message_text: cb.data,\n    sender_id: cb.from.id,\n    sender_name: cb.from.first_name,\n    sender_role: cb.from.username ? '@' + cb.from.username : 'Telegram User',\n    platform: 'telegram',\n    telegram_chat_id: cb.message.chat.id,\n    telegram_user_id: cb.from.id,\n    timestamp: new Date().toISOString(),\n    raw_data: update,\n    is_callback: true\n  };\n}\n\nconst message = update.message || update;\nconst from = message.from || {};\nconst chat = message.chat || {};\n\n// Extract message text\nconst messageText = message.text || message.caption || message.message_text || '';\n\n// IGNORE EMPTY MESSAGES OR BOT SYSTEM UPDATES\nif (!messageText || messageText.trim() === '') {\n  return [];\n}\n\n// Build user identifier\nconst userId = from.id || chat.id || 'unknown';\nconst userName = from.first_name || from.username || 'Unknown User';\nconst userRole = from.username ? '@' + from.username : 'Telegram User';\n\nreturn {\n  message_id: message.message_id || '',\n  message_text: messageText,\n  sender_id: userId,\n  sender_name: userName,\n  sender_role: userRole,\n  platform: 'telegram',\n  // RESTORED FIELDS:\n  telegram_chat_id: chat.id,\n  telegram_message_id: message.message_id,\n  telegram_user_id: userId,\n  timestamp: message.date ? new Date(message.date * 1000).toISOString() : new Date().toISOString(),\n  raw_data: update\n};"
+      },
+      "id": "ba3cc41e-6ec2-4ac7-85fb-684f6dc46150",
+      "name": "Parse Telegram Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        10128,
+        1856
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "msg_id",
+              "name": "message_id",
+              "value": "={{ $now.toISO() }}-{{ $json.telegram_user_id }}",
+              "type": "string"
+            },
+            {
+              "id": "msg_text",
+              "name": "message_text",
+              "value": "={{ $json.message_text }}",
+              "type": "string"
+            },
+            {
+              "id": "ts",
+              "name": "timestamp",
+              "value": "={{ $json.timestamp }}",
+              "type": "string"
+            },
+            {
+              "id": "fwd_from",
+              "name": "forwarded_from",
+              "value": "={{ $json.forwarded_from }}",
+              "type": "string"
+            },
+            {
+              "id": "role",
+              "name": "sender_role",
+              "value": "={{ $json.sender_role }}",
+              "type": "string"
+            },
+            {
+              "id": "stat",
+              "name": "status",
+              "value": "new",
+              "type": "string"
+            },
+            {
+              "id": "platform",
+              "name": "platform",
+              "value": "telegram",
+              "type": "string"
+            },
+            {
+              "id": "telegram_data",
+              "name": "telegram_data",
+              "value": "={{ { user_id: $json.telegram_user_id, chat_id: $json.telegram_chat_id, message_id: $json.telegram_message_id } }}",
+              "type": "object"
+            },
+            {
+              "id": "created",
+              "name": "created_at",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "c7220a89-a7aa-4d93-9fce-7465e96b5603",
+              "name": "district",
+              "value": "ntr-district",
+              "type": "string"
+            },
+            {
+              "id": "tg_uid",
+              "name": "telegram_user_id",
+              "value": "={{ $json.telegram_user_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2c298442-a5cc-49b3-9032-22f2d4995692",
+      "name": "Set Message Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        10336,
+        1856
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "collection": "messages",
+        "fields": "message_id, message_text, district, timestamp, sender_name, sender_role, telegram_user_id",
+        "options": {}
+      },
+      "id": "48af2283-8f81-48d9-a825-370891affc6a",
+      "name": "Save to MongoDB",
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.1,
+      "position": [
+        10528,
+        1856
+      ],
+      "credentials": {
+        "mongoDb": {
+          "id": "YJ4wyhn68TKaChpn",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://ai-service:8000/analyze",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n {\n   \"message_text\": $('Set Message Data').item.json.message_text,\n   \"metadata\": {\n     \"message_id\": $('Set Message Data').item.json.message_id,\n     \"platform\": \"telegram\"\n   }\n }\n}}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "be795221-ae86-43af-9f5d-0beb83f8054b",
+      "name": "Call AI Service",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        10736,
+        1856
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ai_data",
+              "name": "ai_analysis",
+              "value": "={{ $json.analysis }}",
+              "type": "object"
+            },
+            {
+              "id": "msg_id2",
+              "name": "message_id",
+              "value": "={{ $('Set Message Data').item.json.message_id }}",
+              "type": "string"
+            },
+            {
+              "id": "stat2",
+              "name": "status",
+              "value": "processed",
+              "type": "string"
+            },
+            {
+              "id": "upd",
+              "name": "updated_at",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6bf82bbd-f282-4077-846e-d3395c2d4bd6",
+      "name": "Prepare Update Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        10928,
+        1856
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "collection": "messages",
+        "updateKey": "message_id",
+        "options": {}
+      },
+      "id": "388eb335-0845-4010-8761-eb104872ea5b",
+      "name": "Update with AI Analysis",
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.1,
+      "position": [
+        11136,
+        1856
+      ],
+      "credentials": {
+        "mongoDb": {
+          "id": "YJ4wyhn68TKaChpn",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.ai_analysis.priority }}",
+              "operation": "equals",
+              "value2": "high"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0bf535bb-517d-4e51-84cd-3be086fe28a9",
+      "name": "Check Priority",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        11296,
+        2176
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Trigger high priority alert\n// FIX: Get analysis directly from AI Service node\nconst aiAnalysis = $('Call AI Service').item.json.analysis;\nconst messageData = $('Set Message Data').item.json;\n\nreturn {\n  message_id: messageData.message_id,\n  message_text: messageData.message_text,\n  priority: aiAnalysis.priority,\n  intent: aiAnalysis.intent,\n  entities: aiAnalysis.entities,\n  alert_type: 'high_priority',\n  telegram_data: messageData.telegram_data,\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "5d1a5026-7fbb-425f-8a5f-824927be98d4",
+      "name": "Trigger High Priority Alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11536,
+        2064
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Executive Telegram Router\nconst botToken = '8360642437:AAHCj2KamG8W8J5hsUcvmR3SFbftXKtgh8Y'; \n\n// ---- DEPARTMENT CONFIGURATION ----\nconst GROUP_IDS = {\n    'disaster_management': '-1003625449955', \n    'electricity': '-1003577634768',          \n    'health_department': '-1003221517491', \n    'infrastructure': '-1001234567892', \n};\n\nconst isPlaceholder = (id) => {\n  if (!id) return true;\n  const s = id.toString();\n  return s.includes('12345678') || s.length < 5;\n};\n\n// Data Sources\nconst aiAnalysis = $('Call AI Service').item.json.analysis || {};\nconst messageData = $('Set Message Data').item.json || {};\nconst parseData = $('Parse Telegram Message').item.json || {};\n\n// Guard: Do not send general processing response for calendar intents\nif (aiAnalysis.intent === 'view_calendar') {\n    return [];\n}\n\n// Resolve Base Info\nconst reporterChatId = parseData.telegram_chat_id || parseData.chat_id;\nconst msgText = (messageData.message_text || '').toLowerCase();\nconst fromName = parseData.sender_name || 'Citizen';\nconst fromRole = parseData.sender_role || '';\nconst location = aiAnalysis.entities?.location?.[0]?.value || 'Unknown';\n\n// Analysis Results\nlet priority = (aiAnalysis.priority || 'medium').toUpperCase();\nlet intent = (aiAnalysis.intent || 'general').replace(/_/g, ' ').toUpperCase();\nlet deptKey = '';\n\n// --- MULTILINGUAL ROUTING ENGINE ---\n\nif (msgText.includes('power') || msgText.includes('current') || msgText.includes('vidyut') || msgText.includes('\u0c35\u0c3f\u0c26\u0c4d\u0c2f\u0c41\u0c24\u0c4d') || msgText.includes('\u0c15\u0c30\u0c46\u0c02\u0c1f\u0c41')) {\n    deptKey = 'electricity';\n    intent = 'POWER OUTAGE (VIDYUT) \u26a1';\n    priority = 'HIGH';\n}\n\nif (msgText.includes('doctor') || msgText.includes('hospital') || msgText.includes('ambulance') || msgText.includes('\u0c06\u0c30\u0c4b\u0c17\u0c4d\u0c2f\u0c02') || msgText.includes('\u0c35\u0c48\u0c26\u0c4d\u0c2f')) {\n    deptKey = 'health_department';\n    intent = 'MEDICAL EMERGENCY \ud83c\udfe5';\n    priority = 'HIGH';\n}\n\nif (msgText.includes('flood') || msgText.includes('fire') || msgText.includes('varada') || msgText.includes('\u0c35\u0c30\u0c26') || msgText.includes('\u0c35\u0c30\u0c4d\u0c37\u0c02')) {\n    deptKey = 'disaster_management';\n    intent = 'DISASTER ALERT \ud83d\udea8';\n    priority = 'HIGH';\n}\n\n// Fallback logic\nif (!deptKey) {\n  if (intent.includes('DISASTER')) deptKey = 'disaster_management';\n  if (intent.includes('POWER') || intent.includes('ELECTRIC')) deptKey = 'electricity';\n  if (intent.includes('HEALTH') || intent.includes('MEDICAL')) deptKey = 'health_department';\n}\n\n// RESOLVE FINAL DESTINATION\nlet destinationId = reporterChatId;\nlet routingNote = '';\n\nif (deptKey && GROUP_IDS[deptKey] && !isPlaceholder(GROUP_IDS[deptKey])) {\n  destinationId = GROUP_IDS[deptKey];\n  routingNote = `\\n\ud83d\udce2 *Routed to:* ${deptKey.replace(/_/g, ' ').toUpperCase()}`;\n} else if (deptKey) {\n    routingNote = `\\n\u2139\ufe0f *Target Dept:* ${deptKey.replace(/_/g, ' ').toUpperCase()} (Internal Triage)`;\n}\n\n// Format Executive Message (Location Removed)\nconst responseText = \"\u2705 *Message Processed*\" + routingNote + \"\\n\\n\" +\n  \"\ud83c\udfaf *Priority:* \" + priority + \"\\n\" +\n  \"\ud83d\udccb *Intent:* \" + intent + \"\\n\" +\n  \"\ud83d\udc64 *From:* \" + fromName + \" (\" + fromRole + \")\\n\" +\n  \"\ud83d\udcdd *Original Message:*\\n\" + messageData.message_text + \"\\n\\n\" +\n  (priority === 'HIGH' ? \"\u26a0\ufe0f *ACTION REQUIRED*\" : \"Info Only\");\n\nreturn [{\n  chat_id: destinationId,\n  text: responseText,\n  parse_mode: 'Markdown',\n  bot_token: botToken\n}];"
+      },
+      "id": "4afb3e80-7cce-4f09-939e-351b00916896",
+      "name": "Format Telegram Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11760,
+        2160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $json.bot_token }}/sendMessage",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  JSON.stringify(\n    Object.fromEntries(\n      Object.entries({\n        chat_id: $json.chat_id,\n        text: $json.text,\n        parse_mode: $json.parse_mode,\n        reply_markup: $json.reply_markup\n      }).filter(([key, value]) => value !== undefined)\n    )\n  )\n}}",
+        "options": {}
+      },
+      "id": "ff1106a6-aae0-4167-97e0-d10a7c959625",
+      "name": "Send Telegram Response",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        11968,
+        2128
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"status\": \"success\", \"message_id\": $json.message_id, \"priority\": $json.ai_analysis.priority, \"intent\": $json.ai_analysis.intent } }}",
+        "options": {}
+      },
+      "id": "8cd18240-060f-4090-8f02-a315d284fc07",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        12160,
+        2128
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.analysis.intent }}",
+                    "rightValue": "view_calendar|request_appointment",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    },
+                    "id": "cal-route-intent"
+                  },
+                  {
+                    "leftValue": "={{ $('Parse Telegram Message').item.json.message_text.toLowerCase() }}",
+                    "rightValue": "reason:|raason:|reson:|name:|naam:|appointment|meet|schedule|slot|book|available",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    },
+                    "id": "cal-route-text"
+                  }
+                ],
+                "combinator": "or"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.analysis.intent }}",
+                    "rightValue": "view_calendar|request_appointment",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notRegex"
+                    },
+                    "id": "gen-route-fixed"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.analysis.intent }}",
+                    "rightValue": "view_calendar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    },
+                    "id": "not-cal"
+                  },
+                  {
+                    "leftValue": "={{ $json.analysis.intent }}",
+                    "rightValue": "request_appointment",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    },
+                    "id": "not-appt"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        10944,
+        2288
+      ],
+      "id": "f31c3b6e-7626-4117-a27f-210248d59575",
+      "name": "Check Intent"
+    },
+    {
+      "parameters": {
+        "jsCode": "const parseData = $('Parse Telegram Message').item.json;\nconst aiResponse = ($('Call AI Service').item.json && $('Call AI Service').item.json.analysis) || {};\nconst messageText = (parseData.message_text || '').toLowerCase();\n\n// FAIL-SAFE HISTORY\nlet history = [];\ntry { \n    const histItems = $items(\"Get User History\");\n    if (histItems && histItems.length > 0) {\n        history = histItems.map(i => i.json).filter(j => j && j.message_text);\n    }\n} catch (e) { history = []; }\n\nconst msgIso = parseData.timestamp;\nconst msgNowMs = new Date(msgIso).getTime();\nconst istOffset = 5.5 * 60 * 60 * 1000;\nconst istDate = new Date(msgNowMs + istOffset);\n\nconst dateRegex = /\\btomorrow\\b|\\b \u0c30\u0c47\u0c2a\u0c41\\b|\\bnext day\\b/i;\nlet isTomorrow = dateRegex.test(messageText);\n\nif (!isTomorrow) {\n    for (let i = 0; i < Math.min(history.length, 3); i++) {\n        if (dateRegex.test(history[i].message_text)) {\n            isTomorrow = true;\n            break;\n        }\n    }\n}\n\nlet yNum = istDate.getUTCFullYear();\nlet mNum = istDate.getUTCMonth() + 1;\nlet dNum = istDate.getUTCDate();\nlet dateLabel = 'Today';\n\nif (isTomorrow) {\n    const tom = new Date(msgNowMs + 86400000 + istOffset);\n    yNum = tom.getUTCFullYear();\n    mNum = tom.getUTCMonth() + 1;\n    dNum = tom.getUTCDate();\n    dateLabel = 'Tomorrow';\n}\n\nconst pad = (n) => n.toString().padStart(2, '0');\nconst targetDate = `${yNum}-${pad(mNum)}-${pad(dNum)}`;\n\nlet intent = aiResponse.intent || 'UNKNOWN';\nif (/\\bbook\\b|\\bappointment\\b|\\bmeet\\b|\\bcollector\\b|\\bavailable\\b/i.test(messageText)) {\n    intent = 'request_appointment';\n}\n\nconst nameMatch = messageText.match(/(?:name|naam):\\s*([^,.\\n]+)/i);\nconst reasonMatch = messageText.match(/(?:reason|raason|reson|regarding|re|subject):\\s*([^,.\\n]+)/i);\nconst applicantName = nameMatch ? nameMatch[1].trim() : (aiResponse.entities?.person?.[0]?.value || '');\nconst meetingReason = reasonMatch ? reasonMatch[1].trim() : (aiResponse.entities?.reason?.[0]?.value || '');\n\nif ((applicantName || meetingReason) && intent !== 'view_calendar') {\n    intent = 'request_appointment';\n}\n\nconst OWNERS = ['1287706792', '5309276394', '1371540949'];\nconst isOwner = OWNERS.includes(String(parseData.telegram_user_id));\n\nlet reqStart, reqEnd, specificTimeLabel = '';\nconst timeRegex = /(\\d{1,2})[:\\.]?(\\d{2})?\\s*(am|pm)/i;\nlet timeMatch = messageText.match(timeRegex);\n\nif (!timeMatch) {\n    for (let i = 0; i < Math.min(history.length, 3); i++) {\n        let hMatch = (history[i].message_text || '').match(timeRegex);\n        if (hMatch) {\n            timeMatch = hMatch;\n            break;\n        }\n    }\n}\n\nif (timeMatch) {\n    let h = parseInt(timeMatch[1]);\n    const mins = timeMatch[2] ? parseInt(timeMatch[2]) : 0;\n    const ampm = (timeMatch[3] || '').toLowerCase();\n    if (ampm === 'pm' && h < 12) h += 12;\n    if (ampm === 'am' && h === 12) h = 0;\n    reqStart = `${targetDate}T${pad(h)}:${pad(mins)}:00+05:30`;\n    reqEnd = `${targetDate}T${pad(h+1)}:${pad(mins)}:00+05:30`;\n    specificTimeLabel = `${timeMatch[1]}:${pad(mins)} ${ampm}`;\n}\n\nreturn [{\n    json: {\n        timeMin: `${targetDate}T00:00:00+05:30`,\n        timeMax: `${targetDate}T23:59:59+05:30`,\n        authorized: true, isOwner, intent, msgNowMs,\n        targetDate, reqStart, reqEnd, specificTimeLabel, \n        applicantName, meetingReason, dateLabel, messageText\n    }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11296,
+        2304
+      ],
+      "id": "6a30192d-f46f-4ed8-87cf-3cd917bf2ccd",
+      "name": "Extract Date Query"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "=artechnical707@gmail.com",
+          "mode": "id"
+        },
+        "timeMin": "={{ $('Extract Date Query').item.json.timeMin }}",
+        "timeMax": "={{ $('Extract Date Query').item.json.timeMax }}",
+        "options": {
+          "fields": "items(id,summary,start,end,location,description,hangoutLink,conferenceData)",
+          "orderBy": "startTime",
+          "singleEvents": true
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        11536,
+        2304
+      ],
+      "id": "4de8f926-ad3f-4716-b375-7311269347af",
+      "name": "Get Calendar Events",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "9OFA49clggNMm5lk",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const botToken = '8360642437:AAHCj2KamG8W8J5hsUcvmR3SFbftXKtgh8Y';\n\n// ROBUST DATA ACCESS: Use $items() to avoid \"Paired item data unavailable\" error\nconst extractDateItems = $items(\"Extract Date Query\");\nconst parseMsgItems = $items(\"Parse Telegram Message\");\n\nif (!extractDateItems.length || !parseMsgItems.length) return [];\n\nconst dateQuery = extractDateItems[0].json;\nconst parseData = parseMsgItems[0].json;\nconst userChatId = parseData.telegram_chat_id || parseData.chat_id || parseData.sender_id;\n\nconst reply = (msg, kb) => [{ json: { chat_id: String(userChatId), message: msg, bot_token: botToken, parse_mode: 'Markdown', reply_markup: kb } }];\n\ntry {\n    if (dateQuery.intent === 'request_appointment') {\n        let reqStart = dateQuery.reqStart;\n        if (!reqStart) {\n            return reply('\ud83d\udd52 *Time Required:* Please specify the time (e.g., \"at 2:00 PM tomorrow\").');\n        }\n\n        let allEvents = [];\n        try { \n            allEvents = $items(\"Get Calendar Events\").map(i => i.json);\n        } catch (e) { allEvents = []; }\n\n        const reqS = new Date(reqStart).getTime();\n        const reqE = reqS + 3600000;\n        \n        const isBusy = allEvents.some(e => {\n            const s = new Date(e.start.dateTime || e.start.date).getTime();\n            const en = new Date(e.end.dateTime || e.end.date).getTime();\n            return (s < reqE && en > reqS);\n        });\n\n        if (isBusy) {\n            let suggestion = '';\n            let sugDateLabel = dateQuery.dateLabel;\n            const pad = (n) => n.toString().padStart(2, '0');\n            const scanDay = (baseDateStr) => {\n                for (let h = 10; h < 17; h++) {\n                    if (h === 13) continue;\n                    for (let m of ['00', '30']) {\n                        const scanS = new Date(`${baseDateStr}T${pad(h)}:${m}:00+05:30`).getTime();\n                        if (scanS < dateQuery.msgNowMs + 600000) continue; \n                        const collision = allEvents.some(e => {\n                            const s = new Date(e.start.dateTime || e.start.date).getTime();\n                            const en = new Date(e.end.dateTime || e.end.date).getTime();\n                            return (s < scanS + 3600000 && en > scanS);\n                        });\n                        if (!collision) return (h > 12 ? h-12 : h) + ':' + m + (h >= 12 ? ' PM' : ' AM');\n                    }\n                }\n                return null;\n            };\n            suggestion = scanDay(dateQuery.targetDate);\n            if (!suggestion) {\n                const tom = new Date(dateQuery.msgNowMs + 86400000 + (5.5 * 60 * 60 * 1000));\n                const tomStr = tom.getUTCFullYear() + '-' + (tom.getUTCMonth()+1).toString().padStart(2,'0') + '-' + tom.getUTCDate().toString().padStart(2,'0');\n                suggestion = scanDay(tomStr);\n                if (suggestion) sugDateLabel = 'Tomorrow';\n            }\n            const sugMsg = suggestion ? `\\n\\n\ud83d\udca1 *Suggested Slot:* Collector is free at *${suggestion}* on *${sugDateLabel}*.` : '';\n            return reply(`\u274c *Slot Unavailable*\\n\\nThe Collector is busy at *${dateQuery.specificTimeLabel}* on *${dateQuery.dateLabel}*.${sugMsg}`);\n        } else {\n            const name = dateQuery.applicantName;\n            const reason = dateQuery.meetingReason;\n            if (!name || !reason) {\n                 return reply(`\u2705 *${dateQuery.specificTimeLabel}* on ${dateQuery.dateLabel} is available!\\n\\nPlease send your **Full Name and Reason** (e.g., \"Name: Murali, Reason: Road Issue\").`);\n            }\n            const cleanReason = reason.replace(/\\bat\\s*\\d{1,2}[:\\.]?\\d{0,2}\\s*(am|pm)?/gi, '').replace(/\\btomorrow\\b|\\btoday\\b/gi, '').trim();\n            const collectorId = '1287706792';\n            const msgToCollector = `\ud83d\udcc5 *New Appointment Request*\\n\\n\ud83d\udc64 *Applicant:* ${name}\\n\ud83c\udfe2 *Reason:* ${cleanReason}\\n\ud83d\udd52 *Time:* ${dateQuery.targetDate} at ${dateQuery.specificTimeLabel}`;\n            const kb = { inline_keyboard: [[{ text: \"\u2705 Approve\", callback_data: \"/approve_\" + userChatId + \"_\" + reqStart }, { text: \"\u274c Reject\", callback_data: \"/reject_\" + userChatId + \"_\" + reqStart }]] };\n            \n            return [\n                { json: { chat_id: String(userChatId), message: `\u2705 *Request Sent*\\n\\nYour appointment for *${dateQuery.specificTimeLabel}* has been sent for approval.`, bot_token: botToken, parse_mode: 'Markdown' } },\n                { json: { chat_id: String(collectorId), message: msgToCollector, bot_token: botToken, reply_markup: kb, parse_mode: 'Markdown' } }\n            ];\n        }\n    }\n\n    if (dateQuery.intent === 'view_calendar') {\n        if (!dateQuery.isOwner) return reply('\ud83d\udd12 *Privacy Restriction*\\n\\nOnly authorized personnel can view the full schedule.');\n        let evs = []; try { evs = $items(\"Get Calendar Events\").map(i => i.json); } catch (e) { evs = []; }\n        const upcoming = evs.filter(e => new Date(e.end.dateTime || e.end.date).getTime() > (dateQuery.msgNowMs - 60000));\n        let msg = `\ud83d\udcc5 *Schedule for ${dateQuery.dateLabel}*\\n\\n`;\n        if (upcoming.length === 0) msg += 'No meetings scheduled! \u2705';\n        else upcoming.forEach((e, i) => msg += (i + 1) + '. *' + (e.summary || 'Meeting') + '*\\n   \ud83d\udd50 ' + new Date(e.start.dateTime || e.start.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' }) + '\\n\\n');\n        return reply(msg);\n    }\n} catch (err) {\n    return reply('\ud83e\udd16 *System Notice:* I encountered an error. Please try again or use the format \"Name: Murali, Reason: Topic\".');\n}\n\nreturn reply('\ud83e\udd16 *I am here!* To book an appointment, please mention the time and date.');"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11760,
+        2304
+      ],
+      "id": "eece68d8-5235-446a-b163-a12b9d7fa4c0",
+      "name": "Format Calendar Response"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $json.bot_token }}/sendMessage",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    \"chat_id\": $json.chat_id,\n    \"text\": $json.message,\n    \"parse_mode\": \"Markdown\",\n    \"reply_markup\": $json.reply_markup\n  }\n}}",
+        "options": {}
+      },
+      "id": "ea079145-3a15-4383-b5a9-3ab5bdfbbc28",
+      "name": "Send Calendar Response",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        11968,
+        2304
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "collection": "tasks",
+        "fields": "=={{ $json.tasks }}",
+        "options": {}
+      },
+      "id": "83d735f6-63e1-45d3-a233-0087506c752b",
+      "name": "Store Tasks",
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.2,
+      "position": [
+        11664,
+        1856
+      ],
+      "credentials": {
+        "mongoDb": {
+          "id": "YJ4wyhn68TKaChpn",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const messageData = $('Set Message Data').item.json;\nconst aiAnalysis = $json.ai_analysis || {};\n\nconst requestBody = {\n  message_text: messageData.message_text,\n  intent: aiAnalysis.intent || \"general\",\n  priority: aiAnalysis.priority || \"medium\",\n  departments: [\"Health\", \"Revenue\", \"Education\", \"Infrastructure\", \"Police\", \"Disaster Management\"],\n  locations: aiAnalysis.entities || {},\n  message_id: $json.message_id,\n  created_by: \"Telegram User\"\n};\n\n// Use n8n's built-in HTTP helper\nconst response = await this.helpers.httpRequest({\n  method: 'POST',\n  url: 'http://ai-service:8000/extract-tasks',\n  body: requestBody,\n  json: true\n});\n\nreturn response;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11360,
+        1856
+      ],
+      "id": "b4161c91-055b-4b0d-a038-d3e9c00e8ee5",
+      "name": "Call Task Extractor"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message_text }}",
+                    "rightValue": "^\\/approve_(\\d+)_([\\d\\-T:\\+\\.]+)$",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    },
+                    "id": "approve_cmd"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message_text }}",
+                    "rightValue": "^\\/reject_(\\d+)_([\\d\\-T:\\+\\.]+)$",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    },
+                    "id": "reject_cmd"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message_text }}",
+                    "rightValue": "^\\/(approve|reject)_",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notRegex"
+                    },
+                    "id": "passthrough"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cmd-router-123",
+      "name": "Check Command",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        10736,
+        1600
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $json.message_text;\nconst parts = text.match(/^\\/approve_(\\d+)_([\\d\\-T:\\+\\.]+)/);\nconst userId = parts[1];\nconst startTime = parts[2];\n\nconst start = new Date(startTime);\nconst end = new Date(start);\nend.setHours(end.getHours() + 1);\n\nreturn {\n  summary: 'Appointment with Citizen',\n  description: 'Approved via Telegram Intake',\n  start: start.toISOString(),\n  end: end.toISOString(),\n  colorId: '2',\n  userChatId: userId\n};"
+      },
+      "id": "parse-approve-123",
+      "name": "Parse Approve",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11000,
+        1500
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $json.message_text;\nconst parts = text.match(/^\\/reject_(\\d+)_([\\d\\-T:\\+\\.]+)/);\nconst userId = parts[1];\n\nreturn {\n  userChatId: userId\n};"
+      },
+      "id": "parse-reject-123",
+      "name": "Parse Reject",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11000,
+        1700
+      ]
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "artechnical707@gmail.com",
+          "mode": "list",
+          "cachedResultName": "artechnical707@gmail.com"
+        },
+        "start": "={{ $json.start }}",
+        "end": "={{ $json.end }}",
+        "additionalFields": {
+          "colorId": "={{ $json.colorId }}",
+          "summary": "={{ $json.summary }}",
+          "description": "={{ $json.description }}"
+        }
+      },
+      "id": "create-calendar-event-123",
+      "name": "Create Google Meeting",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        11250,
+        1500
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "9OFA49clggNMm5lk",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Parse Approve').item.json.userChatId }}",
+        "text": "\u2705 *Appointment Confirmed!* \n\nThe Collector has approved your request.\nSee you then.",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "notify-approve-user",
+      "name": "Notify User Approve",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        11500,
+        1500
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "HfDM1EHzSVwnzguO",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Parse Reject').item.json.userChatId }}",
+        "text": "\u274c *Appointment Rejected* \n\nThe Collector is unable to meet at the requested time. Please try another slot.",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "notify-reject-user",
+      "name": "Notify User Reject",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        11250,
+        1700
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "HfDM1EHzSVwnzguO",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot8360642437:AAHCj2KamG8W8J5hsUcvmR3SFbftXKtgh8Y/answerCallbackQuery",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"callback_query_id\": \"{{ $('Parse Telegram Message').item.json.raw_data.body.callback_query.id }}\",\n  \"text\": \"Processing completed.\"\n}",
+        "options": {}
+      },
+      "id": "answer-cb-123",
+      "name": "Answer Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        11800,
+        1600
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"status\": \"processed\" }",
+        "options": {}
+      },
+      "id": "respond-cb-123",
+      "name": "Respond Callback",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        12000,
+        1600
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "find",
+        "collection": "messages",
+        "query": "={{ JSON.stringify({ \"telegram_user_id\": String($('Parse Telegram Message').item.json.telegram_user_id) }) }}",
+        "options": {
+          "sort": "{ \"timestamp\": -1 }",
+          "limit": 5
+        }
+      },
+      "id": "get-history-id",
+      "name": "Get User History",
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1.1,
+      "position": [
+        11136,
+        2288
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "mongoDb": {
+          "id": "YJ4wyhn68TKaChpn",
+          "name": "MongoDB account"
+        }
+      },
+      "notesInFlow": true,
+      "notes": "Fetches recent context",
+      "continueOnFail": true
+    }
+  ],
+  "connections": {
+    "Webhook - Telegram Intake": {
+      "main": [
+        [
+          {
+            "node": "Parse Telegram Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Telegram Message": {
+      "main": [
+        [
+          {
+            "node": "Set Message Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Message Data": {
+      "main": [
+        [
+          {
+            "node": "Save to MongoDB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to MongoDB": {
+      "main": [
+        [
+          {
+            "node": "Check Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Command": {
+      "main": [
+        [
+          {
+            "node": "Parse Approve",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Parse Reject",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call AI Service",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Approve": {
+      "main": [
+        [
+          {
+            "node": "Create Google Meeting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Reject": {
+      "main": [
+        [
+          {
+            "node": "Notify User Reject",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Google Meeting": {
+      "main": [
+        [
+          {
+            "node": "Notify User Approve",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify User Approve": {
+      "main": [
+        [
+          {
+            "node": "Answer Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify User Reject": {
+      "main": [
+        [
+          {
+            "node": "Answer Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer Callback": {
+      "main": [
+        [
+          {
+            "node": "Respond Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond Callback": {
+      "main": [
+        []
+      ]
+    },
+    "Call AI Service": {
+      "main": [
+        [
+          {
+            "node": "Prepare Update Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check Intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Update Data": {
+      "main": [
+        [
+          {
+            "node": "Update with AI Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update with AI Analysis": {
+      "main": [
+        [
+          {
+            "node": "Call Task Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Priority": {
+      "main": [
+        [
+          {
+            "node": "Trigger High Priority Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format Telegram Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger High Priority Alert": {
+      "main": [
+        [
+          {
+            "node": "Format Telegram Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Telegram Response": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Telegram Response": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Intent": {
+      "main": [
+        [
+          {
+            "node": "Get User History",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check Priority",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Calendar Events": {
+      "main": [
+        [
+          {
+            "node": "Format Calendar Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Calendar Response": {
+      "main": [
+        [
+          {
+            "node": "Send Calendar Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Date Query": {
+      "main": [
+        [
+          {
+            "node": "Get Calendar Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Tasks": {
+      "main": [
+        []
+      ]
+    },
+    "Call Task Extractor": {
+      "main": [
+        [
+          {
+            "node": "Store Tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get User History": {
+      "main": [
+        [
+          {
+            "node": "Extract Date Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Calendar Response": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "id": "QmjwdS3YsOWhiGPJBpwdV"
+}

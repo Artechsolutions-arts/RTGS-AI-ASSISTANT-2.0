@@ -1,0 +1,501 @@
+message_id,message_text,timestamp,forwarded_from,sender_role,category
+d97f8c2e-1c7d-47b6-a817-04f0d37d516a,Meeting scheduled for 02-02-2026 at 9:30 AM to discuss urban planning.,2026-01-23T10:33:32.290232Z,+919189751417,Inspector,meeting
+3d23180e-0b3f-44a1-916f-90c2bf2d7b46,Kindly prepare expenditure statement and send to Environment Department by 05-02-2026.,2026-01-26T20:51:32.298508Z,+919558897011,Inspector,instruction
+8f968050-9bcb-44f5-b282-d8667a0347b0,documentation complete చేసి 03-02-2026 లోపు submit చేయండి.,2026-01-28T12:38:32.294391Z,+919593275912,Tahsildar,instruction
+a17494de-cdb2-4921-b9e3-318fa476ccfd,Urgent వరద in Rayadurg. Immediate evacuation చేయండి.,2026-01-24T14:38:32.280548Z,+919827300420,Deputy Director,disaster_alert
+63873e45-cd7f-44e2-bb78-2184bde6398c,report preparation completed successfully. 869 beneficiaries covered.,2026-01-24T08:17:32.301426Z,+919939071223,District Collector,status_update
+c084ea63-2c4a-4673-b4a8-f4bf01debebe,Update on verification: on track. No issues.,2026-01-26T08:47:32.302591Z,+919661684690,Chief Engineer,status_update
+2f8b554e-4131-472c-8c36-fa5629b7691e,For your information: project implementation.,2026-01-29T07:10:32.306536Z,+919147220739,Superintendent,fyi
+b1d1b3fb-789b-4fd7-b9ac-a6544f8fe6d3,Request to verify attendance records and provide status update by 12-02-2026.,2026-01-22T15:07:32.297261Z,+919967038452,Project Director,instruction
+d1971b9c-f759-46e1-bf5d-901b6096df5d,Flash flood warning for Kuppam mandal. Alert all villages immediately.,2026-01-28T11:34:32.279767Z,+919522213815,Department Secretary,disaster_alert
+28e8f8dd-4891-4b43-ab90-bf18038a9afb,Drought హెచ్చరిక Chittoorలో. తక్షణ చర్య అవసరం.,2026-01-22T13:09:32.283403Z,+919901262545,District Collector,disaster_alert
+6450d33b-36a7-4c2e-9af7-fc300b39f51a,documentation complete చేసి 05-02-2026 లోపు submit చేయండి.,2026-01-27T19:09:32.301303Z,+919368479090,Tahsildar,instruction
+a5272eb5-8bb4-473e-9547-504616a8e7e0,Reminder: Coordination meeting tomorrow at 11:15 AM. Agenda: project implementation.,2026-01-25T14:43:32.290407Z,+919977106692,Superintendent,meeting
+4843f32a-22e5-4d2c-b42a-581bff092f52,Flash flood warning for Achampet mandal. Alert all villages immediately.,2026-01-25T18:38:32.278141Z,+919755974596,District Collector,disaster_alert
+4b6c430e-db3c-4051-bd12-ca407b508785,Alert: Heavy Heat wave expected in Gannavaram. Please take necessary precautions.,2026-01-26T13:54:32.279438Z,+919832615092,Inspector,disaster_alert
+eb73ee16-a14d-47f3-adc5-1eb3512d2cd4,Notification: welfare schemes. For reference only.,2026-01-21T22:58:32.305926Z,+919060324679,Inspector,fyi
+bd313de5-822d-420a-b8c7-611012ddbbc3,Alert: Heavy Fire expected in Kadiri. Please take necessary precautions.,2026-01-29T00:21:32.283482Z,+919532878608,Chief Engineer,disaster_alert
+277068a2-eea1-490b-b1cf-65cc7598c815,Work on road construction is completed. No major issues reported.,2026-01-21T21:14:32.302289Z,+919544871824,Department Secretary,status_update
+5cc48ab8-d03a-4642-8fd6-2010542955ee,report preparation completed successfully. 372 beneficiaries covered.,2026-01-24T06:18:32.304912Z,+919120672159,Mandal Officer,status_update
+58c1f974-389c-4baa-9fef-aa5de74fc5c0,Please review and approve attendance records at the earliest.,2026-01-26T10:15:32.300022Z,+919644483725,Revenue Officer,instruction
+5dd2c2a5-24c2-439f-8e04-c5287fa47238,Request to verify budget proposal and provide status update by 11-02-2026.,2026-01-22T00:27:32.296955Z,+919688513942,Deputy Director,instruction
+8ab9d872-ffdb-43cf-8a97-d0f924e0a680,Attached: monthly report for your information.,2026-01-25T04:26:32.308118Z,+919622079066,Superintendent,fyi
+70515cbf-92aa-4cec-9e0a-9671e184131d,తుఫాన్ damage reported in Vuyyuru. 0 casualties. Send rescue teams.,2026-01-22T05:14:32.278913Z,+919911041261,Revenue Officer,disaster_alert
+49bdf101-58c5-4792-8950-a19c4e048e1f,Request to verify budget proposal and provide status update by 30-01-2026.,2026-01-21T20:04:32.300926Z,+919221708153,Chief Engineer,instruction
+4867dcc5-4f5b-49d5-bec8-3e2fa6dc15b6,Drought హెచ్చరిక Putturలో. తక్షణ చర్య అవసరం.,2026-01-23T12:41:32.279192Z,+919426674066,District Collector,disaster_alert
+1eabc9b1-bae3-4348-b3ff-baddf076a2ff,Please submit progress report by 10-02-2026. This is urgent.,2026-01-29T00:10:32.298467Z,+919270951421,Tahsildar,instruction
+5ef50ab9-22ce-48fe-a7a6-f680a83b5dbb,Department meeting postponed to 02-02-2026 at 12:30 PM. Venue: Conference Hall.,2026-01-24T05:56:32.292760Z,+919911457579,Deputy Director,meeting
+c11b3809-9993-45f3-b5ea-19bd658700db,Request to verify monthly report and provide status update by 05-02-2026.,2026-01-24T19:15:32.299684Z,+919286731568,Chief Engineer,instruction
+9e1ce372-f705-4079-bbec-fc9d040900f2,Please submit progress report by 08-02-2026. This is urgent.,2026-01-25T10:01:32.294744Z,+919241185681,Assistant Commissioner,instruction
+336a4292-e8f4-4393-8359-6a3baf88d01f,documentation completed successfully. 153 beneficiaries covered.,2026-01-21T23:12:32.301954Z,+919769230315,Department Secretary,status_update
+6a76f855-d9dd-4fc1-8511-7e5468954c34,Urgent Drought in Visakhapatnam. Immediate evacuation చేయండి.,2026-01-25T01:46:32.281678Z,+919744213910,Chief Engineer,disaster_alert
+f11234d2-624b-4dfe-a474-53bc8ad68515,Flash flood warning for Bobbili mandal. Alert all villages immediately.,2026-01-22T00:21:32.280714Z,+919095906679,Revenue Officer,disaster_alert
+432c1b59-bafe-4e1f-8166-958a1e40a005,Request to reschedule meeting from 02-02-2026 to alternate date.,2026-01-26T19:46:32.287856Z,+919217520370,Project Director,meeting
+958139a2-51b9-4b34-a2c9-db348e2aae79,Meeting on 08-02-2026 at 9:00 AM regarding budget allocation. Attendance mandatory.,2026-01-28T07:34:32.283569Z,+919232323220,Tahsildar,meeting
+2878eeda-ab60-4e8e-b8f3-f1ce5ebb943a,Implement updated guidelines in Jaggaiahpet mandal. Report progress weekly.,2026-01-22T03:56:32.299230Z,+919372043283,Chief Engineer,instruction
+0bfabcb4-e539-4a56-98d8-b350a5416dec,Please submit progress report by 11-02-2026. This is urgent.,2026-01-23T22:09:32.297003Z,+919126310193,Department Secretary,instruction
+e34e8a1b-decb-4a55-ae99-02263bd255b1,Ensure data collection is completed before 12-02-2026. No extensions.,2026-01-21T18:34:32.299018Z,+919427608192,Mandal Officer,instruction
+9a544e6b-97d5-47bc-832a-86b38bee6cee,19-02-2026న 2:45 PMకి మీటింగ్. దయచేసి హాజరు అవ్వండి.,2026-01-29T07:34:32.287452Z,+919313815170,Deputy Director,meeting
+87c32eb3-d2d1-4b0e-ac30-010a70a089fc,Kindly prepare action taken report and send to Municipal Administration by 12-02-2026.,2026-01-24T16:43:32.296814Z,+919334699508,Superintendent,instruction
+03971cd7-66e2-4a9e-b9fd-3001325cc5a4,Meeting scheduled for 01-02-2026 at 10:45 AM to discuss welfare schemes.,2026-01-22T17:08:32.288905Z,+919981617557,Inspector,meeting
+3886e3c7-2ade-4707-b38f-cce6a0b47f9a,Please note: project implementation. No action required.,2026-01-22T20:22:32.307929Z,+919958860962,Deputy Director,fyi
+1cb146b4-e6c9-4c4e-8f38-c8a86e9b5e36,Update on field survey: pending approval. Some delays.,2026-01-25T06:51:32.305315Z,+919291441762,Revenue Officer,status_update
+893adf2d-d924-48d5-800b-c64c43be64c0,Reminder: Emergency meeting tomorrow at 12:45 PM. Agenda: budget allocation.,2026-01-23T10:38:32.285266Z,+919912079409,Joint Collector,meeting
+8d8a416f-f3e9-41d4-b9e8-93a73f836914,Please note: road construction. No action required.,2026-01-25T12:44:32.308004Z,+919788574425,Joint Collector,fyi
+c855cdb5-1c64-47a6-810d-3843e9daec1f,Work on agricultural support is in progress. No major issues reported.,2026-01-29T09:58:32.303587Z,+919832184569,District Collector,status_update
+d21700e9-d924-43cc-a737-b7e8f1f576a6,Video conference scheduled for 16-02-2026 at 12:15 PM. Join link will be shared.,2026-01-23T23:06:32.287213Z,+919521985718,Mandal Officer,meeting
+b2c090de-3b77-480f-9990-6a74046d2de3,Please review and approve monthly report at the earliest.,2026-01-29T06:52:32.298769Z,+919324378217,Joint Collector,instruction
+c69d89f5-8cfd-4026-bd52-dcfc95987bc7,Critical: Storm situation in Tiruvuru. Relief measures needed urgently.,2026-01-28T01:27:32.282609Z,+919166238900,Department Secretary,disaster_alert
+30d5f87b-bf95-40db-923a-1d601592403b,Critical: తుఫాన్ situation in Proddatur. Evacuation needed urgently.,2026-01-24T12:55:32.279398Z,+919917169051,Revenue Officer,disaster_alert
+1111b7a1-e761-4895-93e9-d974ad56b7c0,Critical: Drought situation in Atmakur. Emergency response needed urgently.,2026-01-22T15:23:32.279542Z,+919102236637,Project Director,disaster_alert
+ad0e542b-c88b-459f-a479-b7357f2a11a8,documentation complete చేసి 02-02-2026 లోపు submit చేయండి.,2026-01-24T12:07:32.299847Z,+919035071641,Mandal Officer,instruction
+ba7f40ee-dc87-490b-80a8-6ec38d304050,field survey పూర్తయింది. రిపోర్ట్ attached.,2026-01-24T22:52:32.304794Z,+919625389846,Inspector,status_update
+c2c5d44c-9575-41df-8a9f-d0b8978dbd74,scheme implementation completed successfully. 909 beneficiaries covered.,2026-01-23T12:51:32.303945Z,+919184948443,Mandal Officer,status_update
+0c485814-d181-4186-9bf3-9455db785f6a,For your information: welfare schemes.,2026-01-24T00:17:32.307356Z,+919418323485,Joint Collector,fyi
+8edd6d35-0ebf-4071-a54d-d9a0fb9dfed7,For your information: agricultural support.,2026-01-28T10:48:32.306497Z,+919558252113,Chief Engineer,fyi
+10554375-1299-4aed-af65-459c091ea9ef,Please review and approve monthly report at the earliest.,2026-01-28T04:14:32.298808Z,+919535563020,Inspector,instruction
+70905b29-fa78-4c45-a7c8-5472dee8a97a,Alert: Heavy Landslide expected in Narasaraopet. Please take necessary precautions.,2026-01-29T00:00:32.277602Z,+919415096694,Joint Collector,disaster_alert
+02ff9b74-14fd-4ee5-b6f6-15446c1f14ef,Please review and approve monthly report at the earliest.,2026-01-27T11:24:32.300143Z,+919083600281,Project Director,instruction
+e841f30c-d420-4b99-a14e-c20fafb03ee4,data collection పూర్తయింది. రిపోర్ట్ attached.,2026-01-26T21:44:32.302463Z,+919431406587,Joint Collector,status_update
+73753d3f-bc22-41fc-936b-7905fbf95a78,For your information: welfare schemes.,2026-01-29T12:57:32.308309Z,+919199504918,Superintendent,fyi
+f474b312-57ae-4e92-aec1-5473631dd84e,URGENT: Landslide alert in Yemmiganur. Immediate action required.,2026-01-29T10:01:32.278399Z,+919886022279,District Collector,disaster_alert
+68c3c3f7-73e7-4e00-89cb-b2b9995ca62e,Please attend the Department meeting on 12-02-2026 at 10:45 AM in Conference Hall.,2026-01-25T07:33:32.289812Z,+919099426557,Tahsildar,meeting
+94cede68-d094-4c51-b2ba-ab9b1c014a9f,Critical: Flood situation in Guntakal. Evacuation needed urgently.,2026-01-28T16:37:32.283320Z,+919204797518,Assistant Commissioner,disaster_alert
+22b4bc19-6345-471e-8471-05754a379719,scheme implementation complete చేసి 06-02-2026 లోపు submit చేయండి.,2026-01-26T03:00:32.300591Z,+919008556222,Inspector,instruction
+7623a98d-2313-4a51-919a-871b2c2aec2d,Notification: welfare schemes. For reference only.,2026-01-23T09:39:32.308157Z,+919057690572,Inspector,fyi
+f0e6284c-05e5-477d-a92c-bd3f8ab14152,Notification: infrastructure development. For reference only.,2026-01-24T03:02:32.306994Z,+919651419214,Chief Engineer,fyi
+71b5d34c-135b-47d0-9494-2b6bd7b39832,Ensure documentation is completed before 31-01-2026. No extensions.,2026-01-21T17:58:32.300313Z,+919964286030,Joint Collector,instruction
+d52bb2c1-efd7-4192-8a1e-27eefaa02197,14-02-2026న 12:00 PMకి మీటింగ్. దయచేసి హాజరు అవ్వండి.,2026-01-22T02:16:32.293505Z,+919661397735,Mandal Officer,meeting
+7140f2b3-8a6d-4af5-842a-15995329c0f5,inspection complete చేసి 10-02-2026 లోపు submit చేయండి.,2026-01-26T12:57:32.298557Z,+919948586963,Revenue Officer,instruction
+894e203f-9b04-4b04-b4cf-409b5f4965ff,Status update: fund allocation is in progress. 25% completed.,2026-01-29T02:32:32.301466Z,+919935705069,Revenue Officer,status_update
+b79738de-47e2-443c-a1fb-120eff015f7b,Please submit monthly report by 12-02-2026. This is urgent.,2026-01-24T21:31:32.299099Z,+919289726488,Tahsildar,instruction
+48fec42f-0bbb-45c9-8fbb-f8ab10928dcb,field survey పూర్తయింది. రిపోర్ట్ attached.,2026-01-27T11:18:32.303095Z,+919708783863,Joint Collector,status_update
+d00a3656-8528-4e05-9ecc-b46633d90ad6,Meeting on 28-02-2026 at 5:15 PM regarding revenue collection. Attendance mandatory.,2026-01-26T11:24:32.284239Z,+919237033713,Chief Engineer,meeting
+42dfbedc-bb31-4060-8a0d-3ef2fad37278,Please note: disaster preparedness. No action required.,2026-01-21T16:31:32.307274Z,+919001078170,District Collector,fyi
+c3e1f9de-a589-4502-a24c-31115c437f15,Emergency meeting postponed to 23-02-2026 at 5:30 PM. Venue: District Office.,2026-01-24T09:08:32.286953Z,+919097875314,Mandal Officer,meeting
+aea5b01a-1f97-4aa7-9363-5633422a99ab,Notification: education initiatives. For reference only.,2026-01-28T14:27:32.308353Z,+919604376074,Chief Engineer,fyi
+a37440a3-eaff-42a6-ae51-38d917cb2644,Kindly prepare compliance certificate and send to Housing Department by 09-02-2026.,2026-01-28T17:28:32.294214Z,+919026239563,Tahsildar,instruction
+d8ceeb10-62cb-459c-8135-d543b8787e9c,infrastructure development progress report: under review. Expected completion: 11-02-2026.,2026-01-24T09:39:32.304484Z,+919163240652,Deputy Director,status_update
+16cc98e8-81b0-4092-9797-a9bf94d29a8a,Flash flood warning for Nellore mandal. Alert all villages immediately.,2026-01-23T04:35:32.279122Z,+919763720584,Mandal Officer,disaster_alert
+158c10a8-5c90-48cf-a03e-c01ee82e7865,Ensure documentation is completed before 12-02-2026. No extensions.,2026-01-23T05:23:32.294702Z,+919200710233,Inspector,instruction
+a82719b4-8cdd-494a-834b-6944d47ac803,Please review and approve utilization certificate at the earliest.,2026-01-24T13:00:32.297477Z,+919606232734,Joint Collector,instruction
+578f7b77-a8c0-4002-b28f-3b0644372db7,Action required: inspection. Deadline: 06-02-2026.,2026-01-21T20:16:32.298729Z,+919190616566,Superintendent,instruction
+23b3c9d7-303d-40e8-8b76-63da3b390218,Circular: urban planning. Effective from 25-02-2026.,2026-01-28T08:53:32.306320Z,+919256846707,Assistant Commissioner,fyi
+8401d665-2ddc-414c-8873-b6a112346f59,Reminder: Planning session tomorrow at 4:00 PM. Agenda: budget allocation.,2026-01-25T23:30:32.287700Z,+919338404733,Mandal Officer,meeting
+13a14250-223f-4cc1-bfa1-9b721ef74f13,Ensure scheme implementation is completed before 05-02-2026. No extensions.,2026-01-26T21:21:32.294610Z,+919452786727,Assistant Commissioner,instruction
+37dce3f7-64fa-4582-b414-073ba303f6d8,infrastructure development progress report: on track. Expected completion: 17-02-2026.,2026-01-26T15:30:32.302947Z,+919987890452,Deputy Director,status_update
+64c59b96-019a-467c-9858-255deaa4332e,Please submit compliance certificate by 04-02-2026. This is urgent.,2026-01-25T06:06:32.300723Z,+919846304681,Department Secretary,instruction
+d317b97b-bc02-43de-a875-f08b7f3a6912,Please review and approve utilization certificate at the earliest.,2026-01-27T17:01:32.298043Z,+919169804126,Project Director,instruction
+45df73e7-27d2-40ed-a6be-da7878a425ac,FYI: New circular regarding disaster preparedness has been uploaded to portal.,2026-01-23T06:19:32.307473Z,+919203115715,Inspector,fyi
+2bf135c1-678e-4e7b-82de-0a76c7ed05ce,Video conference scheduled for 15-02-2026 at 5:30 PM. Join link will be shared.,2026-01-26T04:12:32.292680Z,+919372599959,Revenue Officer,meeting
+2ae842da-f25c-4cb3-81aa-68ad64cb484a,inspection complete చేసి 05-02-2026 లోపు submit చేయండి.,2026-01-24T07:03:32.297387Z,+919093278356,Tahsildar,instruction
+3611f080-76f0-4c49-b932-01db8811d5a4,Delay in field survey due to staff shortage. New deadline: 24-02-2026.,2026-01-24T09:29:32.302781Z,+919996744449,Mandal Officer,status_update
+7ce758c2-ed0b-4c5c-af55-84dc46243dd6,Emergency: Drought warning for Tadepalligudem district. Evacuate low-lying areas immediately.,2026-01-23T21:55:32.280863Z,+919686933854,Mandal Officer,disaster_alert
+b400e6fa-77a9-4744-9c90-38d0b729a153,verification completed successfully. 392 beneficiaries covered.,2026-01-28T18:34:32.303503Z,+919560011015,Mandal Officer,status_update
+922a9abd-7c3b-4ce2-9dcc-bad5c24c8763,Reminder: Emergency meeting tomorrow at 4:15 PM. Agenda: rural development.,2026-01-23T16:53:32.284968Z,+919705721333,Superintendent,meeting
+871ed0ef-6385-4229-846f-341967d60664,Work on infrastructure development is on track. No major issues reported.,2026-01-26T20:57:32.301508Z,+919818018585,District Collector,status_update
+ae9f9a58-cb9b-48c7-835a-045834cfb93b,scheme implementation complete చేసి 03-02-2026 లోపు submit చేయండి.,2026-01-28T12:41:32.294434Z,+919483154897,Mandal Officer,instruction
+89e29529-1dc4-456d-b392-92b139da42e8,Please submit progress report by 13-02-2026. This is urgent.,2026-01-28T01:43:32.298330Z,+919217264348,Inspector,instruction
+324dce38-1ecc-4120-ae83-0d40cc7d4484,For your information: project implementation.,2026-01-27T09:45:32.306657Z,+919690929441,Chief Engineer,fyi
+f20b1c5b-9acc-42a6-ab83-88cffab30568,Kindly prepare budget proposal and send to Women and Child Welfare by 12-02-2026.,2026-01-24T13:56:32.298689Z,+919500611768,District Collector,instruction
+d56f2c7e-5e7f-42d9-965a-ac86af695a65,Video conference postponed to 04-02-2026 at 9:45 AM. Venue: Collectorate.,2026-01-21T23:05:32.289646Z,+919836648945,Revenue Officer,meeting
+1e6d6822-6a4b-4f17-add4-9c06a6bb86a8,Progress report for disaster preparedness: 85% done. On track.,2026-01-22T16:42:32.303906Z,+919515636087,Revenue Officer,status_update
+969ee7b1-62d2-432d-ab03-949b508f4885,Circular: welfare schemes. Effective from 09-02-2026.,2026-01-23T01:51:32.306793Z,+919149486747,District Collector,fyi
+4dd2032a-54ac-4c13-b002-ce238d5e3adb,Implement new scheme in Guntur mandal. Report progress weekly.,2026-01-24T17:21:32.300885Z,+919824335136,Revenue Officer,instruction
+9ebe321d-ea4a-48c6-b03e-1717e9b43afa,Status update: fund allocation is under review. 70% completed.,2026-01-21T16:44:32.303745Z,+919278235126,Project Director,status_update
+907ff8bd-3138-40e3-9410-58eb413da740,Delay in verification due to staff shortage. New deadline: 06-02-2026.,2026-01-24T14:53:32.304602Z,+919995229691,Mandal Officer,status_update
+c7db4a2c-d493-4b9f-9643-4ab7c5bafc1c,Update on data collection: delayed. No issues.,2026-01-23T20:57:32.303706Z,+919309541975,Project Director,status_update
+767169ee-bdd6-4ce6-9e14-6637b6b39f8b,Urgent Heavy rainfall in Tadpatri. Immediate evacuation చేయండి.,2026-01-24T05:45:32.281529Z,+919483027368,Inspector,disaster_alert
+3b56bd72-6d8c-4e75-8806-bf634ee86450,Action required: inspection. Deadline: 01-02-2026.,2026-01-23T22:49:32.294524Z,+919949892605,Inspector,instruction
+c35f1eaa-e48e-41cd-a90f-e3e7a6ea21a9,District meeting postponed to 05-02-2026 at 4:00 PM. Venue: Conference Hall.,2026-01-23T20:03:32.284331Z,+919900871293,Revenue Officer,meeting
+c60b8717-ef22-4cf4-97de-53308181e016,వరద damage reported in Bobbili. 41 casualties. Send rescue teams.,2026-01-23T04:26:32.283050Z,+919066070947,Deputy Director,disaster_alert
+0730878a-7548-4660-b2f2-a7a534ad1935,Kindly prepare expenditure statement and send to Stamps and Registration by 04-02-2026.,2026-01-28T09:27:32.299981Z,+919356237877,District Collector,instruction
+a01f1469-06a7-4646-84a9-f38916f5a7c8,Urgent Heavy rainfall in Hindupur. Immediate evacuation చేయండి.,2026-01-24T01:57:32.281449Z,+919006977495,Tahsildar,disaster_alert
+16a639ef-360a-4eba-8bd3-3fbd245e13ec,Information: agricultural support. Please share with your team.,2026-01-21T18:14:32.308401Z,+919564572336,Chief Engineer,fyi
+bfacd3e8-4584-4505-b7ca-1791e4357ff6,Update on report preparation: completed. Some delays.,2026-01-25T20:27:32.304833Z,+919609053208,Assistant Commissioner,status_update
+95ddfc3a-65f4-48db-afbd-0249f956b77e,Ensure documentation is completed before 09-02-2026. No extensions.,2026-01-27T14:19:32.300230Z,+919915606282,Project Director,instruction
+3bfd9c2c-2573-48b9-96be-47ae45823c2f,Budget meeting postponed to 08-02-2026 at 10:15 AM. Venue: Conference Hall.,2026-01-27T07:32:32.283813Z,+919877121725,District Collector,meeting
+02bf65a5-0782-4d5b-b725-405ec550bb8b,For your information: agricultural support.,2026-01-26T23:39:32.307510Z,+919734586860,Superintendent,fyi
+fd39bef9-f16d-4d4f-923d-d66dba85e2f9,URGENT: వరద alert in Krishna. Immediate action required.,2026-01-22T11:22:32.279356Z,+919261668475,Mandal Officer,disaster_alert
+9298a91f-8aa6-47f0-b1c5-f1a562d4a220,Alert: Heavy Landslide expected in Guntur. Please take necessary precautions.,2026-01-21T20:34:32.282780Z,+919364931249,Revenue Officer,disaster_alert
+aa74e6ea-b19d-4fe0-8d06-338f9a3e7435,Attached: monthly report for your information.,2026-01-24T01:05:32.306010Z,+919517287012,Superintendent,fyi
+e9115f8a-fd16-4fa9-ba31-2702b6775e4d,30-01-2026న 3:45 PMకి మీటింగ్. దయచేసి హాజరు అవ్వండి.,2026-01-26T23:38:32.288025Z,+919730634569,Department Secretary,meeting
+88acb0f4-eb19-4a78-a465-3a086f47a114,documentation complete చేసి 31-01-2026 లోపు submit చేయండి.,2026-01-26T09:24:32.300456Z,+919443004210,Department Secretary,instruction
+5aacae7b-ef36-4f19-a71f-773037d02661,Status update: verification is partially completed. 43% completed.,2026-01-21T18:03:32.302504Z,+919196487686,Project Director,status_update
+1d8ce512-6aef-4698-9283-efd883bb0abd,Critical: Storm situation in Repalle. Emergency response needed urgently.,2026-01-23T17:52:32.278739Z,+919480734271,Superintendent,disaster_alert
+e1a9ef29-5538-482a-9744-67484b2b37e8,Update on field survey: delayed. Some delays.,2026-01-28T07:28:32.303339Z,+919361191365,Project Director,status_update
+d97e30f7-c160-4903-9cf7-c7944d9eea78,Status update: verification is on track. 40% completed.,2026-01-26T13:41:32.304990Z,+919559099313,Revenue Officer,status_update
+3468921b-804f-4700-a587-5f6663d72faf,Request to verify project status report and provide status update by 10-02-2026.,2026-01-25T03:15:32.298427Z,+919365714892,Mandal Officer,instruction
+393775ec-54c4-4f95-9b45-c2480de3626b,Action required: scheme implementation. Deadline: 02-02-2026.,2026-01-26T20:12:32.296678Z,+919654892591,Assistant Commissioner,instruction
+ed71c753-ff84-4b75-930b-d9fed9bf5a17,Planning session postponed to 09-02-2026 at 9:45 AM. Venue: District Office.,2026-01-25T21:59:32.289233Z,+919296466753,Deputy Director,meeting
+2c8d0ab4-40fc-4407-9d03-572c1955af45,Ensure report preparation is completed before 04-02-2026. No extensions.,2026-01-29T10:57:32.299806Z,+919789963382,District Collector,instruction
+cafeb490-66df-4348-8182-503270e94d24,Kindly prepare progress report and send to Public Works Department by 10-02-2026.,2026-01-23T10:16:32.297177Z,+919473659938,Deputy Director,instruction
+fb062d02-ee81-4f3d-96b8-21902e999f62,Urgent Heat wave in Anakapalle. Immediate evacuation చేయండి.,2026-01-26T20:31:32.280158Z,+919009595567,Revenue Officer,disaster_alert
+33e38513-aa0b-499c-9b66-ac7980651a6a,Please attend the Review meeting on 19-02-2026 at 9:15 AM in Project Office.,2026-01-24T21:47:32.284156Z,+919654459705,Mandal Officer,meeting
+0b47a1d7-f006-4b5b-a26c-542546612232,urban planning progress report: under review. Expected completion: 12-02-2026.,2026-01-24T12:16:32.304065Z,+919528109938,Superintendent,status_update
+186c3d07-f5d6-410e-9c3c-1ba6e2335bb5,Circular: infrastructure development. Effective from 15-02-2026.,2026-01-25T19:58:32.308040Z,+919383671496,Deputy Director,fyi
+1a8435c4-cc52-4b7d-a5cc-72897423248d,Urgent Cyclone in Narasaraopet. Immediate evacuation చేయండి.,2026-01-25T10:53:32.281195Z,+919797649140,Chief Engineer,disaster_alert
+ef7ae99d-94ba-473b-9715-5178e45017d2,Meeting scheduled for 23-02-2026 at 9:30 AM to discuss agricultural support.,2026-01-23T05:07:32.286325Z,+919767602058,Department Secretary,meeting
+8ebe4f48-435d-450a-bacf-a648fd1a91a1,FYI - agricultural support guidelines updated. Check portal for details.,2026-01-29T10:34:32.307552Z,+919309492348,Tahsildar,fyi
+b4ac3d0a-c709-48fc-a87e-e2764c09b1b4,Video conference postponed to 26-02-2026 at 9:15 AM. Venue: Secretariat.,2026-01-22T22:15:32.292182Z,+919254525410,Department Secretary,meeting
+dcd7852d-28b6-47f8-8c02-f228b366204c,data collection పూర్తయింది. రిపోర్ట్ attached.,2026-01-25T20:58:32.302726Z,+919717851758,Department Secretary,status_update
+9d0ff783-bf5b-4c96-954d-c4bb80988085,Implement revised procedure in Sullurpeta mandal. Report progress weekly.,2026-01-22T12:45:32.297738Z,+919600770738,Chief Engineer,instruction
+d084a6fa-eaf2-4747-9ba3-158e83629c9c,report preparation పూర్తయింది. రిపోర్ట్ attached.,2026-01-26T09:37:32.305107Z,+919184562028,Project Director,status_update
+15d5206a-def8-4d1a-80be-477b4471618a,Flash flood warning for Rayachoti mandal. Alert all villages immediately.,2026-01-29T08:03:32.282262Z,+919573285583,Chief Engineer,disaster_alert
+0e93e1e8-89e3-44ce-94c8-a9c296509304,Kindly prepare expenditure statement and send to Agriculture Department by 11-02-2026.,2026-01-23T17:58:32.300967Z,+919693483989,Deputy Director,instruction
+5e946c11-4f35-44f9-ad7d-f20e1cd94d6d,Please attend the District meeting on 01-02-2026 at 9:15 AM in District Office.,2026-01-24T08:35:32.293256Z,+919420823108,Department Secretary,meeting
+6d7a5aee-af2a-4d93-bab6-62e8a24d3d2d,For your information: infrastructure development.,2026-01-24T06:07:32.306281Z,+919594952863,Joint Collector,fyi
+91205bbf-e9f3-40e4-86b0-bf00c3e557e1,Alert: Heavy Landslide expected in Naidupet. Please take necessary precautions.,2026-01-21T18:10:32.278233Z,+919247790405,Joint Collector,disaster_alert
+0241dd0c-898c-460e-8b1c-9ab72529e141,Emergency meeting postponed to 30-01-2026 at 1:15 PM. Venue: Project Office.,2026-01-27T08:18:32.286483Z,+919119785188,Revenue Officer,meeting
+3ed97465-d15b-47c5-b591-f4b3d0edaafe,Please attend the Department meeting on 21-02-2026 at 12:45 PM in District Office.,2026-01-27T22:46:32.289397Z,+919727235334,Assistant Commissioner,meeting
+9d0454b5-d682-4949-a318-be06a3c04562,infrastructure development progress report: delayed. Expected completion: 06-02-2026.,2026-01-27T01:41:32.304563Z,+919577246149,Mandal Officer,status_update
+777e512f-1c15-42e0-872b-8f5e8786f0f0,Please attend the Emergency meeting on 03-02-2026 at 4:00 PM in Mandal Office.,2026-01-26T14:13:32.293014Z,+919630827391,Mandal Officer,meeting
+e45f2087-728a-4419-b692-9e770574ff82,Meeting on 21-02-2026 at 3:15 PM regarding health programs. Attendance mandatory.,2026-01-23T06:42:32.284724Z,+919971138255,Inspector,meeting
+4ec71a7e-6db8-4ec0-9f5d-640212502e2d,Please submit action taken report by 13-02-2026. This is urgent.,2026-01-23T15:41:32.294348Z,+919947721791,Joint Collector,instruction
+fe1b3456-c863-4f38-9e74-1910f9d0597c,Progress report for disaster preparedness: 90% done. On track.,2026-01-27T09:15:32.302167Z,+919158414145,Mandal Officer,status_update
+423e66ee-a22e-4fe3-bd27-690d97e5ecfe,Meeting scheduled for 06-02-2026 at 5:30 PM to discuss welfare schemes.,2026-01-27T19:23:32.288187Z,+919727170107,Assistant Commissioner,meeting
+1baa59f6-0a2c-49a9-834e-d5b9f7b5c361,Notification: agricultural support. For reference only.,2026-01-22T17:44:32.308267Z,+919769841123,Tahsildar,fyi
+d642a121-fe21-4b52-8b41-572cfb7a928f,Circular: revenue collection. Effective from 05-02-2026.,2026-01-25T22:47:32.308555Z,+919969890515,Assistant Commissioner,fyi
+e8144a30-3217-42a7-b624-82514e7945eb,verification పూర్తయింది. రిపోర్ట్ attached.,2026-01-22T19:20:32.303220Z,+919736510614,Department Secretary,status_update
+d61d437e-674a-4242-bf6e-5bca7439853c,Ensure field survey is completed before 30-01-2026. No extensions.,2026-01-28T23:35:32.300497Z,+919685306078,Superintendent,instruction
+d5faa9f6-2880-4149-adb9-314b178f57a7,Critical: తుఫాన్ situation in Ramachandrapuram. Relief measures needed urgently.,2026-01-23T17:37:32.280245Z,+919898751899,Joint Collector,disaster_alert
+ca573a05-9e4c-4294-81d9-d06bf15a2bbc,Video conference scheduled for 17-02-2026 at 4:00 PM. Join link will be shared.,2026-01-24T03:52:32.289001Z,+919451311444,Department Secretary,meeting
+4d7aff3e-a829-4dc3-8aa4-be2f0740ebaf,Work on revenue collection is on track. No major issues reported.,2026-01-28T09:16:32.303783Z,+919613603430,Chief Engineer,status_update
+c762fa74-380b-47ac-ae2a-e568a0bb7286,Emergency: Cyclone warning for Ramachandrapuram district. Evacuate affected areas immediately.,2026-01-25T20:32:32.279478Z,+919941051656,Assistant Commissioner,disaster_alert
+2d20b4c0-1f13-4cbd-ac7e-ce36ce9ce59e,Delay in fund allocation due to weather conditions. New deadline: 30-01-2026.,2026-01-26T09:45:32.303464Z,+919011597082,Project Director,status_update
+25d6a25d-cb18-4bf7-97d0-efb3a8a2c8d5,beneficiary identification complete చేసి 30-01-2026 లోపు submit చేయండి.,2026-01-25T01:22:32.294261Z,+919190022962,District Collector,instruction
+9e3de5ff-402c-43e4-ac84-40808768d87e,Please note: welfare schemes. No action required.,2026-01-27T19:03:32.306916Z,+919748092308,Chief Engineer,fyi
+04efcb79-0b1c-4b88-b9eb-eafb4e3d96a5,Please review and approve compliance certificate at the earliest.,2026-01-26T18:00:32.298935Z,+919141714697,District Collector,instruction
+ea0ccea8-5d1a-48bc-8536-7b620d8180d1,Please attend the Video conference on 27-02-2026 at 4:15 PM in Secretariat.,2026-01-28T19:08:32.289311Z,+919323125092,Assistant Commissioner,meeting
+c547ef5d-3e47-4b06-8239-acd8251da9c1,Circular: health programs. Effective from 10-02-2026.,2026-01-23T06:02:32.306088Z,+919109453714,Project Director,fyi
+c0a4c9e2-3b07-4b73-bdee-24b4574dde65,report preparation complete చేసి 10-02-2026 లోపు submit చేయండి.,2026-01-21T17:16:32.299444Z,+919414407993,Superintendent,instruction
+827edd56-7f91-4604-9cd1-b1c6d488246d,Video conference scheduled for 22-02-2026 at 4:30 PM. Join link will be shared.,2026-01-22T14:52:32.291898Z,+919406558738,Assistant Commissioner,meeting
+364589c1-1f0a-47d9-832c-fe08d3972e73,Ensure inspection is completed before 07-02-2026. No extensions.,2026-01-27T01:14:32.298166Z,+919519880985,Assistant Commissioner,instruction
+8028d63b-1145-4720-ba70-16e178969775,Request to verify attendance records and provide status update by 13-02-2026.,2026-01-22T04:04:32.297647Z,+919785042146,Superintendent,instruction
+8ae89838-d641-46c4-94f9-c4d686f0afa3,Action required: inspection. Deadline: 13-02-2026.,2026-01-25T08:03:32.294108Z,+919960960231,District Collector,instruction
+85ca322b-9a11-4ae4-a194-db03ab9ed272,Kindly prepare utilization certificate and send to Home Department by 04-02-2026.,2026-01-27T01:27:32.297692Z,+919581212370,Inspector,instruction
+c3824bfa-13ae-4efd-bb16-3e556c65598a,Progress report for urban planning: 69% done. On track.,2026-01-23T05:29:32.301708Z,+919777671513,Deputy Director,status_update
+2b0b8590-27fd-4456-ad44-2d57921eb32d,Please attend the Planning session on 27-02-2026 at 2:45 PM in Secretariat.,2026-01-25T03:55:32.291240Z,+919787835289,Department Secretary,meeting
+d102821e-6108-4d38-9cf6-680ffe12cdb3,FYI: New circular regarding infrastructure development has been uploaded to portal.,2026-01-25T05:29:32.306243Z,+919840372505,Tahsildar,fyi
+45bd3f62-3b37-4780-abf0-275b64859392,Status update: fund allocation is pending approval. 97% completed.,2026-01-22T10:36:32.302331Z,+919901193798,District Collector,status_update
+e0de8e70-6bd8-4d3a-8e9d-49fb9fbc615c,Implement new scheme in Tadepalligudem mandal. Report progress weekly.,2026-01-27T01:05:32.301216Z,+919338221996,District Collector,instruction
+2f2e105a-4284-455a-a790-28939505374d,Coordination meeting postponed to 09-02-2026 at 2:15 PM. Venue: District Office.,2026-01-24T22:00:32.291818Z,+919850444663,Superintendent,meeting
+c1ae26cc-e35c-4dc2-acd5-2ad3eb89dace,Video conference postponed to 27-02-2026 at 3:00 PM. Venue: Mandal Office.,2026-01-22T05:46:32.287620Z,+919768577065,Assistant Commissioner,meeting
+36feeeea-900f-4db3-bbc9-1860abe9139b,Meeting scheduled for 09-02-2026 at 5:45 PM to discuss revenue collection.,2026-01-27T07:02:32.293335Z,+919532959532,Tahsildar,meeting
+7b39b591-c3e8-4c2d-b9a5-187eff51cf55,Please review and approve action taken report at the earliest.,2026-01-24T02:19:32.294568Z,+919553189173,Mandal Officer,instruction
+8323cf2c-03b4-4c51-b909-2abdfe959cda,Request to reschedule meeting from 08-02-2026 to alternate date.,2026-01-25T22:17:32.284489Z,+919991136441,Tahsildar,meeting
+c8f52e07-16a1-441a-b74e-a0db20726cd3,field survey completed successfully. 149 beneficiaries covered.,2026-01-26T13:02:32.305232Z,+919490872625,Inspector,status_update
+b1de933b-f8d3-44d8-a977-49f59717c91f,Attached: expenditure statement for your information.,2026-01-25T06:03:32.307123Z,+919290489057,Tahsildar,fyi
+23ccddb5-fcaa-4b72-8875-6f3b86e9e096,Please submit expenditure statement by 30-01-2026. This is urgent.,2026-01-29T00:47:32.294835Z,+919561288029,Project Director,instruction
+171065ca-626f-4ed4-ac88-1c8fc23701ba,URGENT: తుఫాన్ alert in Nandyal. Immediate action required.,2026-01-22T03:41:32.278658Z,+919385029915,Inspector,disaster_alert
+e997c612-1d6a-4d28-95f1-4626a355b65f,Request to reschedule meeting from 07-02-2026 to alternate date.,2026-01-22T18:42:32.285045Z,+919093255576,Superintendent,meeting
+6672fe32-1560-4d66-b74c-d1fc2840f993,14-02-2026న 11:15 AMకి మీటింగ్. దయచేసి హాజరు అవ్వండి.,2026-01-26T01:52:32.290490Z,+919237715314,Revenue Officer,meeting
+443a03c3-c18a-49b4-b70e-e3d9fd078712,Video conference scheduled for 08-02-2026 at 4:15 PM. Join link will be shared.,2026-01-25T16:58:32.288589Z,+919339551774,Department Secretary,meeting
+31d804a3-665b-4115-9d23-8fece556c9f4,Please attend the Emergency meeting on 06-02-2026 at 5:00 PM in Mandal Office.,2026-01-26T11:20:32.291995Z,+919323508754,Superintendent,meeting
+7246a394-6b13-4a73-80b8-d36be01f7389,Attached: compliance certificate for your information.,2026-01-26T20:14:32.308440Z,+919567494962,Mandal Officer,fyi
+abee2ceb-830c-4c69-8d30-459778fb1ce7,Action required: beneficiary identification. Deadline: 09-02-2026.,2026-01-25T14:52:32.297520Z,+919933939058,Deputy Director,instruction
+6136db83-5507-40f7-9971-3f88a655e2eb,Information: urban planning. Please share with your team.,2026-01-27T06:46:32.306165Z,+919980675514,Joint Collector,fyi
+821b0e7e-72e0-402d-86f7-efdcf9b8070f,Notification: disaster preparedness. For reference only.,2026-01-29T09:56:32.307966Z,+919988826650,District Collector,fyi
+523d534f-02b8-43ad-ae6b-3fb24acf7787,Video conference scheduled for 14-02-2026 at 4:30 PM. Join link will be shared.,2026-01-23T10:55:32.283891Z,+919398473051,Inspector,meeting
+e69dfa36-d31d-4699-ba70-cf03d22a0033,Review meeting postponed to 10-02-2026 at 3:00 PM. Venue: Conference Hall.,2026-01-28T14:36:32.293668Z,+919815151704,Joint Collector,meeting
+74420793-3141-4ecd-b8a8-8578117d2819,Ensure fund allocation is completed before 06-02-2026. No extensions.,2026-01-26T05:46:32.300103Z,+919676498751,Inspector,instruction
+cd64c2ea-ec66-4660-8e2d-065f2575e00e,04-02-2026న 1:00 PMకి మీటింగ్. దయచేసి హాజరు అవ్వండి.,2026-01-24T19:32:32.285122Z,+919771201360,Revenue Officer,meeting
+54ffcb4b-b593-4b15-aa50-80671c35aa95,infrastructure development progress report: pending approval. Expected completion: 22-02-2026.,2026-01-28T10:46:32.302988Z,+919190736468,District Collector,status_update
+02847f81-b37d-4898-b039-08915b46f97d,Request to verify compliance certificate and provide status update by 08-02-2026.,2026-01-26T04:10:32.297561Z,+919160083752,Project Director,instruction
+67386fa3-c117-47d5-bd82-70f0fc01e708,Circular: urban planning. Effective from 26-02-2026.,2026-01-25T10:14:32.306955Z,+919834804498,Mandal Officer,fyi
+d8c96f64-b5e8-4ee5-9ee8-fdd045e3e8dc,Progress report for project implementation: 45% done. On track.,2026-01-23T08:43:32.301833Z,+919151157396,Project Director,status_update
+041eadaa-eed9-4885-a9fd-b802566f95c1,For your information: road construction.,2026-01-26T04:48:32.306205Z,+919277900022,Joint Collector,fyi
+2aa792b3-d45b-4a57-9ae2-8f756bb38562,Meeting scheduled for 11-02-2026 at 3:15 PM to discuss welfare schemes.,2026-01-23T12:42:32.292593Z,+919924550520,Joint Collector,meeting
+0e34c337-e16e-41a3-9d6f-1424df9e207c,Please review and approve compliance certificate at the earliest.,2026-01-23T07:03:32.297219Z,+919323805702,Assistant Commissioner,instruction
+72c17e12-58c6-48f2-bc3d-042fd0caf085,Action required: fund allocation. Deadline: 06-02-2026.,2026-01-22T06:15:32.297779Z,+919427566939,Superintendent,instruction
+f32d21e8-bf37-4170-a2f4-cd753d134499,For your information: health programs.,2026-01-29T10:42:32.306413Z,+919500543327,Department Secretary,fyi
+43d34968-bf59-40b7-99be-11989794e20d,Request to reschedule meeting from 03-02-2026 to alternate date.,2026-01-21T17:46:32.289158Z,+919310947607,Superintendent,meeting
+e6892022-6b20-46a6-b5d4-46276b2f9b0b,Ensure fund allocation is completed before 06-02-2026. No extensions.,2026-01-26T23:35:32.299058Z,+919922680164,Inspector,instruction
+f540fb71-2a34-4954-91d8-bcaef4934718,Request to reschedule meeting from 03-02-2026 to alternate date.,2026-01-23T20:36:32.288509Z,+919287342950,Inspector,meeting
+d73cc524-3218-40f4-98bf-626782274cb3,Please review and approve compliance certificate at the earliest.,2026-01-22T15:57:32.300271Z,+919690351372,Tahsildar,instruction
+1b024411-8b7e-49dd-8208-2ae6b343e9c4,road construction progress report: completed. Expected completion: 04-02-2026.,2026-01-29T04:39:32.304645Z,+919820330287,Assistant Commissioner,status_update
+078949c6-e6e6-474a-809d-47fd192a6ea0,Reminder: Department meeting tomorrow at 9:30 AM. Agenda: infrastructure development.,2026-01-22T02:14:32.290914Z,+919740688751,Revenue Officer,meeting
+bb8a3149-83d0-4c29-b9dc-bb803ac7516a,21-02-2026న 2:30 PMకి మీటింగ్. దయచేసి హాజరు అవ్వండి.,2026-01-23T22:36:32.284077Z,+919729558723,Inspector,meeting
+e498b775-49bd-44af-b3d7-89701569cc93,Meeting scheduled for 24-02-2026 at 1:00 PM to discuss project implementation.,2026-01-29T10:51:32.287936Z,+919535531870,Chief Engineer,meeting
+a68e5a48-34b8-441f-8d3d-4fcfea6fc6c7,Please attend the Review meeting on 17-02-2026 at 2:00 PM in Secretariat.,2026-01-23T22:50:32.290742Z,+919967903794,Mandal Officer,meeting
+4f3072da-7429-49dc-8733-00da9c007be7,Drought damage reported in Kurnool. 40 casualties. Send rescue teams.,2026-01-28T22:27:32.279258Z,+919524125179,Deputy Director,disaster_alert
+5aa9f318-1b61-4185-a227-2fdce4a50725,Flash flood warning for Rayadurg mandal. Alert all villages immediately.,2026-01-25T22:42:32.278313Z,+919621946426,Revenue Officer,disaster_alert
+dabc7696-e78b-4a45-a9e6-35a8749903cc,FYI - disaster preparedness guidelines updated. Check portal for details.,2026-01-22T03:06:32.306049Z,+919528892375,District Collector,fyi
+63ddcb81-feee-49b1-97dc-9e07e0b4baec,Status update: verification is under review. 75% completed.,2026-01-28T19:52:32.305354Z,+919467696748,Project Director,status_update
+a42a8d99-6cfa-4ebe-97e7-bfa1f1789545,FYI: New circular regarding welfare schemes has been uploaded to portal.,2026-01-26T00:40:32.307740Z,+919621386712,Deputy Director,fyi
+b78e80a2-0a8b-4228-b3a6-0838153578a6,Action required: field survey. Deadline: 09-02-2026.,2026-01-25T05:07:32.298386Z,+919996237419,Chief Engineer,instruction
+4a3851fe-b221-4435-864f-a2d54be5ad60,Emergency: Flood warning for Rayachoti district. Evacuate low-lying areas immediately.,2026-01-29T01:45:32.280401Z,+919168322620,Inspector,disaster_alert
+2d17e70c-1916-45c1-8651-fc5f1488d131,field survey పూర్తయింది. రిపోర్ట్ attached.,2026-01-22T04:54:32.301749Z,+919734750523,Department Secretary,status_update
+8167a519-ca24-481b-b261-e9796024ba94,rural development progress report: under review. Expected completion: 02-02-2026.,2026-01-22T18:32:32.304756Z,+919873174743,Deputy Director,status_update
+e7cbc4cb-df62-4e60-b4b9-f8383f41260e,Ensure beneficiary identification is completed before 04-02-2026. No extensions.,2026-01-28T05:45:32.299726Z,+919706077792,Superintendent,instruction
+91b1f7cb-f623-4cc0-9ef3-dea98ba803ab,Video conference scheduled for 27-02-2026 at 1:00 PM. Join link will be shared.,2026-01-24T13:45:32.290152Z,+919580999226,Project Director,meeting
+65f17567-5762-4837-80e4-ab6f4d637b02,Video conference scheduled for 22-02-2026 at 3:00 PM. Join link will be shared.,2026-01-28T12:34:32.288353Z,+919741929875,Inspector,meeting
+2aaab99c-97bf-40a6-a2e6-13db533b218f,Flash flood warning for Tirupati mandal. Alert all villages immediately.,2026-01-28T16:12:32.280937Z,+919423555814,Department Secretary,disaster_alert
+ac2304d9-f41b-4346-ac23-d6e4ac39b90a,20-02-2026న 3:45 PMకి మీటింగ్. దయచేసి హాజరు అవ్వండి.,2026-01-24T07:00:32.293416Z,+919791003652,Joint Collector,meeting
+cbda89ef-9221-4153-961b-ad6ff47e5eb7,Meeting on 21-02-2026 at 11:00 AM regarding road construction. Attendance mandatory.,2026-01-25T18:18:32.292262Z,+919776110024,District Collector,meeting
+fac5504f-924e-4594-af0d-2ea3f91f4cb8,Please note: rural development. No action required.,2026-01-28T19:53:32.306748Z,+919627231748,Tahsildar,fyi
+ab5eb748-9e7f-4ac1-8ed0-5e03a782f6ac,Ensure scheme implementation is completed before 10-02-2026. No extensions.,2026-01-27T12:05:32.293911Z,+919269879907,Tahsildar,instruction
+8641199c-ad8e-4e12-b175-fcd1bbd44e67,Meeting on 13-02-2026 at 5:30 PM regarding agricultural support. Attendance mandatory.,2026-01-23T11:21:32.287779Z,+919164663762,Project Director,meeting
+634e5d79-b9ae-46cd-af2c-679586af2399,Update on field survey: completed. Some delays.,2026-01-22T14:24:32.303136Z,+919879337149,Superintendent,status_update
+bf40c2a9-51a0-4149-95b0-2d32fe8ed9b0,Kindly prepare attendance records and send to Energy Department by 05-02-2026.,2026-01-25T06:38:32.298289Z,+919513148863,Revenue Officer,instruction
+e486e85b-8338-4f68-b9d7-f3ff3f99f3c0,Reminder: Department meeting tomorrow at 11:15 AM. Agenda: revenue collection.,2026-01-27T23:01:32.290834Z,+919853042140,Revenue Officer,meeting
+d29fd49e-1e71-4a6a-8ddc-65657de4842a,Please note: health programs. No action required.,2026-01-23T20:43:32.305729Z,+919556520473,Joint Collector,fyi
+f362a41c-aa1b-4c83-950a-70a643a928d5,Alert: Heavy Heat wave expected in Badvel. Please take necessary precautions.,2026-01-24T09:05:32.279619Z,+919656478031,Department Secretary,disaster_alert
+b7286303-4e69-49f8-9a97-4ea1530c6f5b,report preparation పూర్తయింది. రిపోర్ట్ attached.,2026-01-21T21:51:32.305514Z,+919383871788,Project Director,status_update
+2478a0c6-a43a-4a07-9d29-fd5877a9a102,Notification: budget allocation. For reference only.,2026-01-26T01:29:32.306618Z,+919795499700,Project Director,fyi
+df659317-53cb-456f-a794-9c9695778e57,Request to reschedule meeting from 31-01-2026 to alternate date.,2026-01-27T05:12:32.284878Z,+919808208676,Assistant Commissioner,meeting
+4a3aa6d0-c87e-4c59-9d44-b63e9ed4d815,verification complete చేసి 08-02-2026 లోపు submit చేయండి.,2026-01-28T04:54:32.298609Z,+919648526882,Superintendent,instruction
+d725c9d6-c261-40fc-b2ed-9d91bc563150,Work on rural development is completed. No major issues reported.,2026-01-23T20:58:32.304186Z,+919595008872,Tahsildar,status_update
+e8b3edcb-e049-431c-9b69-d9e76c160420,FYI - revenue collection guidelines updated. Check portal for details.,2026-01-28T08:18:32.306458Z,+919222120009,Tahsildar,fyi
+30588a28-09f7-4073-93ef-58b5c6a97e40,Meeting scheduled for 16-02-2026 at 5:30 PM to discuss road construction.,2026-01-28T21:44:32.285340Z,+919105989201,Deputy Director,meeting
+06c699d1-257f-414c-80f4-2a303f33202b,Work on project implementation is pending approval. No major issues reported.,2026-01-23T23:04:32.302636Z,+919746179824,Assistant Commissioner,status_update
+f2024990-2c63-476c-8bd8-01efdff1c4db,Video conference scheduled for 20-02-2026 at 5:00 PM. Join link will be shared.,2026-01-25T21:29:32.288829Z,+919675120783,Mandal Officer,meeting
+15d8c761-b2eb-4447-95d4-f990a4111df1,fund allocation complete చేసి 07-02-2026 లోపు submit చేయండి.,2026-01-24T06:29:32.294165Z,+919104876936,Inspector,instruction
+e141b0c1-e51b-4f03-8095-b9c166931a0b,Ensure field survey is completed before 07-02-2026. No extensions.,2026-01-25T14:24:32.294040Z,+919177757270,Tahsildar,instruction
+8a3eb84f-e258-429d-a697-3889701759d5,project implementation progress report: completed. Expected completion: 05-02-2026.,2026-01-23T07:48:32.304873Z,+919168355334,Mandal Officer,status_update
+0add23b2-60d5-411b-8215-f7ed3405d3c9,Alert: Heavy Heavy rainfall expected in Kovvur. Please take necessary precautions.,2026-01-26T08:49:32.282527Z,+919023100356,Assistant Commissioner,disaster_alert
+b4f6f407-de45-4d52-9abc-beffc5b708a3,Storm హెచ్చరిక Punganurలో. తక్షణ చర్య అవసరం.,2026-01-26T21:51:32.280319Z,+919095129621,Project Director,disaster_alert
+92b85382-109c-4e6e-bd62-fe0fb0774dec,URGENT: Drought alert in Proddatur. Immediate action required.,2026-01-26T13:42:32.282168Z,+919029792210,Inspector,disaster_alert
+ea6449e8-d422-4020-b5ff-29f37789f401,FYI: New circular regarding budget allocation has been uploaded to portal.,2026-01-29T01:08:32.307236Z,+919679997176,Assistant Commissioner,fyi
+85835cce-5f49-467d-a293-e4462d572364,Urgent Fire in Tirupati. Immediate evacuation చేయండి.,2026-01-29T11:45:32.278574Z,+919331003284,Inspector,disaster_alert
+12d266db-ef76-45ff-9139-facb0d2612d3,Reminder: Department meeting tomorrow at 4:15 PM. Agenda: welfare schemes.,2026-01-24T09:32:32.289731Z,+919995662159,Chief Engineer,meeting
+1da75970-5de0-48ea-b6d6-ef6697c17daf,Meeting scheduled for 13-02-2026 at 10:30 AM to discuss disaster preparedness.,2026-01-29T09:34:32.286645Z,+919941347579,Chief Engineer,meeting
+6ac2a60c-d8a3-4845-a088-8362072ae0b9,Delay in inspection due to staff shortage. New deadline: 16-02-2026.,2026-01-26T17:16:32.302380Z,+919830007594,Chief Engineer,status_update
+806eb3fd-3660-4969-ac16-ea7ba277d0fe,Status update: field survey is pending approval. 21% completed.,2026-01-26T15:37:32.301668Z,+919983778194,Inspector,status_update
+8b00d595-8a1d-4d0c-aec9-9b316328bf8d,Action required: documentation. Deadline: 07-02-2026.,2026-01-21T20:50:32.301176Z,+919014091433,Inspector,instruction
+3d48d1f1-b144-4e07-9dfc-ddf393cf4331,Notification: health programs. For reference only.,2026-01-28T11:23:32.306872Z,+919246030041,Mandal Officer,fyi
+516c46bd-4096-4060-86bb-6757525b042d,Meeting on 08-02-2026 at 3:30 PM regarding health programs. Attendance mandatory.,2026-01-25T05:46:32.289564Z,+919597615766,Chief Engineer,meeting
+3bdde558-c47f-4196-a5fa-7de54464da0b,Please attend the District meeting on 28-02-2026 at 3:45 PM in Collectorate.,2026-01-27T03:36:32.286721Z,+919070705704,Chief Engineer,meeting
+375ba904-cd10-4d08-8b7a-6af922c49a64,Meeting on 12-02-2026 at 5:30 PM regarding welfare schemes. Attendance mandatory.,2026-01-27T12:53:32.285496Z,+919005566769,Superintendent,meeting
+be9a905b-8b8f-4215-8b98-dafae5dba224,Alert: Heavy Fire expected in Bhimavaram. Please take necessary precautions.,2026-01-28T20:20:32.279066Z,+919774723735,Mandal Officer,disaster_alert
+eaa39556-1a76-4330-81ea-db9c7c2cfa66,fund allocation completed successfully. 749 beneficiaries covered.,2026-01-27T11:07:32.302679Z,+919647827135,District Collector,status_update
+55b1fd04-3794-420a-9ecb-2d2408258516,Please note: budget allocation. No action required.,2026-01-24T14:16:32.308193Z,+919715606206,Superintendent,fyi
+2eccb55c-5d4f-4388-ac13-10f2bbcc7e5a,Flash flood warning for Ponnur mandal. Alert all villages immediately.,2026-01-24T02:46:32.283234Z,+919233409997,Mandal Officer,disaster_alert
+5997163a-d0fb-4f82-a549-57ff91608eee,Please review and approve expenditure statement at the earliest.,2026-01-22T22:23:32.301011Z,+919588308544,Project Director,instruction
+04fa5c40-c403-49fa-b652-ac6c30c4c938,Meeting on 22-02-2026 at 11:45 AM regarding education initiatives. Attendance mandatory.,2026-01-28T08:43:32.283969Z,+919709394154,Project Director,meeting
+4a74efcc-d692-4fbf-8492-1b39b4fdd0bb,fund allocation complete చేసి 09-02-2026 లోపు submit చేయండి.,2026-01-26T06:24:32.299273Z,+919578912646,Assistant Commissioner,instruction
+f2a9bba2-42c5-43ad-907d-8c1a949dbcde,budget allocation progress report: pending approval. Expected completion: 14-02-2026.,2026-01-26T20:19:32.305067Z,+919777898645,Mandal Officer,status_update
+919eacff-185f-4e00-a06f-5a4c1355b8b3,10-02-2026న 5:45 PMకి మీటింగ్. దయచేసి హాజరు అవ్వండి.,2026-01-24T13:46:32.285189Z,+919498321088,Inspector,meeting
+8981bd37-9fdc-4f94-a9b4-17f26b90ac36,Meeting scheduled for 16-02-2026 at 11:45 AM to discuss health programs.,2026-01-22T02:55:32.289893Z,+919914082631,District Collector,meeting
+51e5de89-b090-4c8c-9639-b418d33048e4,Please note: agricultural support. No action required.,2026-01-22T17:05:32.307436Z,+919365231645,Tahsildar,fyi
+9389a768-29d0-4f34-8ff1-08a51d20a4b2,Alert: Heavy Landslide expected in Dharmavaram. Please take necessary precautions.,2026-01-24T12:48:32.280009Z,+919657427409,Project Director,disaster_alert
+70668042-439f-418a-8993-e73316ced133,URGENT: Heat wave alert in Mangalagiri. Immediate action required.,2026-01-23T20:52:32.282948Z,+919450940617,Project Director,disaster_alert
+58977138-8293-45e9-9666-7a59fc3cf024,Implement new scheme in Kadiri mandal. Report progress weekly.,2026-01-24T13:19:32.299399Z,+919671177926,Chief Engineer,instruction
+d47eb461-0329-4338-9040-eca37a7453b7,08-02-2026న 4:15 PMకి మీటింగ్. దయచేసి హాజరు అవ్వండి.,2026-01-22T00:32:32.289479Z,+919882282175,Project Director,meeting
+36055c07-5393-41bb-95b0-1bdbce35bf5a,Update on verification: partially completed. No issues.,2026-01-25T00:14:32.301994Z,+919137184416,Mandal Officer,status_update
+6aaaf926-d687-49f5-bf1f-7caabb6a7bf2,welfare schemes progress report: on track. Expected completion: 25-02-2026.,2026-01-24T05:03:32.305475Z,+919227032989,Tahsildar,status_update
+33106dc6-7c31-4c80-bead-356553595a43,fund allocation complete చేసి 11-02-2026 లోపు submit చేయండి.,2026-01-29T03:27:32.300369Z,+919564668200,Revenue Officer,instruction
+7580df92-5a0c-46e9-9c29-7bc63b84affe,Critical: Cyclone situation in Guntakal. Evacuation needed urgently.,2026-01-25T14:11:32.278818Z,+919016969412,Joint Collector,disaster_alert
+06757256-030c-4721-a6a4-deb160c030de,Attached: project status report for your information.,2026-01-23T10:31:32.305560Z,+919678483388,Project Director,fyi
+df53d4d8-ac58-4b33-a0d4-891b8619a3ae,verification complete చేసి 06-02-2026 లోపు submit చేయండి.,2026-01-29T05:55:32.299888Z,+919642826525,Mandal Officer,instruction
+adb41d00-8894-4bb0-ae95-42c58cad9119,Critical: Heavy rainfall situation in Addanki. Relief measures needed urgently.,2026-01-21T16:01:32.281408Z,+919974478130,Revenue Officer,disaster_alert
+70ab8d08-50da-417e-8202-71f20fa97684,FYI - welfare schemes guidelines updated. Check portal for details.,2026-01-23T18:30:32.307198Z,+919515600419,Deputy Director,fyi
+61724fc9-a10b-466c-ba1b-22418c3e18dc,Work on welfare schemes is delayed. No major issues reported.,2026-01-27T00:07:32.304689Z,+919396989165,Deputy Director,status_update
+db997e22-d2a9-41ef-a0c5-58c0f738914a,Meeting on 15-02-2026 at 10:15 AM regarding budget allocation. Attendance mandatory.,2026-01-27T06:07:32.287371Z,+919935692882,Inspector,meeting
+d59b8324-3194-4348-8bf4-609dccd1662e,Video conference scheduled for 07-02-2026 at 1:00 PM. Join link will be shared.,2026-01-25T23:35:32.293176Z,+919028191083,Project Director,meeting
+3d59c776-f23c-4c61-b7bc-2f3208d09be0,Video conference scheduled for 27-02-2026 at 3:15 PM. Join link will be shared.,2026-01-29T06:49:32.287125Z,+919860360542,Chief Engineer,meeting
+2b5867ac-4bfd-4c1f-8a33-4ae5026b170e,FYI: New circular regarding health programs has been uploaded to portal.,2026-01-29T07:51:32.305769Z,+919280464674,Chief Engineer,fyi
+29e2d1d0-0867-4a29-8113-69ca37048ac7,Delay in field survey due to weather conditions. New deadline: 18-02-2026.,2026-01-26T03:44:32.303176Z,+919557854941,Inspector,status_update
+659d2405-e487-42bf-a084-d92a9de94b51,Request to reschedule meeting from 02-02-2026 to alternate date.,2026-01-26T06:24:32.285413Z,+919493022858,Chief Engineer,meeting
+909c12bd-fc6f-4e4e-8e62-58c65f3d3d23,Please submit budget proposal by 13-02-2026. This is urgent.,2026-01-27T07:05:32.297861Z,+919689462642,Mandal Officer,instruction
+8617fb95-2971-4464-8786-a66f3de8b79d,Reminder: District meeting tomorrow at 2:15 PM. Agenda: education initiatives.,2026-01-22T01:58:32.288674Z,+919765047892,Department Secretary,meeting
+fcd69dfd-f0b1-4bd3-b9b6-2477c3117471,Video conference scheduled for 27-02-2026 at 10:15 AM. Join link will be shared.,2026-01-21T16:41:32.286877Z,+919957629528,Mandal Officer,meeting
+21306cd4-5620-44ae-8b9e-28d79f8d6b14,Notification: urban planning. For reference only.,2026-01-28T11:00:32.308230Z,+919216526359,Chief Engineer,fyi
+07541228-0125-4442-8a32-a57d862a3b04,Meeting scheduled for 08-02-2026 at 10:15 AM to discuss disaster preparedness.,2026-01-27T02:00:32.283649Z,+919029348412,Revenue Officer,meeting
+ba60581a-df04-4cb6-b4ed-4cb6c7aa6904,Critical: Flood situation in Salur. Emergency response needed urgently.,2026-01-27T06:04:32.281013Z,+919502288614,Department Secretary,disaster_alert
+77a769a0-0b5c-4dc2-87e4-057cc1092163,Notification: health programs. For reference only.,2026-01-25T03:03:32.308516Z,+919882798717,Tahsildar,fyi
+24922173-cb5e-4853-9f02-6c1294c7049d,తుఫాన్ హెచ్చరిక Sattenapalleలో. తక్షణ చర్య అవసరం.,2026-01-23T18:06:32.281243Z,+919858022552,Mandal Officer,disaster_alert
+e36c0333-fb8c-49dd-a6ad-75fdaeb67042,Review meeting postponed to 28-02-2026 at 10:30 AM. Venue: Mandal Office.,2026-01-23T02:07:32.290069Z,+919538418291,Project Director,meeting
+e80f2112-386d-4791-8d7b-1247b29eeb30,Request to reschedule meeting from 28-02-2026 to alternate date.,2026-01-26T20:45:32.293747Z,+919296153677,Joint Collector,meeting
+ca13f6da-6c58-47d9-8b5c-75df97d9091a,Update on data collection: on track. Some delays.,2026-01-22T11:57:32.303985Z,+919934670764,District Collector,status_update
+79f1047b-d2c9-45c5-a58e-cb5a170d1c9f,FYI: New circular regarding agricultural support has been uploaded to portal.,2026-01-25T17:41:32.307086Z,+919473542305,Department Secretary,fyi
+bb94590c-9b88-4591-85c4-9d7ca3632b5c,Planning session postponed to 15-02-2026 at 12:15 PM. Venue: Mandal Office.,2026-01-22T09:54:32.286560Z,+919180493343,District Collector,meeting
+866e57a7-0774-4667-9b8e-405687851831,Information: rural development. Please share with your team.,2026-01-23T10:04:32.307589Z,+919219997887,Department Secretary,fyi
+10436841-c189-4b8d-b815-15955d002991,Ensure fund allocation is completed before 08-02-2026. No extensions.,2026-01-21T17:17:32.300188Z,+919040494303,District Collector,instruction
+61c06765-acc0-44ce-959f-e0c8e6132a38,scheme implementation complete చేసి 13-02-2026 లోపు submit చేయండి.,2026-01-29T01:03:32.294792Z,+919721076803,Deputy Director,instruction
+0c35fd03-1bde-44bb-9a0d-91a24b36d749,Please attend the Department meeting on 11-02-2026 at 1:15 PM in Mandal Office.,2026-01-29T04:06:32.284410Z,+919262374781,Assistant Commissioner,meeting
+f1eac862-c8f3-498a-bdc6-fdceca80bb86,field survey complete చేసి 12-02-2026 లోపు submit చేయండి.,2026-01-27T03:56:32.301136Z,+919925082878,Joint Collector,instruction
+0d79708e-94c1-4c44-bab6-e15cc9854bcc,project implementation progress report: pending approval. Expected completion: 12-02-2026.,2026-01-22T07:27:32.303547Z,+919703807521,Superintendent,status_update
+2b3d2f05-f67f-4f63-9f7a-1194b0f78769,Notification: urban planning. For reference only.,2026-01-24T02:10:32.305808Z,+919873798187,Inspector,fyi
+65a542b4-d5d8-4014-9ac4-6cb61116592d,14-02-2026న 11:30 AMకి మీటింగ్. దయచేసి హాజరు అవ్వండి.,2026-01-24T00:49:32.292840Z,+919173494132,Chief Engineer,meeting
+133e37cc-7966-4056-82cc-8f1e2cf63002,Heavy rainfall damage reported in Badvel. 10 casualties. Send rescue teams.,2026-01-27T19:51:32.280475Z,+919454543528,Project Director,disaster_alert
+2a34f881-6ca7-49f3-b8de-4f2657bbe240,Please submit monthly report by 31-01-2026. This is urgent.,2026-01-26T04:09:32.298853Z,+919856668176,Tahsildar,instruction
+0eba9f6f-90c9-42c2-bc9c-924214ed6107,Heavy rainfall damage reported in Vijayawada. 12 casualties. Send rescue teams.,2026-01-28T06:33:32.282860Z,+919815163764,Superintendent,disaster_alert
+437f1aa8-09cb-4eda-bec9-5799574b24db,report preparation పూర్తయింది. రిపోర్ట్ attached.,2026-01-21T20:27:32.304106Z,+919811266448,District Collector,status_update
+8973ff94-732b-4ba0-b321-8854224e4063,Video conference scheduled for 07-02-2026 at 10:15 AM. Join link will be shared.,2026-01-29T01:50:32.286093Z,+919236349382,Joint Collector,meeting
+2c165e8e-a4fa-4b6e-aa45-bef93ae73622,Request to verify action taken report and provide status update by 08-02-2026.,2026-01-29T08:17:32.297090Z,+919165477224,Department Secretary,instruction
+40bfbf6e-0ee9-4fe4-8a27-2b704fd6f524,31-01-2026న 9:00 AMకి మీటింగ్. దయచేసి హాజరు అవ్వండి.,2026-01-24T00:56:32.286799Z,+919662155671,Chief Engineer,meeting
+45cf94c7-8727-4fa3-b08f-2367ac7e5ca2,Video conference scheduled for 23-02-2026 at 4:00 PM. Join link will be shared.,2026-01-23T13:18:32.285577Z,+919702528530,Superintendent,meeting
+645e8ab8-1d1e-4537-87b0-6bf2505c001e,Implement revised procedure in Prakasam mandal. Report progress weekly.,2026-01-22T12:56:32.297133Z,+919766356027,Deputy Director,instruction
+3e61ef2b-3c7f-4663-bfc2-03c9c7743edd,Delay in inspection due to staff shortage. New deadline: 13-02-2026.,2026-01-29T03:30:32.305393Z,+919906040004,Project Director,status_update
+3ef9befb-b960-4486-9bd5-978207a2cabf,Kindly prepare monthly report and send to Industries Department by 13-02-2026.,2026-01-28T11:12:32.301096Z,+919338081435,Inspector,instruction
+187def7a-5474-4aa8-a3c9-13f0c33ff5a5,Notification: project implementation. For reference only.,2026-01-23T16:47:32.307665Z,+919656395581,Joint Collector,fyi
+823de119-0a12-4b2f-a28b-f9052271187a,Kindly prepare expenditure statement and send to Food and Consumer Affairs by 06-02-2026.,2026-01-23T16:45:32.299140Z,+919832088647,Joint Collector,instruction
+1732d410-4a87-4b0d-8da3-2990f85b0a2a,Work on urban planning is partially completed. No major issues reported.,2026-01-21T17:42:32.305436Z,+919433385579,Assistant Commissioner,status_update
+17b1734a-c707-469d-a6b0-6f7609b5018c,Kindly prepare action taken report and send to Commercial Taxes by 30-01-2026.,2026-01-23T10:31:32.298125Z,+919023091102,Project Director,instruction
+ce3f8961-2e4c-4e75-aacf-f2bc1fdc1927,urban planning progress report: under review. Expected completion: 16-02-2026.,2026-01-23T04:12:32.303259Z,+919405238179,Superintendent,status_update
+d6d704fb-07cf-43a0-b1be-192306495f45,Video conference scheduled for 09-02-2026 at 3:45 PM. Join link will be shared.,2026-01-22T22:42:32.292921Z,+919845709105,Deputy Director,meeting
+6232141d-e6c7-49c2-80a6-c79b931c9664,Please submit attendance records by 12-02-2026. This is urgent.,2026-01-24T12:53:32.298207Z,+919183614183,Assistant Commissioner,instruction
+f04639cb-e4d1-4d35-8533-e2ac369d40fb,Status update: scheme implementation is pending approval. 87% completed.,2026-01-27T21:39:32.304951Z,+919829232073,Department Secretary,status_update
+7bd45a63-cf31-429d-9e50-16cc90f376e8,Request to reschedule meeting from 09-02-2026 to alternate date.,2026-01-27T14:59:32.287292Z,+919367440383,Joint Collector,meeting
+0d9ded71-470b-47c1-a7da-84c3e1b92294,Reminder: Department meeting tomorrow at 4:45 PM. Agenda: agricultural support.,2026-01-28T20:17:32.286405Z,+919503814662,Revenue Officer,meeting
+ef7fbd90-8623-46d9-82d7-3c45d10138cf,Video conference scheduled for 20-02-2026 at 5:45 PM. Join link will be shared.,2026-01-29T04:22:32.288758Z,+919504607640,Assistant Commissioner,meeting
+ed2521f1-eafb-4f5e-a6b3-23434633cfe1,Circular: infrastructure development. Effective from 26-02-2026.,2026-01-26T13:00:32.307854Z,+919276582981,Chief Engineer,fyi
+37951acf-4fde-4cc5-bef9-65f983a3d7ff,Cyclone హెచ్చరిక Kandukurలో. తక్షణ చర్య అవసరం.,2026-01-27T16:49:32.277922Z,+919413066260,Superintendent,disaster_alert
+e587a559-d685-45e7-acda-da6e3e0e5484,Status update: report preparation is partially completed. 19% completed.,2026-01-24T00:22:32.304352Z,+919812935920,Project Director,status_update
+a4e650b3-37a3-41e2-a4b9-3249b411722d,Meeting on 23-02-2026 at 4:30 PM regarding project implementation. Attendance mandatory.,2026-01-21T17:43:32.286170Z,+919086167366,Joint Collector,meeting
+17e6074c-f7b0-4af8-b438-d0a1e2a21dcb,Please submit action taken report by 07-02-2026. This is urgent.,2026-01-22T00:04:32.300805Z,+919994732218,Superintendent,instruction
+6e578859-80ae-4248-9830-3017d556d812,Notification: urban planning. For reference only.,2026-01-22T05:47:32.306700Z,+919338780752,Mandal Officer,fyi
+66a360f5-a31d-406b-ad8a-8234d25e925b,Circular: health programs. Effective from 05-02-2026.,2026-01-27T16:02:32.307816Z,+919841874060,Chief Engineer,fyi
+c81f40a9-a659-487f-8a0b-633b06fd217d,Status update: inspection is completed. 36% completed.,2026-01-23T15:37:32.301548Z,+919669208430,Chief Engineer,status_update
+52ad09b7-a801-4b33-b4f8-2953cb92d5b8,Attached: project status report for your information.,2026-01-21T20:12:32.305971Z,+919349873970,Project Director,fyi
+41f86946-e864-4a7a-8d88-dcaab9122bb8,Work on rural development is delayed. No major issues reported.,2026-01-23T06:41:32.304401Z,+919270999521,Inspector,status_update
+8d5f2b7e-faf7-4212-b8b7-6d1ac9cea42e,Drought హెచ్చరిక Uravakondaలో. తక్షణ చర్య అవసరం.,2026-01-27T21:58:32.280640Z,+919866150053,Project Director,disaster_alert
+88d327bb-155d-4535-8c4d-1d7fad915087,Please attend the Review meeting on 12-02-2026 at 9:00 AM in Collectorate.,2026-01-24T03:50:32.290996Z,+919912550492,Mandal Officer,meeting
+a6fa7dfb-6961-4a9a-b3f5-6086dd3c1ae6,Please attend the District meeting on 22-02-2026 at 2:45 PM in District Office.,2026-01-24T21:02:32.284801Z,+919983071792,Tahsildar,meeting
+0260ba25-17f7-4872-84e3-79c07c0eb239,Update on fund allocation: under review. Some delays.,2026-01-27T10:59:32.302126Z,+919227723295,Chief Engineer,status_update
+c14c3384-7466-4cf3-a411-0e3a13ffbfdf,FYI: New circular regarding infrastructure development has been uploaded to portal.,2026-01-23T14:57:32.308077Z,+919811485218,Deputy Director,fyi
+30882569-e0c5-4f17-8437-b4577801119c,Ensure verification is completed before 10-02-2026. No extensions.,2026-01-25T19:09:32.300676Z,+919375684289,Tahsildar,instruction
+514fef67-e645-48ee-9718-b1148485d5fd,report preparation completed successfully. 194 beneficiaries covered.,2026-01-24T19:48:32.302423Z,+919558398873,Revenue Officer,status_update
+47722faa-47a6-4be9-b9eb-c9f29446cf50,fund allocation complete చేసి 01-02-2026 లోపు submit చేయండి.,2026-01-23T03:27:32.298001Z,+919883331028,Revenue Officer,instruction
+3677f6b3-444e-4b49-99e0-3c2c60f7374c,Update on field survey: in progress. Some delays.,2026-01-28T08:15:32.304225Z,+919930275340,District Collector,status_update
+92c2ad64-e0b6-4a60-b8c1-a3af1a495e4f,Meeting on 13-02-2026 at 10:30 AM regarding revenue collection. Attendance mandatory.,2026-01-24T11:18:32.288109Z,+919381902476,Revenue Officer,meeting
+51589deb-acb1-4add-8e6d-9c9e7b14c6c7,Delay in verification due to weather conditions. New deadline: 30-01-2026.,2026-01-25T14:15:32.303823Z,+919728962615,District Collector,status_update
+f38b79dd-af81-4017-b200-e0a1a8d2fb30,Implement revised procedure in Vizianagaram mandal. Report progress weekly.,2026-01-25T23:10:32.297302Z,+919163169689,Tahsildar,instruction
+680ecd66-937d-4e5a-9148-b9626c661d3f,Notification: road construction. For reference only.,2026-01-24T18:13:32.306363Z,+919727352019,Superintendent,fyi
+4b98a407-dd61-4591-b70a-5fa574d16e6a,Meeting scheduled for 01-02-2026 at 9:15 AM to discuss welfare schemes.,2026-01-27T23:30:32.291487Z,+919094539549,Assistant Commissioner,meeting
+ab0c1c8f-1ae7-449d-aa6c-4eb72544f378,Action required: beneficiary identification. Deadline: 02-02-2026.,2026-01-21T19:09:32.297958Z,+919474635947,Joint Collector,instruction
+4e44c4c7-123e-420b-9bf2-b1285fb58348,beneficiary identification complete చేసి 04-02-2026 లోపు submit చేయండి.,2026-01-24T04:16:32.298894Z,+919996436691,Joint Collector,instruction
+c027221e-a52f-4440-ab9b-56892cbbd753,Kindly prepare monthly report and send to Home Department by 31-01-2026.,2026-01-23T00:44:32.299766Z,+919367614067,District Collector,instruction
+52d547c5-3d1d-403f-a597-0e7585d4068a,Request to verify progress report and provide status update by 31-01-2026.,2026-01-26T05:48:32.297047Z,+919485708804,Joint Collector,instruction
+246f11a1-e659-49ae-b61e-735a003de762,Request to verify expenditure statement and provide status update by 09-02-2026.,2026-01-24T18:43:32.298084Z,+919570016959,Department Secretary,instruction
+63cee492-f3ed-4f97-954b-4b1483a189d8,Attached: attendance records for your information.,2026-01-26T15:17:32.307160Z,+919651334257,Chief Engineer,fyi
+90ebfb6b-feba-42c1-8713-3df8feae9b12,Kindly prepare monthly report and send to Health Department by 07-02-2026.,2026-01-26T20:49:32.297602Z,+919659899998,Assistant Commissioner,instruction
+6bcf13bb-c508-4e44-b7ef-b2d89c979794,Meeting scheduled for 01-02-2026 at 9:15 AM to discuss agricultural support.,2026-01-24T06:07:32.292102Z,+919918508597,Department Secretary,meeting
+014445d3-5d7c-415a-89b3-b91d881ded82,Progress report for urban planning: 99% done. On track.,2026-01-25T23:56:32.305192Z,+919113913140,Assistant Commissioner,status_update
+6028a44e-8266-4506-b29f-67016729f771,వరద హెచ్చరిక Visakhapatnamలో. తక్షణ చర్య అవసరం.,2026-01-23T16:47:32.278999Z,+919008052625,Chief Engineer,disaster_alert
+715ec9bf-2766-419b-93c0-367c90c7540e,URGENT: Heavy rainfall alert in Krishna. Immediate action required.,2026-01-28T14:02:32.278032Z,+919112008426,Deputy Director,disaster_alert
+dc024649-46b0-4423-9dbf-5b2a6599b2dc,Work on disaster preparedness is pending approval. No major issues reported.,2026-01-22T18:04:32.301628Z,+919017750148,Assistant Commissioner,status_update
+5ec25183-cafa-4b1c-9377-a4c2c1a4b68b,Meeting on 05-02-2026 at 9:00 AM regarding disaster preparedness. Attendance mandatory.,2026-01-25T05:23:32.285817Z,+919197099388,Revenue Officer,meeting
+a053d4ef-40a9-4d81-923d-221095133cf5,Emergency: Storm warning for Dharmavaram district. Evacuate coastal areas immediately.,2026-01-21T22:43:32.281068Z,+919857910762,Superintendent,disaster_alert
+3f84781b-44bc-4104-8c9f-859ef653ab16,Reminder: Department meeting tomorrow at 12:30 PM. Agenda: welfare schemes.,2026-01-28T18:01:32.291405Z,+919316588089,Inspector,meeting
+c621bb0a-199f-4d42-ab0d-f627e8456e27,Emergency: తుఫాన్ warning for East Godavari district. Evacuate low-lying areas immediately.,2026-01-25T14:46:32.279309Z,+919913711230,Mandal Officer,disaster_alert
+a5b56f88-8500-4150-a88d-73edafc402dd,Request to reschedule meeting from 11-02-2026 to alternate date.,2026-01-24T11:49:32.290658Z,+919959113757,Joint Collector,meeting
+1c0b187d-2da2-4b93-a852-0ea82d7fb460,Heat wave damage reported in West Godavari. 20 casualties. Send rescue teams.,2026-01-24T18:06:32.282349Z,+919009434254,Mandal Officer,disaster_alert
+70a94e95-1f18-40e7-9ace-b4370af3d8d2,Meeting on 20-02-2026 at 12:45 PM regarding budget allocation. Attendance mandatory.,2026-01-29T06:17:32.292513Z,+919784692243,Chief Engineer,meeting
+b5351bc9-7c05-426b-8e92-e383be3fba28,fund allocation completed successfully. 764 beneficiaries covered.,2026-01-27T05:40:32.304023Z,+919122299109,Project Director,status_update
+0bd6a7f8-f81b-46b8-82ee-4024d55b223e,Critical: Landslide situation in Gudivada. Relief measures needed urgently.,2026-01-27T15:20:32.281327Z,+919696569397,Department Secretary,disaster_alert
+bc7dbdf8-f004-48e8-a12e-20a47b0df95c,Information: health programs. Please share with your team.,2026-01-25T18:12:32.307627Z,+919677899291,Mandal Officer,fyi
+da911753-ccc4-4e9f-8ded-060b64a7b91e,Status update: fund allocation is delayed. 95% completed.,2026-01-25T05:02:32.301789Z,+919538972049,Department Secretary,status_update
+d9a6c943-dd66-47f8-a7c4-8833522a45a3,Critical: Heavy rainfall situation in Salur. Emergency response needed urgently.,2026-01-23T10:31:32.281154Z,+919287905328,Project Director,disaster_alert
+dc4ae1f6-9cdc-41c1-a216-a3d152808e0f,Meeting scheduled for 15-02-2026 at 4:30 PM to discuss health programs.,2026-01-27T16:13:32.291570Z,+919443261009,Inspector,meeting
+a6a8168e-070f-425c-a710-55d96080d470,Kindly prepare action taken report and send to Animal Husbandry by 04-02-2026.,2026-01-21T19:34:32.299930Z,+919590958754,Department Secretary,instruction
+ac0c0521-f846-4a4c-b295-5e3e85437f89,Please submit attendance records by 08-02-2026. This is urgent.,2026-01-23T07:41:32.294304Z,+919485297769,Joint Collector,instruction
+f02b01ad-8244-4ddd-b1f7-52b5572394c0,Progress report for revenue collection: 98% done. On track.,2026-01-27T01:35:32.305271Z,+919969718023,Chief Engineer,status_update
+6b09721c-a7f1-48a5-b17a-8fed77f469b3,Please note: agricultural support. No action required.,2026-01-24T02:50:32.307702Z,+919868463230,Inspector,fyi
+3fe6bdf3-53ef-47b5-be51-487201365070,Meeting on 28-02-2026 at 1:45 PM regarding rural development. Attendance mandatory.,2026-01-28T19:19:32.289077Z,+919084999562,Assistant Commissioner,meeting
+69e253c4-f5a0-44b1-ba34-4180d6013810,Meeting scheduled for 24-02-2026 at 3:00 PM to discuss revenue collection.,2026-01-23T08:11:32.291159Z,+919231854723,Project Director,meeting
+864b99d5-ad20-4650-9819-725a58ac2785,documentation పూర్తయింది. రిపోర్ట్ attached.,2026-01-25T01:21:32.303379Z,+919292408947,Revenue Officer,status_update
+390a4680-c168-47dd-a3e2-d9021e021e47,Emergency: Fire warning for Chirala district. Evacuate vulnerable areas immediately.,2026-01-29T04:04:32.278482Z,+919190924875,Inspector,disaster_alert
+ffda9fd8-caf8-490a-ad61-eba99c936c71,Video conference scheduled for 26-02-2026 at 4:00 PM. Join link will be shared.,2026-01-23T20:24:32.283731Z,+919846887240,District Collector,meeting
+952079c6-b9b0-4de5-9eb7-39484997abc2,Critical: Flood situation in Atmakur. Emergency response needed urgently.,2026-01-29T09:44:32.281367Z,+919369438990,Chief Engineer,disaster_alert
+f8849af5-1e5f-4479-bfd4-1e2757e2a98f,Work on budget allocation is pending approval. No major issues reported.,2026-01-27T23:17:32.302247Z,+919647455012,Inspector,status_update
+9d771306-a585-47fb-ba76-8d0923412cd0,FYI: New circular regarding urban planning has been uploaded to portal.,2026-01-28T18:24:32.305672Z,+919398321664,Department Secretary,fyi
+e9566bff-ddfd-4de7-b3d1-a84b6ae6569f,Status update: data collection is delayed. 61% completed.,2026-01-25T02:09:32.302550Z,+919419018038,Department Secretary,status_update
+007c0ea2-d478-46b3-af7f-9b41acb9f405,Information: budget allocation. Please share with your team.,2026-01-29T13:15:32.305887Z,+919791602456,Mandal Officer,fyi
+6594857f-237e-42bf-9a6f-36a68684d074,Request to reschedule meeting from 13-02-2026 to alternate date.,2026-01-21T23:27:32.290570Z,+919592388588,Tahsildar,meeting
+dd2f0b23-97fb-4d62-bb91-7f59249bb347,rural development progress report: under review. Expected completion: 06-02-2026.,2026-01-28T08:18:32.303049Z,+919553807013,Project Director,status_update
+73272b25-8636-41fd-8a2b-8f3dd9bea630,Request to reschedule meeting from 23-02-2026 to alternate date.,2026-01-28T22:41:32.285904Z,+919668381568,Joint Collector,meeting
+b3cbee6d-eb42-4bd4-b5d2-0fee07a4ccbb,Please submit budget proposal by 05-02-2026. This is urgent.,2026-01-22T14:37:32.299180Z,+919600419254,Inspector,instruction
+b1f6efd1-1812-4150-9387-37398061b939,Implement revised procedure in Vijayawada mandal. Report progress weekly.,2026-01-26T05:13:32.300845Z,+919618644769,Revenue Officer,instruction
+b7686587-e660-4ffc-9809-8fd92bc0fbc0,Meeting on 17-02-2026 at 3:00 PM regarding welfare schemes. Attendance mandatory.,2026-01-24T08:39:32.290325Z,+919028522410,Chief Engineer,meeting
+ea674090-bc45-4b35-af2c-b78f1d6367de,Please submit action taken report by 06-02-2026. This is urgent.,2026-01-22T09:41:32.298649Z,+919650952501,Assistant Commissioner,instruction
+867f7fad-3c13-4966-9a7a-3976396dcfe9,Ensure verification is completed before 30-01-2026. No extensions.,2026-01-24T19:30:32.298976Z,+919896363774,Superintendent,instruction
+027b0877-c60c-4b34-b199-6c855f698bd5,Meeting on 21-02-2026 at 9:30 AM regarding rural development. Attendance mandatory.,2026-01-26T14:02:32.289974Z,+919412410091,Department Secretary,meeting
+c2e2f6a0-48bb-4525-a22e-616732ab86ee,revenue collection progress report: partially completed. Expected completion: 10-02-2026.,2026-01-24T16:32:32.301385Z,+919466897350,Inspector,status_update
+1b9da680-adfa-4765-863f-cfa145d6dec0,Status update: scheme implementation is in progress. 50% completed.,2026-01-27T16:01:32.304523Z,+919555473341,Chief Engineer,status_update
+51b9d561-9edd-4584-81e9-028cfe8e5b69,disaster preparedness progress report: in progress. Expected completion: 24-02-2026.,2026-01-22T23:07:32.305152Z,+919544291712,Assistant Commissioner,status_update
+e42dbe27-3123-4a6a-9165-f6f0c91851dd,Ensure inspection is completed before 02-02-2026. No extensions.,2026-01-22T13:53:32.299643Z,+919694515579,Project Director,instruction
+3d601a1a-8178-4dc1-b01a-d8c551bb2948,Work on welfare schemes is on track. No major issues reported.,2026-01-29T00:34:32.303419Z,+919916007311,District Collector,status_update
+115d9de2-9ed7-47b5-abd8-ed413a2269ea,Progress report for budget allocation: 60% done. On track.,2026-01-23T09:31:32.302865Z,+919657565139,Tahsildar,status_update
+dc2f220a-7503-4f2c-b53e-51d6fe2af49f,Critical: Landslide situation in Giddalur. Emergency response needed urgently.,2026-01-29T03:05:32.277827Z,+919377299630,Revenue Officer,disaster_alert
+9e07029a-2865-43d4-a9e7-1588da2c8f4f,Department meeting postponed to 27-02-2026 at 5:00 PM. Venue: Secretariat.,2026-01-27T22:15:32.287541Z,+919944438388,Joint Collector,meeting
+63e4db3c-bd06-41e7-a1aa-de17648d8754,Alert: Heavy Cyclone expected in Addanki. Please take necessary precautions.,2026-01-28T19:29:32.280083Z,+919689987148,Tahsildar,disaster_alert
+00787e70-db65-4ad0-b3bd-70480d90f3e8,Ensure field survey is completed before 09-02-2026. No extensions.,2026-01-28T21:29:32.296895Z,+919480290012,Project Director,instruction
+c6338727-a711-4bb8-b598-7dc11eabc550,Progress report for project implementation: 95% done. On track.,2026-01-28T05:59:32.304445Z,+919138188462,Mandal Officer,status_update
+42e017ff-9a4a-4f3a-b57b-e8cb36267f93,Please review and approve attendance records at the earliest.,2026-01-28T20:36:32.299358Z,+919603759463,Department Secretary,instruction
+3992ce3b-23b0-4689-9776-5a13311e79bb,Planning session postponed to 20-02-2026 at 3:00 PM. Venue: Project Office.,2026-01-29T10:01:32.285654Z,+919549543986,Deputy Director,meeting
+83709076-c21d-4010-ac21-8519417739af,Request to reschedule meeting from 09-02-2026 to alternate date.,2026-01-25T06:57:32.291653Z,+919970685745,Superintendent,meeting
+54982b33-6f20-4d05-9833-d48fb4d39fc7,FYI - disaster preparedness guidelines updated. Check portal for details.,2026-01-21T15:48:32.305848Z,+919553086083,Project Director,fyi
+11a7ea6f-61c1-4198-b4c3-6209d43ff3f2,Delay in scheme implementation due to weather conditions. New deadline: 09-02-2026.,2026-01-28T14:10:32.301873Z,+919833892930,Revenue Officer,status_update
+b09c048b-c822-4b99-83c9-b96a2abcbadf,Action required: fund allocation. Deadline: 07-02-2026.,2026-01-25T00:16:32.299546Z,+919284329949,Chief Engineer,instruction
+69ad6e64-e3a4-4201-bbcc-0109eef35d96,Meeting on 22-02-2026 at 5:45 PM regarding infrastructure development. Attendance mandatory.,2026-01-24T23:51:32.287046Z,+919331090120,Tahsildar,meeting
+8a60435a-ca75-46a4-abed-2ef61c44053e,Attached: monthly report for your information.,2026-01-29T06:18:32.307033Z,+919576936037,Deputy Director,fyi
+0e643c0a-7ec0-47d1-99bc-78bd29a8cf1f,Delay in scheme implementation due to weather conditions. New deadline: 01-02-2026.,2026-01-24T16:50:32.302035Z,+919513095305,Chief Engineer,status_update
+0a9c9a8e-0b84-4848-8c81-c57eeb0c02b5,Implement updated guidelines in Ongole mandal. Report progress weekly.,2026-01-22T18:25:32.298248Z,+919020071601,Inspector,instruction
+72182da3-db30-4b13-87d5-3dd2010eb7ce,06-02-2026న 12:15 PMకి మీటింగ్. దయచేసి హాజరు అవ్వండి.,2026-01-26T12:39:32.284647Z,+919249851310,Chief Engineer,meeting
+b4f0a05a-555c-45e2-8519-02b9a0dfca5c,Ensure beneficiary identification is completed before 07-02-2026. No extensions.,2026-01-28T05:19:32.299485Z,+919729430600,District Collector,instruction
+9aa610c5-e196-48ef-8e29-3f605df5e4d6,Please submit budget proposal by 13-02-2026. This is urgent.,2026-01-25T17:18:32.297820Z,+919938892860,Chief Engineer,instruction
+c4eabe96-fe4a-4cd0-af47-32534ee0e2c9,For your information: agricultural support.,2026-01-27T13:12:32.307891Z,+919715605179,Chief Engineer,fyi
+741b7f7f-2ed4-40de-a78a-fb838e1b584f,Budget meeting postponed to 21-02-2026 at 11:00 AM. Venue: District Office.,2026-01-25T18:48:32.291323Z,+919742142551,Revenue Officer,meeting
+06eb174b-26ee-4036-baba-606b8523a1a4,Video conference scheduled for 07-02-2026 at 1:45 PM. Join link will be shared.,2026-01-28T23:15:32.285985Z,+919040145419,Project Director,meeting
+6003780d-3022-47d8-8467-dd10132e8026,Delay in inspection due to weather conditions. New deadline: 24-02-2026.,2026-01-25T16:43:32.301588Z,+919907838459,Tahsildar,status_update
+a131e6f7-3a26-4d22-802b-82e5693d8671,Attached: progress report for your information.,2026-01-22T16:33:32.306579Z,+919149806498,Mandal Officer,fyi
+39a58514-b294-4c87-98b7-b47f64f788d7,Status update: beneficiary identification is delayed. 74% completed.,2026-01-28T05:36:32.303867Z,+919068546399,Chief Engineer,status_update
+3a28bf43-0944-4b53-9e40-a5ecafc4fbce,FYI - education initiatives guidelines updated. Check portal for details.,2026-01-26T09:01:32.306833Z,+919312742612,Assistant Commissioner,fyi
+cf54b302-30fd-48fb-b10b-d184273609b3,Emergency: Storm warning for Tanuku district. Evacuate low-lying areas immediately.,2026-01-24T08:44:32.279916Z,+919977819261,District Collector,disaster_alert
+626d5de0-db54-48e4-a7ec-7bb6bbf2a2c6,Flash flood warning for Yemmiganur mandal. Alert all villages immediately.,2026-01-26T20:21:32.282690Z,+919759332197,Joint Collector,disaster_alert
+31678e4e-c3c8-4d67-9ef6-fed5ddef7015,Please review and approve utilization certificate at the earliest.,2026-01-25T18:43:32.297430Z,+919201303708,Joint Collector,instruction
+abd829c6-7a85-4ff1-91b8-ecb3f384f45b,Please submit compliance certificate by 04-02-2026. This is urgent.,2026-01-28T03:13:32.294653Z,+919853235321,Inspector,instruction
+0de5c81f-ccb6-42e9-97d3-4987f77818f2,Kindly prepare attendance records and send to Sericulture Department by 01-02-2026.,2026-01-23T00:57:32.299602Z,+919261255880,Department Secretary,instruction
+0c361edf-6f25-412d-b227-0a5357c8f17b,welfare schemes progress report: under review. Expected completion: 30-01-2026.,2026-01-28T01:48:32.303300Z,+919072905416,Tahsildar,status_update
+044d5367-8d70-43db-90ee-03e86253ce18,Progress report for project implementation: 15% done. On track.,2026-01-22T12:07:32.302906Z,+919628706513,Project Director,status_update
+2cee2a18-e540-472e-866a-a8cc54bf3137,fund allocation complete చేసి 04-02-2026 లోపు submit చేయండి.,2026-01-25T04:09:32.301342Z,+919920379875,Mandal Officer,instruction
+4f226cd1-3e47-4660-8947-d0277c9ff605,Kindly prepare project status report and send to Housing Department by 30-01-2026.,2026-01-23T13:56:32.301055Z,+919062142320,Mandal Officer,instruction
+e4de68ae-beed-44a5-b257-7cd4352b72b6,FYI - revenue collection guidelines updated. Check portal for details.,2026-01-22T18:52:32.308478Z,+919745786566,Tahsildar,fyi
+0f09151a-020d-4345-a378-d801148e4b2c,Alert: Heavy Storm expected in Vizianagaram. Please take necessary precautions.,2026-01-24T09:30:32.281489Z,+919678296407,Department Secretary,disaster_alert
+05dc2668-2923-4563-9414-f8de0912bb6d,Please submit budget proposal by 12-02-2026. This is urgent.,2026-01-28T14:39:32.297343Z,+919589081270,District Collector,instruction
+a96b4139-4463-45f9-b051-18fa1ea8826f,Update on inspection: under review. On schedule.,2026-01-27T15:39:32.302207Z,+919611186964,Assistant Commissioner,status_update
+96ce6607-bd4f-4f12-9e50-31310b64a364,beneficiary identification పూర్తయింది. రిపోర్ట్ attached.,2026-01-22T21:34:32.303666Z,+919699676766,Project Director,status_update
+c2e1b6c2-bf5f-45a0-9113-70aefe03f14d,fund allocation complete చేసి 08-02-2026 లోపు submit చేయండి.,2026-01-25T10:44:32.294477Z,+919648285400,Project Director,instruction
+3ef17ae8-1927-42b4-98d3-27012439b0f6,Status update: verification is delayed. 35% completed.,2026-01-24T01:08:32.302824Z,+919569815154,Superintendent,status_update
+dacc8c27-cc17-4d75-9167-617e6f750b5f,Please submit attendance records by 12-02-2026. This is urgent.,2026-01-25T06:16:32.300537Z,+919644091855,Revenue Officer,instruction
+eb251aa1-86dc-4546-9646-728aa0cd56fb,Information: disaster preparedness. Please share with your team.,2026-01-25T10:26:32.305604Z,+919458855378,Project Director,fyi
+9d0f4629-196d-49b8-b541-de8d1b0cfc8f,Ensure fund allocation is completed before 03-02-2026. No extensions.,2026-01-21T23:04:32.301261Z,+919959336403,Project Director,instruction
+fe83cd75-777b-4b65-9a81-1d6ef9289a82,Urgent Cyclone in Tuni. Immediate evacuation చేయండి.,2026-01-29T07:58:32.280787Z,+919483564993,Project Director,disaster_alert
+968644d7-b076-436e-bedc-7fae951e64c1,Meeting scheduled for 08-02-2026 at 11:30 AM to discuss education initiatives.,2026-01-23T14:53:32.284568Z,+919805901671,Chief Engineer,meeting
+59f28add-e026-40b1-bd13-fe5a38684a6d,Meeting scheduled for 21-02-2026 at 12:15 PM to discuss revenue collection.,2026-01-24T23:22:32.286247Z,+919131083661,Chief Engineer,meeting
+6babcb0c-a6e8-4e24-a56f-b280f07c7bec,Urgent Fire in Puttur. Immediate evacuation చేయండి.,2026-01-23T18:02:32.283151Z,+919767269401,Mandal Officer,disaster_alert
+ea7189aa-9a3f-4038-b22a-6366eea3b022,Reminder: Review meeting tomorrow at 5:15 PM. Agenda: rural development.,2026-01-26T11:08:32.285735Z,+919420127087,District Collector,meeting
+77a5e925-4f4a-448a-b74b-a506abd402e8,Coordination meeting postponed to 25-02-2026 at 10:00 AM. Venue: Project Office.,2026-01-27T05:22:32.288273Z,+919873846997,Chief Engineer,meeting
+0c2edb9d-a9fd-485f-84d1-cf4cc9f53e61,Review meeting postponed to 31-01-2026 at 4:45 PM. Venue: Secretariat.,2026-01-29T01:58:32.291078Z,+919661338992,Superintendent,meeting
+192458e8-439e-4215-81fb-43d1054045cd,URGENT: వరద alert in Proddatur. Immediate action required.,2026-01-24T12:35:32.281112Z,+919046356701,Deputy Director,disaster_alert
+ea0f5b58-11f3-4c52-a492-af77bb41f1d2,Review meeting postponed to 09-02-2026 at 4:30 PM. Venue: Collectorate.,2026-01-28T02:53:32.293098Z,+919185879100,Assistant Commissioner,meeting
+f3cf0abd-8a48-4f26-bb50-2f4cb1a67120,Request to verify project status report and provide status update by 30-01-2026.,2026-01-23T02:57:32.297905Z,+919425038956,Tahsildar,instruction
+abe2c0e4-fb49-4bd2-8ca9-60b4c0722766,Meeting scheduled for 23-02-2026 at 4:30 PM to discuss agricultural support.,2026-01-25T22:55:32.293588Z,+919234162193,Mandal Officer,meeting
+d9ae6ca8-95ff-4f7a-9812-bf7cda17b075,Please attend the Review meeting on 02-02-2026 at 5:45 PM in Project Office.,2026-01-27T04:38:32.291736Z,+919716624546,Chief Engineer,meeting
+a0fe59fc-d796-462e-80da-db978c176b03,Kindly prepare project status report and send to Planning Department by 09-02-2026.,2026-01-22T06:51:32.300063Z,+919535286853,Superintendent,instruction
+ccb084ec-667b-4c52-9937-814e3fc868c4,FYI - revenue collection guidelines updated. Check portal for details.,2026-01-24T09:14:32.306126Z,+919164837800,Project Director,fyi
+5b8df354-4af3-4b5f-a08f-9989738f9629,Flash flood warning for Gudivada mandal. Alert all villages immediately.,2026-01-22T10:11:32.281601Z,+919510908344,Project Director,disaster_alert
+62d2ffca-d2d0-4d7e-b585-73a3ca4449d8,Please attend the Emergency meeting on 25-02-2026 at 10:00 AM in Mandal Office.,2026-01-28T03:14:32.292350Z,+919899132401,Inspector,meeting
+3ca7263f-818f-4881-955d-b5bf973fcd70,Drought damage reported in Guntakal. 11 casualties. Send rescue teams.,2026-01-29T03:46:32.277731Z,+919333901341,Project Director,disaster_alert
+35146826-09cc-4537-b9ae-b1997f581aa6,Notification: agricultural support. For reference only.,2026-01-23T19:29:32.307317Z,+919327358122,Project Director,fyi
+77d6f293-2992-490e-8b21-39434c2727d8,Delay in field survey due to staff shortage. New deadline: 23-02-2026.,2026-01-29T04:14:32.301913Z,+919136163536,Project Director,status_update
+09612a6f-63f2-48cb-928b-dba4604bba04,Emergency: Cyclone warning for Nellore district. Evacuate coastal areas immediately.,2026-01-27T06:08:32.279841Z,+919687376674,Project Director,disaster_alert
+ad5708f3-b246-4c43-a624-a2a1a14b7a35,Landslide హెచ్చరిక Gajuwakaలో. తక్షణ చర్య అవసరం.,2026-01-29T06:42:32.281284Z,+919921283770,Inspector,disaster_alert
+f3bfbf81-3b08-44ec-aa8a-9bed98659500,Attached: progress report for your information.,2026-01-29T11:15:32.307777Z,+919374236453,Tahsildar,fyi
+4b97e978-bbdb-451c-97fb-3a6700fc8a8c,Please note: road construction. No action required.,2026-01-23T19:32:32.307399Z,+919591836086,Superintendent,fyi
+5dc7ae89-dba6-4000-9f94-57ed7902a471,Alert: Heavy వరద expected in Gannavaram. Please take necessary precautions.,2026-01-24T00:19:32.279693Z,+919327870669,Joint Collector,disaster_alert
+2de4e0a3-540c-484a-bd12-0d05ad0651cc,Request to verify project status report and provide status update by 06-02-2026.,2026-01-29T14:34:32.300635Z,+919650538273,Mandal Officer,instruction
+cc8e53de-9700-45c9-b9f4-2a1e8428b0ab,scheme implementation completed successfully. 890 beneficiaries covered.,2026-01-23T07:18:32.302080Z,+919256133438,Mandal Officer,status_update
+e33af097-9ea4-49dc-9958-2a8f63ea2d64,Implement updated guidelines in Guntur mandal. Report progress weekly.,2026-01-21T19:31:32.300414Z,+919700973659,Inspector,instruction
+97fe74f4-dab7-41a6-9663-3a13ab87726a,Please review and approve action taken report at the earliest.,2026-01-26T13:56:32.300765Z,+919003029223,Revenue Officer,instruction
+2bd89353-031c-48d8-b866-0916c36612aa,URGENT: Cyclone alert in Dharmavaram. Immediate action required.,2026-01-24T12:23:32.282445Z,+919561524240,Deputy Director,disaster_alert
+5d11caf1-5ce3-478d-91b4-60c2c915757a,07-02-2026న 11:15 AMకి మీటింగ్. దయచేసి హాజరు అవ్వండి.,2026-01-27T00:39:32.292432Z,+919243298055,Mandal Officer,meeting
+a6c8e7cb-daac-4fcd-abba-cd055f422552,Implement new scheme in Palakonda mandal. Report progress weekly.,2026-01-29T12:51:32.299317Z,+919530402309,Superintendent,instruction
+bc725592-276c-4a9e-b7a7-d912299d12ad,project implementation progress report: in progress. Expected completion: 03-02-2026.,2026-01-25T13:23:32.304146Z,+919485798580,Superintendent,status_update
+dc48656c-21ac-42a2-b516-9f8f3b5baf3b,documentation పూర్తయింది. రిపోర్ట్ attached.,2026-01-22T05:58:32.304269Z,+919950451315,Revenue Officer,status_update
+998cab6e-a1bb-43f6-8c09-79a0c891d9e1,20-02-2026న 12:15 PMకి మీటింగ్. దయచేసి హాజరు అవ్వండి.,2026-01-23T22:10:32.288431Z,+919387297623,Mandal Officer,meeting
+ada6b993-72c1-4af9-ab14-b1df9d02a4fd,Progress report for agricultural support: 70% done. On track.,2026-01-22T23:45:32.304313Z,+919308168133,Deputy Director,status_update
+2d83abd5-54a2-4866-b988-cc2efd38de92,Status update: documentation is delayed. 89% completed.,2026-01-26T12:22:32.303626Z,+919482350176,Assistant Commissioner,status_update
+8c2e01b0-b093-436f-897c-44cab37b5ae2,project implementation progress report: in progress. Expected completion: 08-02-2026.,2026-01-26T16:41:32.305028Z,+919050796988,Project Director,status_update

@@ -1,0 +1,102 @@
+{
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": [
+            "log_id",
+            "action_type",
+            "timestamp"
+        ],
+        "properties": {
+            "log_id": {
+                "bsonType": "string",
+                "description": "Unique log identifier"
+            },
+            "action_type": {
+                "bsonType": "string",
+                "enum": [
+                    "ai_analysis",
+                    "message_routing",
+                    "task_creation",
+                    "calendar_event",
+                    "reminder_sent",
+                    "escalation",
+                    "weekly_digest"
+                ],
+                "description": "Type of action logged"
+            },
+            "entity_type": {
+                "bsonType": "string",
+                "enum": [
+                    "message",
+                    "task",
+                    "event",
+                    "system"
+                ],
+                "description": "Type of entity affected"
+            },
+            "entity_id": {
+                "bsonType": [
+                    "string",
+                    "null"
+                ],
+                "description": "ID of affected entity"
+            },
+            "user_role": {
+                "bsonType": [
+                    "string",
+                    "null"
+                ],
+                "description": "Role of user who triggered action"
+            },
+            "input_data": {
+                "bsonType": "object",
+                "description": "Input data (masked sensitive fields)"
+            },
+            "output_data": {
+                "bsonType": "object",
+                "description": "Output/decision data"
+            },
+            "ai_confidence": {
+                "bsonType": [
+                    "double",
+                    "null"
+                ],
+                "description": "AI confidence score if applicable"
+            },
+            "decision_rationale": {
+                "bsonType": [
+                    "string",
+                    "null"
+                ],
+                "description": "Explanation of decision made"
+            },
+            "status": {
+                "bsonType": "string",
+                "enum": [
+                    "success",
+                    "failure",
+                    "partial"
+                ],
+                "description": "Action status"
+            },
+            "error_message": {
+                "bsonType": [
+                    "string",
+                    "null"
+                ],
+                "description": "Error message if failed"
+            },
+            "timestamp": {
+                "bsonType": "date",
+                "description": "Log timestamp"
+            },
+            "processing_time_ms": {
+                "bsonType": [
+                    "double",
+                    "null"
+                ],
+                "description": "Processing time in milliseconds"
+            }
+        }
+    }
+}

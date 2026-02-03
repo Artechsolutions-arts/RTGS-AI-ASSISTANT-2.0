@@ -1,0 +1,92 @@
+{
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": [
+            "report_id",
+            "week_start",
+            "week_end",
+            "created_at"
+        ],
+        "properties": {
+            "report_id": {
+                "bsonType": "string",
+                "description": "Unique report identifier"
+            },
+            "week_start": {
+                "bsonType": "date",
+                "description": "Start of week"
+            },
+            "week_end": {
+                "bsonType": "date",
+                "description": "End of week"
+            },
+            "summary": {
+                "bsonType": "object",
+                "properties": {
+                    "total_messages": {
+                        "bsonType": "int"
+                    },
+                    "by_priority": {
+                        "bsonType": "object"
+                    },
+                    "by_intent": {
+                        "bsonType": "object"
+                    },
+                    "by_department": {
+                        "bsonType": "object"
+                    }
+                }
+            },
+            "low_priority_messages": {
+                "bsonType": "array",
+                "description": "List of low priority message IDs",
+                "items": {
+                    "bsonType": "string"
+                }
+            },
+            "pending_tasks": {
+                "bsonType": "array",
+                "description": "List of pending task IDs",
+                "items": {
+                    "bsonType": "string"
+                }
+            },
+            "overdue_tasks": {
+                "bsonType": "array",
+                "description": "List of overdue task IDs",
+                "items": {
+                    "bsonType": "string"
+                }
+            },
+            "upcoming_events": {
+                "bsonType": "array",
+                "description": "List of upcoming event IDs",
+                "items": {
+                    "bsonType": "string"
+                }
+            },
+            "ai_generated_summary": {
+                "bsonType": "string",
+                "description": "AI-generated text summary"
+            },
+            "sent_to": {
+                "bsonType": "array",
+                "description": "List of recipients",
+                "items": {
+                    "bsonType": "string"
+                }
+            },
+            "sent_at": {
+                "bsonType": [
+                    "date",
+                    "null"
+                ],
+                "description": "When report was sent"
+            },
+            "created_at": {
+                "bsonType": "date",
+                "description": "Report creation timestamp"
+            }
+        }
+    }
+}

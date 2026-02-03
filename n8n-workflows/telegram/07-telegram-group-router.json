@@ -1,0 +1,339 @@
+{
+    "name": "07 - Telegram Group Router",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "telegram-department-update",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "id": "webhook-telegram-update",
+            "name": "Webhook - Telegram Department Update",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1.1,
+            "position": [
+                250,
+                300
+            ],
+            "webhookId": "telegram-department-update"
+        },
+        {
+            "parameters": {
+                "jsCode": "// Load Telegram configuration\nconst fs = require('fs');\nconst configPath = 'd:/AI Assist/n8n-workflows/telegram_config.json';\nconst config = JSON.parse(fs.readFileSync(configPath, 'utf8'));\n\nreturn [{...config}];"
+            },
+            "id": "load-telegram-config",
+            "name": "Load Telegram Config",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Identify sender and department (simplified for demo)\nconst message = $input.first().json;\nconst config = $input.last().json;\n\n// For demo, use message content to determine department\nconst messageText = (message.message_text || message.message || '').toLowerCase();\nlet department = 'infrastructure'; // default\n\nif (messageText.includes('flood') || messageText.includes('disaster') || messageText.includes('cyclone') || messageText.includes('emergency')) {\n  department = 'disaster_management';\n} else if (messageText.includes('power') || messageText.includes('electricity') || messageText.includes('outage')) {\n  department = 'electricity';\n} else if (messageText.includes('road') || messageText.includes('building') || messageText.includes('infrastructure')) {\n  department = 'infrastructure';\n}\n\nconst groupInfo = config.department_groups[department];\n\nreturn [{\n  message_data: message,\n  sender: {\n    name: message.forwarded_from || 'Government Officer',\n    role: message.sender_role || 'Officer',\n    priority_default: 'MEDIUM'\n  },\n  department: department,\n  group: groupInfo,\n  collector: config.collector,\n  templates: config.message_templates,\n  bot_token: config.bot_token\n}];"
+            },
+            "id": "identify-department",
+            "name": "Identify Department",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                850,
+                450
+            ]
+        },
+        {
+            "parameters": {
+                "url": "http://host.docker.internal:8000/analyze",
+                "method": "POST",
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ { \"message_text\": $json.message_data.message_text || $json.message_data.message, \"metadata\": { \"sender\": $json.sender.name, \"department\": $json.department, \"platform\": \"telegram\" } } }}",
+                "options": {
+                    "timeout": 30000
+                }
+            },
+            "id": "analyze-message",
+            "name": "AI Analysis",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1050,
+                450
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Format message for Telegram group\nconst data = $input.first().json;\nconst analysis = data.analysis || {};\nconst sender = $('Identify Department').item.json.sender;\nconst dept = $('Identify Department').item.json.department;\nconst template = $('Identify Department').item.json.templates.group_update;\n\nconst priority = analysis.priority || sender.priority_default || 'MEDIUM';\nconst intent = analysis.intent || 'update';\nconst entities = analysis.entities ? Object.keys(analysis.entities).map(k => `${k}: ${analysis.entities[k][0]?.value || 'N/A'}`).join(', ') : 'None detected';\n\nconst formattedMessage = template\n  .replace(/{{PRIORITY}}/g, priority.toUpperCase())\n  .replace('{{NAME}}', sender.name)\n  .replace('{{ROLE}}', sender.role)\n  .replace('{{DEPARTMENT}}', dept.replace('_', ' ').toUpperCase())\n  .replace('{{TIMESTAMP}}', new Date().toLocaleString('en-IN', {timeZone: 'Asia/Kolkata'}))\n  .replace('{{MESSAGE}}', data.message_data.message_text || data.message_data.message)\n  .replace('{{INTENT}}', intent.replace('_', ' ').toUpperCase())\n  .replace('{{ENTITIES}}', entities);\n\nreturn [{\n  group_message: formattedMessage,\n  group_chat_id: $('Identify Department').item.json.group.chat_id,\n  group_name: $('Identify Department').item.json.group.name,\n  sender: sender,\n  department: dept,\n  analysis: analysis,\n  original_message: data.message_data,\n  bot_token: $('Identify Department').item.json.bot_token\n}];"
+            },
+            "id": "format-group-message",
+            "name": "Format Group Message",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1250,
+                450
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Format summary for collector (Murali)\nconst data = $input.first().json;\nconst template = $('Identify Department').item.json.templates.collector_summary;\nconst groupName = $('Identify Department').item.json.group.name;\n\nconst deptShortNames = {\n  'disaster_management': 'Disaster Mgmt',\n  'electricity': 'Electricity',\n  'infrastructure': 'Infrastructure'\n};\n\nconst collectorMessage = template\n  .replace('{{NAME}}', data.sender.name)\n  .replace('{{DEPT_SHORT}}', deptShortNames[data.department] || data.department)\n  .replace('{{GROUP_NAME}}', groupName)\n  .replace('{{PRIORITY}}', (data.analysis.priority || 'MEDIUM').toUpperCase())\n  .replace('{{INTENT}}', (data.analysis.intent || 'update').replace('_', ' ').toUpperCase());\n\nreturn [{\n  collector_message: collectorMessage,\n  collector_chat_id: $('Identify Department').item.json.collector.chat_id,\n  ...data\n}];"
+            },
+            "id": "format-collector-summary",
+            "name": "Format Collector Summary",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1450,
+                450
+            ]
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "msg_id",
+                            "name": "message_id",
+                            "value": "={{ $now.toISO() }}-{{ $json.sender.name }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "msg_text",
+                            "name": "message_text",
+                            "value": "={{ $json.original_message.message_text || $json.original_message.message }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "sender_info",
+                            "name": "sender_info",
+                            "value": "={{ $json.sender }}",
+                            "type": "object"
+                        },
+                        {
+                            "id": "ai_analysis",
+                            "name": "ai_analysis",
+                            "value": "={{ $json.analysis }}",
+                            "type": "object"
+                        },
+                        {
+                            "id": "routing",
+                            "name": "routing",
+                            "value": "={{ { \"department\": $json.department, \"telegram_group\": $json.group_chat_id, \"sent_to_group\": true, \"sent_to_collector\": true, \"sent_at\": $now.toISO(), \"platform\": \"telegram\" } }}",
+                            "type": "object"
+                        },
+                        {
+                            "id": "status",
+                            "name": "status",
+                            "value": "routed",
+                            "type": "string"
+                        },
+                        {
+                            "id": "platform",
+                            "name": "platform",
+                            "value": "telegram",
+                            "type": "string"
+                        },
+                        {
+                            "id": "created",
+                            "name": "created_at",
+                            "value": "={{ $now.toISO() }}",
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            "id": "prepare-db-save",
+            "name": "Prepare DB Save",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.3,
+            "position": [
+                1650,
+                450
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "insert",
+                "collection": "messages",
+                "options": {}
+            },
+            "id": "save-to-mongodb",
+            "name": "Save to MongoDB",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                1850,
+                450
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "url": "=https://api.telegram.org/bot{{ $json.bot_token }}/sendMessage",
+                "method": "POST",
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ { \"chat_id\": $json.group_chat_id, \"text\": $json.group_message, \"parse_mode\": \"Markdown\" } }}",
+                "options": {}
+            },
+            "id": "send-to-telegram-group",
+            "name": "Send to Telegram Group",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "url": "=https://api.telegram.org/bot{{ $json.bot_token }}/sendMessage",
+                "method": "POST",
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ { \"chat_id\": $json.collector_chat_id, \"text\": $json.collector_message, \"parse_mode\": \"Markdown\" } }}",
+                "options": {}
+            },
+            "id": "send-to-collector",
+            "name": "Send to Collector",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1650,
+                600
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ { \"status\": \"success\", \"message\": \"Update sent to \" + $('Identify Department').item.json.group.name + \" and collector\", \"sender\": $('Identify Department').item.json.sender.name, \"department\": $('Identify Department').item.json.department } }}"
+            },
+            "id": "respond-success",
+            "name": "Respond Success",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                2050,
+                450
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook - Telegram Department Update": {
+            "main": [
+                [
+                    {
+                        "node": "Load Telegram Config",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Load Telegram Config": {
+            "main": [
+                [
+                    {
+                        "node": "Identify Department",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Identify Department": {
+            "main": [
+                [
+                    {
+                        "node": "AI Analysis",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "AI Analysis": {
+            "main": [
+                [
+                    {
+                        "node": "Format Group Message",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format Group Message": {
+            "main": [
+                [
+                    {
+                        "node": "Format Collector Summary",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Send to Telegram Group",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format Collector Summary": {
+            "main": [
+                [
+                    {
+                        "node": "Prepare DB Save",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Send to Collector",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Prepare DB Save": {
+            "main": [
+                [
+                    {
+                        "node": "Save to MongoDB",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Save to MongoDB": {
+            "main": [
+                [
+                    {
+                        "node": "Respond Success",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": false,
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "versionId": "8",
+    "id": "9",
+    "meta": {
+        "instanceId": "gov-ai-assistant"
+    },
+    "tags": []
+}

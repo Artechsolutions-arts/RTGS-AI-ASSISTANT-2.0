@@ -1,0 +1,323 @@
+{
+    "name": "07 - WhatsApp Group Router",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "department-update",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "id": "webhook-department-update",
+            "name": "Webhook - Department Update",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1.1,
+            "position": [
+                250,
+                300
+            ],
+            "webhookId": "department-update"
+        },
+        {
+            "parameters": {
+                "jsCode": "// Load department configuration\nconst fs = require('fs');\nconst configPath = 'd:/AI Assist/n8n-workflows/department_config.json';\nconst config = JSON.parse(fs.readFileSync(configPath, 'utf8'));\n\nreturn [{...config}];"
+            },
+            "id": "load-config",
+            "name": "Load Department Config",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Identify sender and department\nconst message = $input.first().json;\nconst config = $input.last().json;\n\nconst senderPhone = message.from || message.forwarded_from;\nconst departmentHead = config.department_heads[senderPhone];\n\nif (!departmentHead) {\n  throw new Error(`Unknown sender: ${senderPhone}`);\n}\n\nconst department = departmentHead.department;\nconst groupInfo = config.whatsapp_groups[department];\n\nreturn [{\n  message_data: message,\n  sender: departmentHead,\n  department: department,\n  group: groupInfo,\n  collector: config.collector,\n  templates: config.message_templates\n}];"
+            },
+            "id": "identify-sender",
+            "name": "Identify Sender & Department",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                850,
+                450
+            ]
+        },
+        {
+            "parameters": {
+                "url": "http://host.docker.internal:8000/analyze",
+                "method": "POST",
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ { \"message_text\": $json.message_data.message_text || $json.message_data.message, \"metadata\": { \"sender\": $json.sender.name, \"department\": $json.department } } }}",
+                "options": {
+                    "timeout": 30000
+                }
+            },
+            "id": "analyze-message",
+            "name": "AI Analysis",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1050,
+                450
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Format message for WhatsApp group\nconst data = $input.first().json;\nconst analysis = data.analysis || {};\nconst sender = $('Identify Sender & Department').item.json.sender;\nconst dept = $('Identify Sender & Department').item.json.department;\nconst template = $('Identify Sender & Department').item.json.templates.group_update;\n\nconst priority = analysis.priority || sender.priority_default || 'MEDIUM';\nconst intent = analysis.intent || 'update';\nconst entities = analysis.entities ? Object.keys(analysis.entities).map(k => `${k}: ${analysis.entities[k][0]?.value || 'N/A'}`).join(', ') : 'None detected';\n\nconst formattedMessage = template\n  .replace('{{PRIORITY}}', priority.toUpperCase())\n  .replace('{{NAME}}', sender.name)\n  .replace('{{ROLE}}', sender.role)\n  .replace('{{DEPARTMENT}}', dept.replace('_', ' ').toUpperCase())\n  .replace('{{TIMESTAMP}}', new Date().toLocaleString('en-IN', {timeZone: 'Asia/Kolkata'}))\n  .replace('{{MESSAGE}}', data.message_data.message_text || data.message_data.message)\n  .replace('{{PRIORITY}}', priority.toUpperCase())\n  .replace('{{INTENT}}', intent.replace('_', ' ').toUpperCase())\n  .replace('{{ENTITIES}}', entities);\n\nreturn [{\n  group_message: formattedMessage,\n  group_id: $('Identify Sender & Department').item.json.group.group_id,\n  webhook_url: $('Identify Sender & Department').item.json.group.webhook_url,\n  sender: sender,\n  department: dept,\n  analysis: analysis,\n  original_message: data.message_data\n}];"
+            },
+            "id": "format-group-message",
+            "name": "Format Group Message",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1250,
+                450
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Format summary for collector (Murali)\nconst data = $input.first().json;\nconst template = $('Identify Sender & Department').item.json.templates.collector_summary;\nconst groupName = $('Identify Sender & Department').item.json.group.name;\n\nconst deptShortNames = {\n  'disaster_management': 'Disaster Mgmt',\n  'electricity': 'Electricity',\n  'infrastructure': 'Infrastructure'\n};\n\nconst collectorMessage = template\n  .replace('{{NAME}}', data.sender.name)\n  .replace('{{DEPT_SHORT}}', deptShortNames[data.department] || data.department)\n  .replace('{{GROUP_NAME}}', groupName)\n  .replace('{{PRIORITY}}', (data.analysis.priority || 'MEDIUM').toUpperCase())\n  .replace('{{INTENT}}', (data.analysis.intent || 'update').replace('_', ' ').toUpperCase());\n\nreturn [{\n  collector_message: collectorMessage,\n  collector_phone: $('Identify Sender & Department').item.json.collector.phone,\n  ...data\n}];"
+            },
+            "id": "format-collector-summary",
+            "name": "Format Collector Summary",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1450,
+                450
+            ]
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "msg_id",
+                            "name": "message_id",
+                            "value": "={{ $now.toISO() }}-{{ $json.sender.name }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "msg_text",
+                            "name": "message_text",
+                            "value": "={{ $json.original_message.message_text || $json.original_message.message }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "sender_info",
+                            "name": "sender_info",
+                            "value": "={{ $json.sender }}",
+                            "type": "object"
+                        },
+                        {
+                            "id": "ai_analysis",
+                            "name": "ai_analysis",
+                            "value": "={{ $json.analysis }}",
+                            "type": "object"
+                        },
+                        {
+                            "id": "routing",
+                            "name": "routing",
+                            "value": "={{ { \"department\": $json.department, \"whatsapp_group\": $json.group_id, \"sent_to_group\": true, \"sent_to_collector\": true, \"sent_at\": $now.toISO() } }}",
+                            "type": "object"
+                        },
+                        {
+                            "id": "status",
+                            "name": "status",
+                            "value": "routed",
+                            "type": "string"
+                        },
+                        {
+                            "id": "created",
+                            "name": "created_at",
+                            "value": "={{ $now.toISO() }}",
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            "id": "prepare-db-save",
+            "name": "Prepare DB Save",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.3,
+            "position": [
+                1650,
+                450
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "insert",
+                "collection": "messages",
+                "options": {}
+            },
+            "id": "save-to-mongodb",
+            "name": "Save to MongoDB",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                1850,
+                450
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// Simulate sending to WhatsApp group\n// In production, replace with actual WhatsApp Business API call\nconst data = $input.first().json;\n\nconsole.log('=== SENDING TO WHATSAPP GROUP ===');\nconsole.log('Group ID:', data.group_id);\nconsole.log('Message:', data.group_message);\nconsole.log('===================================');\n\n// For production, uncomment and configure:\n// const response = await fetch(data.webhook_url, {\n//   method: 'POST',\n//   headers: {\n//     'Authorization': 'Bearer YOUR_WHATSAPP_TOKEN',\n//     'Content-Type': 'application/json'\n//   },\n//   body: JSON.stringify({\n//     messaging_product: 'whatsapp',\n//     to: data.group_id,\n//     type: 'text',\n//     text: { body: data.group_message }\n//   })\n// });\n\nreturn [{\n  sent_to_group: true,\n  group_id: data.group_id,\n  message: data.group_message,\n  timestamp: new Date().toISOString()\n}];"
+            },
+            "id": "send-to-group",
+            "name": "Send to WhatsApp Group",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Simulate sending to collector (Murali)\nconst data = $input.first().json;\n\nconsole.log('=== SENDING TO COLLECTOR (MURALI) ===');\nconsole.log('Phone:', data.collector_phone);\nconsole.log('Message:', data.collector_message);\nconsole.log('======================================');\n\n// For production, uncomment and configure:\n// const response = await fetch('https://graph.facebook.com/v18.0/YOUR_PHONE_ID/messages', {\n//   method: 'POST',\n//   headers: {\n//     'Authorization': 'Bearer YOUR_WHATSAPP_TOKEN',\n//     'Content-Type': 'application/json'\n//   },\n//   body: JSON.stringify({\n//     messaging_product: 'whatsapp',\n//     to: data.collector_phone,\n//     type: 'text',\n//     text: { body: data.collector_message }\n//   })\n// });\n\nreturn [{\n  sent_to_collector: true,\n  collector_phone: data.collector_phone,\n  message: data.collector_message,\n  timestamp: new Date().toISOString()\n}];"
+            },
+            "id": "send-to-collector",
+            "name": "Send to Collector (Murali)",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1650,
+                600
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ { \"status\": \"success\", \"message\": \"Update sent to \" + $('Identify Sender & Department').item.json.group.name + \" and collector\", \"sender\": $('Identify Sender & Department').item.json.sender.name, \"department\": $('Identify Sender & Department').item.json.department } }}"
+            },
+            "id": "respond-success",
+            "name": "Respond Success",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                2050,
+                450
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook - Department Update": {
+            "main": [
+                [
+                    {
+                        "node": "Load Department Config",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Load Department Config": {
+            "main": [
+                [
+                    {
+                        "node": "Identify Sender & Department",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Identify Sender & Department": {
+            "main": [
+                [
+                    {
+                        "node": "AI Analysis",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "AI Analysis": {
+            "main": [
+                [
+                    {
+                        "node": "Format Group Message",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format Group Message": {
+            "main": [
+                [
+                    {
+                        "node": "Format Collector Summary",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Send to WhatsApp Group",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format Collector Summary": {
+            "main": [
+                [
+                    {
+                        "node": "Prepare DB Save",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Send to Collector (Murali)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Prepare DB Save": {
+            "main": [
+                [
+                    {
+                        "node": "Save to MongoDB",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Save to MongoDB": {
+            "main": [
+                [
+                    {
+                        "node": "Respond Success",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": true,
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "versionId": "7",
+    "id": "7",
+    "meta": {
+        "instanceId": "gov-ai-assistant"
+    },
+    "tags": []
+}

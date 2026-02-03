@@ -1,0 +1,338 @@
+{
+    "name": "03 - Rule-Based Routing",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": "runOnceForAllItems",
+                "values": {
+                    "interval": [
+                        {
+                            "field": "cronExpression",
+                            "expression": "*/5 * * * *"
+                        }
+                    ]
+                }
+            },
+            "id": "schedule-trigger",
+            "name": "Schedule Every 5 Minutes",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1.2,
+            "position": [
+                250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "find",
+                "collection": "messages",
+                "options": {
+                    "limit": 50,
+                    "sort": "{ \"created_at\": -1 }",
+                    "queryParameters": "{ \"status\": \"processed\" }"
+                }
+            },
+            "id": "get-processed-messages",
+            "name": "Get Processed Messages",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                450,
+                300
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// Route messages based on intent and priority\nconst routingRules = {\n  disaster_alert: 'Disaster Management',\n  meeting: 'General Administration',\n  instruction: null,\n  status_update: null,\n  fyi: 'Information and Public Relations'\n};\n\nconst results = [];\n\nfor (const item of $input.all()) {\n  const analysis = item.json.ai_analysis;\n  const intent = analysis.intent;\n  const entities = analysis.entities || {};\n  \n  let department = routingRules[intent];\n  \n  if (!department && entities.department && entities.department.length > 0) {\n    department = entities.department[0].value;\n  }\n  \n  if (!department) {\n    department = 'General Administration';\n  }\n  \n  let assignedTo = 'Officer';\n  if (analysis.priority === 'high') {\n    assignedTo = 'Senior Officer';\n  } else if (analysis.priority === 'medium') {\n    assignedTo = 'Officer';\n  } else {\n    assignedTo = 'Assistant';\n  }\n  \n  results.push({\n    message_id: item.json.message_id,\n    message_text: item.json.message_text,\n    intent: intent,\n    priority: analysis.priority,\n    department: department,\n    assigned_to: assignedTo,\n    routed_at: new Date().toISOString(),\n    entities: entities\n  });\n}\n\nreturn results;"
+            },
+            "id": "apply-routing-rules",
+            "name": "Apply Routing Rules",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "msg_id",
+                            "name": "message_id",
+                            "value": "={{ $json.message_id }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "routing_data",
+                            "name": "routing",
+                            "value": "={{ { \"department\": $json.department, \"assigned_to\": $json.assigned_to, \"routed_at\": $json.routed_at } }}",
+                            "type": "object"
+                        },
+                        {
+                            "id": "status",
+                            "name": "status",
+                            "value": "routed",
+                            "type": "string"
+                        },
+                        {
+                            "id": "updated",
+                            "name": "updated_at",
+                            "value": "={{ $now.toISO() }}",
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            "id": "prepare-routing-update",
+            "name": "Prepare Routing Update",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.3,
+            "position": [
+                850,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "update",
+                "collection": "messages",
+                "updateKey": "message_id",
+                "options": {}
+            },
+            "id": "update-routing",
+            "name": "Update Routing in DB",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                1050,
+                300
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "string": [
+                        {
+                            "value1": "={{ $('Apply Routing Rules').item.json.intent }}",
+                            "operation": "equals",
+                            "value2": "instruction"
+                        }
+                    ]
+                }
+            },
+            "id": "check-if-instruction",
+            "name": "Check if Instruction",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                1250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "string": [
+                        {
+                            "value1": "={{ $('Apply Routing Rules').item.json.intent }}",
+                            "operation": "equals",
+                            "value2": "meeting"
+                        }
+                    ]
+                }
+            },
+            "id": "check-if-meeting",
+            "name": "Check if Meeting",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                1250,
+                150
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "string": [
+                        {
+                            "value1": "={{ $('Apply Routing Rules').item.json.priority }}",
+                            "operation": "equals",
+                            "value2": "high"
+                        }
+                    ]
+                }
+            },
+            "id": "check-if-high-priority",
+            "name": "Check if High Priority",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                1250,
+                450
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Pass through for task creation\nreturn $input.all();"
+            },
+            "id": "trigger-task-creation",
+            "name": "Trigger Task Creation",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Pass through for calendar workflow\nreturn $input.all();"
+            },
+            "id": "trigger-calendar-workflow",
+            "name": "Trigger Calendar Workflow",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1450,
+                150
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Send instant alert\nconst results = [];\n\nfor (const item of $input.all()) {\n  const routingData = $('Apply Routing Rules').item.json;\n  results.push({\n    recipient: routingData.assigned_to,\n    department: routingData.department,\n    message: `🚨 HIGH PRIORITY ALERT\\n\\nMessage: ${routingData.message_text.substring(0, 100)}...\\n\\nDepartment: ${routingData.department}\\nAssigned to: ${routingData.assigned_to}\\n\\nImmediate action required.`,\n    timestamp: new Date().toISOString()\n  });\n}\n\nreturn results;"
+            },
+            "id": "send-instant-alert",
+            "name": "Send Instant Alert",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1450,
+                450
+            ]
+        }
+    ],
+    "connections": {
+        "Schedule Every 5 Minutes": {
+            "main": [
+                [
+                    {
+                        "node": "Get Processed Messages",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Processed Messages": {
+            "main": [
+                [
+                    {
+                        "node": "Apply Routing Rules",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Apply Routing Rules": {
+            "main": [
+                [
+                    {
+                        "node": "Prepare Routing Update",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Prepare Routing Update": {
+            "main": [
+                [
+                    {
+                        "node": "Update Routing in DB",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Update Routing in DB": {
+            "main": [
+                [
+                    {
+                        "node": "Check if Instruction",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Check if Meeting",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Check if High Priority",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Check if Instruction": {
+            "main": [
+                [
+                    {
+                        "node": "Trigger Task Creation",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Check if Meeting": {
+            "main": [
+                [
+                    {
+                        "node": "Trigger Calendar Workflow",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Check if High Priority": {
+            "main": [
+                [
+                    {
+                        "node": "Send Instant Alert",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": true,
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "versionId": "3",
+    "id": "3",
+    "meta": {
+        "instanceId": "gov-ai-assistant"
+    },
+    "tags": []
+}

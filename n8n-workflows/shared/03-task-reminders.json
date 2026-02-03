@@ -1,0 +1,208 @@
+{
+    "name": "03-task-reminders",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": {
+                    "interval": [
+                        {
+                            "field": "cronExpression",
+                            "expression": "0 9 * * *"
+                        }
+                    ]
+                }
+            },
+            "id": "schedule-trigger",
+            "name": "Schedule Trigger",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1.1,
+            "position": [
+                240,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "find",
+                "collection": "tasks",
+                "options": {
+                    "query": "{ \"status\": { \"$in\": [\"PENDING\", \"IN_PROGRESS\"] } }"
+                }
+            },
+            "id": "get-pending-tasks",
+            "name": "Get Pending Tasks",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1,
+            "position": [
+                460,
+                300
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "mongodb-credentials",
+                    "name": "MongoDB"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// Filter tasks by deadline status\nconst now = new Date();\nconst tasks = $input.all().map(item => item.json);\n\nconst categorized = {\n  overdue: [],\n  due_today: [],\n  due_this_week: []\n};\n\nfor (const task of tasks) {\n  const deadline = new Date(task.deadline);\n  const diffMs = deadline - now;\n  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));\n  \n  if (diffDays < 0) {\n    categorized.overdue.push(task);\n  } else if (diffDays === 0) {\n    categorized.due_today.push(task);\n  } else if (diffDays <= 7) {\n    categorized.due_this_week.push(task);\n  }\n}\n\n// Group by department\nconst byDepartment = {};\n\nfor (const category in categorized) {\n  for (const task of categorized[category]) {\n    const dept = task.department || 'Unassigned';\n    if (!byDepartment[dept]) {\n      byDepartment[dept] = {\n        department: dept,\n        overdue: [],\n        due_today: [],\n        due_this_week: []\n      };\n    }\n    byDepartment[dept][category].push(task);\n  }\n}\n\n// Convert to array for processing\nconst output = Object.values(byDepartment).filter(dept => \n  dept.overdue.length > 0 || dept.due_today.length > 0 || dept.due_this_week.length > 0\n);\n\nreturn output.map(dept => ({ json: dept }));"
+            },
+            "id": "filter-and-categorize",
+            "name": "Filter and Categorize",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                680,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Load Telegram config\nconst fs = require('fs');\nconst configPath = 'd:/AI Assist/n8n-workflows/telegram_config.json';\nconst config = JSON.parse(fs.readFileSync(configPath, 'utf8'));\n\nconst data = $input.first().json;\n\n// Format reminder message\nlet message = `📋 *Task Reminder - ${data.department}*\\n\\n`;\n\n// Overdue tasks\nif (data.overdue.length > 0) {\n  message += `🚨 *OVERDUE (${data.overdue.length})*\\n`;\n  for (const task of data.overdue.slice(0, 5)) {\n    const deadline = new Date(task.deadline).toLocaleDateString('en-IN');\n    message += `• ${task.title}\\n  ⏰ Was due: ${deadline}\\n  🎯 Priority: ${task.priority}\\n\\n`;\n  }\n  if (data.overdue.length > 5) {\n    message += `... and ${data.overdue.length - 5} more overdue tasks\\n\\n`;\n  }\n}\n\n// Due today\nif (data.due_today.length > 0) {\n  message += `⚠️ *DUE TODAY (${data.due_today.length})*\\n`;\n  for (const task of data.due_today.slice(0, 5)) {\n    message += `• ${task.title}\\n  🎯 Priority: ${task.priority}\\n\\n`;\n  }\n  if (data.due_today.length > 5) {\n    message += `... and ${data.due_today.length - 5} more tasks due today\\n\\n`;\n  }\n}\n\n// Due this week\nif (data.due_this_week.length > 0) {\n  message += `📅 *DUE THIS WEEK (${data.due_this_week.length})*\\n`;\n  for (const task of data.due_this_week.slice(0, 3)) {\n    const deadline = new Date(task.deadline).toLocaleDateString('en-IN');\n    message += `• ${task.title}\\n  ⏰ Due: ${deadline}\\n\\n`;\n  }\n  if (data.due_this_week.length > 3) {\n    message += `... and ${data.due_this_week.length - 3} more tasks this week\\n\\n`;\n  }\n}\n\nmessage += `\\n💡 Please update task status to keep track of progress.`;\n\n// Get task IDs for updating reminder status\nconst taskIds = [\n  ...data.overdue.map(t => t.task_id),\n  ...data.due_today.map(t => t.task_id),\n  ...data.due_this_week.map(t => t.task_id)\n];\n\nreturn [{\n  bot_token: config.bot_token,\n  chat_id: config.department_groups[data.department] || config.default_chat_id,\n  text: message,\n  parse_mode: 'Markdown',\n  department: data.department,\n  task_ids: taskIds\n}];"
+            },
+            "id": "format-reminder-message",
+            "name": "Format Reminder Message",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                900,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "url": "=https://api.telegram.org/bot{{ $json.bot_token }}/sendMessage",
+                "method": "POST",
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ { chat_id: $json.chat_id, text: $json.text, parse_mode: $json.parse_mode } }}",
+                "options": {}
+            },
+            "id": "send-reminder",
+            "name": "Send Reminder",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1120,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "update",
+                "collection": "tasks",
+                "updateKey": "task_id",
+                "fieldsUi": {
+                    "fieldValues": [
+                        {
+                            "fieldId": "={{ $json.task_ids }}",
+                            "fieldValue": "={{ $json.task_ids }}"
+                        }
+                    ]
+                },
+                "options": {
+                    "upsert": false
+                },
+                "updateFields": {
+                    "customFieldsUi": {
+                        "fieldValues": [
+                            {
+                                "fieldId": "reminder_sent",
+                                "fieldValue": "true"
+                            },
+                            {
+                                "fieldId": "reminder_count",
+                                "fieldValue": "={{ $json.reminder_count + 1 }}"
+                            },
+                            {
+                                "fieldId": "last_reminder_at",
+                                "fieldValue": "={{ new Date().toISOString() }}"
+                            }
+                        ]
+                    }
+                }
+            },
+            "id": "update-reminder-status",
+            "name": "Update Reminder Status",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1,
+            "position": [
+                1340,
+                300
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "mongodb-credentials",
+                    "name": "MongoDB"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Schedule Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Get Pending Tasks",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Pending Tasks": {
+            "main": [
+                [
+                    {
+                        "node": "Filter and Categorize",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Filter and Categorize": {
+            "main": [
+                [
+                    {
+                        "node": "Format Reminder Message",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format Reminder Message": {
+            "main": [
+                [
+                    {
+                        "node": "Send Reminder",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Send Reminder": {
+            "main": [
+                [
+                    {
+                        "node": "Update Reminder Status",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [],
+    "triggerCount": 0,
+    "updatedAt": "2026-01-16T11:30:00.000Z",
+    "versionId": "1"
+}

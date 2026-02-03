@@ -1,0 +1,104 @@
+{
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": [
+            "task_id",
+            "source_message_id",
+            "title",
+            "department",
+            "priority",
+            "status",
+            "created_at"
+        ],
+        "properties": {
+            "task_id": {
+                "bsonType": "string",
+                "description": "Unique task identifier"
+            },
+            "source_message_id": {
+                "bsonType": "string",
+                "description": "ID of the message that created this task"
+            },
+            "title": {
+                "bsonType": "string",
+                "description": "Task title"
+            },
+            "description": {
+                "bsonType": "string",
+                "description": "Detailed task description"
+            },
+            "department": {
+                "bsonType": "string",
+                "description": "Assigned department"
+            },
+            "owner_role": {
+                "bsonType": "string",
+                "description": "Role of task owner"
+            },
+            "priority": {
+                "bsonType": "string",
+                "enum": [
+                    "high",
+                    "medium",
+                    "low"
+                ],
+                "description": "Task priority"
+            },
+            "deadline": {
+                "bsonType": [
+                    "date",
+                    "null"
+                ],
+                "description": "Task deadline"
+            },
+            "status": {
+                "bsonType": "string",
+                "enum": [
+                    "pending",
+                    "in_progress",
+                    "completed",
+                    "overdue",
+                    "cancelled"
+                ],
+                "description": "Task status"
+            },
+            "reminders_sent": {
+                "bsonType": "int",
+                "description": "Number of reminders sent"
+            },
+            "escalated": {
+                "bsonType": "bool",
+                "description": "Whether task has been escalated"
+            },
+            "escalation_level": {
+                "bsonType": [
+                    "int",
+                    "null"
+                ],
+                "description": "Current escalation level"
+            },
+            "completion_notes": {
+                "bsonType": [
+                    "string",
+                    "null"
+                ],
+                "description": "Notes on task completion"
+            },
+            "created_at": {
+                "bsonType": "date",
+                "description": "Task creation timestamp"
+            },
+            "updated_at": {
+                "bsonType": "date",
+                "description": "Last update timestamp"
+            },
+            "completed_at": {
+                "bsonType": [
+                    "date",
+                    "null"
+                ],
+                "description": "Task completion timestamp"
+            }
+        }
+    }
+}

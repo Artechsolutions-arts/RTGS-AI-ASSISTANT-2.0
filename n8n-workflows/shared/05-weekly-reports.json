@@ -1,0 +1,186 @@
+{
+    "name": "05-weekly-reports",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": {
+                    "interval": [
+                        {
+                            "field": "cronExpression",
+                            "expression": "0 17 * * 5"
+                        }
+                    ]
+                }
+            },
+            "id": "schedule-trigger",
+            "name": "Schedule Trigger",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1.1,
+            "position": [
+                240,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "find",
+                "collection": "messages",
+                "options": {
+                    "query": "={ \"created_at\": { \"$gte\": { \"$date\": \"{{ $now.minus({days: 7}).toISO() }}\" } } }"
+                }
+            },
+            "id": "get-week-messages",
+            "name": "Get Week Messages",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1,
+            "position": [
+                460,
+                200
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "mongodb-credentials",
+                    "name": "MongoDB"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "find",
+                "collection": "tasks",
+                "options": {
+                    "query": "={ \"created_at\": { \"$gte\": { \"$date\": \"{{ $now.minus({days: 7}).toISO() }}\" } } }"
+                }
+            },
+            "id": "get-week-tasks",
+            "name": "Get Week Tasks",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1,
+            "position": [
+                460,
+                400
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "mongodb-credentials",
+                    "name": "MongoDB"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const messages = $('Get Week Messages').all().map(item => item.json);\nconst tasks = $('Get Week Tasks').all().map(item => item.json);\n\n// Calculate message statistics\nconst totalMessages = messages.length;\nconst byPriority = {\n  HIGH: messages.filter(m => m.ai_analysis && m.ai_analysis.priority === 'high').length,\n  MEDIUM: messages.filter(m => m.ai_analysis && m.ai_analysis.priority === 'medium').length,\n  LOW: messages.filter(m => m.ai_analysis && m.ai_analysis.priority === 'low').length\n};\n\n// Calculate by department\nconst byDepartment = {};\nmessages.forEach(m => {\n  if (m.ai_analysis && m.ai_analysis.entities) {\n    const dept = m.ai_analysis.entities.department || 'Unassigned';\n    byDepartment[dept] = (byDepartment[dept] || 0) + 1;\n  }\n});\n\n// Calculate by intent\nconst byIntent = {};\nmessages.forEach(m => {\n  if (m.ai_analysis) {\n    const intent = m.ai_analysis.intent || 'unknown';\n    byIntent[intent] = (byIntent[intent] || 0) + 1;\n  }\n});\n\n// Calculate task statistics\nconst totalTasks = tasks.length;\nconst completedTasks = tasks.filter(t => t.status === 'COMPLETED').length;\nconst pendingTasks = tasks.filter(t => t.status === 'PENDING').length;\nconst inProgressTasks = tasks.filter(t => t.status === 'IN_PROGRESS').length;\nconst overdueTasks = tasks.filter(t => {\n  return t.status !== 'COMPLETED' && new Date(t.deadline) < new Date();\n}).length;\n\n// Calculate completion rate\nconst completionRate = totalTasks > 0 ? \n  Math.round((completedTasks / totalTasks) * 100) : 0;\n\n// Calculate on-time completion\nconst onTimeCompleted = tasks.filter(t => {\n  return t.status === 'COMPLETED' && \n    t.completed_at && \n    new Date(t.completed_at) <= new Date(t.deadline);\n}).length;\n\nconst onTimeRate = completedTasks > 0 ?\n  Math.round((onTimeCompleted / completedTasks) * 100) : 0;\n\nreturn [{\n  json: {\n    totalMessages,\n    byPriority,\n    byDepartment,\n    byIntent,\n    totalTasks,\n    completedTasks,\n    pendingTasks,\n    inProgressTasks,\n    overdueTasks,\n    completionRate,\n    onTimeCompleted,\n    onTimeRate\n  }\n}];"
+            },
+            "id": "calculate-statistics",
+            "name": "Calculate Statistics",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                680,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Load Telegram config\nconst fs = require('fs');\nconst configPath = 'd:/AI Assist/n8n-workflows/telegram/telegram_config.json';\nconst config = JSON.parse(fs.readFileSync(configPath, 'utf8'));\n\nconst stats = $input.first().json;\nconst weekStart = new Date();\nweekStart.setDate(weekStart.getDate() - 7);\nconst weekEnd = new Date();\n\nconst message = `📊 *Weekly Summary Report*\\\\n` +\n  `Week: ${weekStart.toLocaleDateString('en-IN')} to ${weekEnd.toLocaleDateString('en-IN')}\\\\n\\\\n` +\n  \n  `📨 *Messages*\\\\n` +\n  `Total: ${stats.totalMessages}\\\\n` +\n  `• High Priority: ${stats.byPriority.HIGH}\\\\n` +\n  `• Medium Priority: ${stats.byPriority.MEDIUM}\\\\n` +\n  `• Low Priority: ${stats.byPriority.LOW}\\\\n\\\\n` +\n  \n  `🏢 *Department Breakdown*\\\\n` +\n  Object.entries(stats.byDepartment)\n    .sort((a, b) => b[1] - a[1])\n    .slice(0, 5)\n    .map(([dept, count]) => `• ${dept}: ${count} messages`)\n    .join('\\\\n') + '\\\\n\\\\n' +\n  \n  `📋 *Top Intents*\\\\n` +\n  Object.entries(stats.byIntent)\n    .sort((a, b) => b[1] - a[1])\n    .slice(0, 5)\n    .map(([intent, count]) => `• ${intent.replace('_', ' ')}: ${count}`)\n    .join('\\\\n') + '\\\\n\\\\n' +\n  \n  `✅ *Tasks*\\\\n` +\n  `Total: ${stats.totalTasks}\\\\n` +\n  `• Completed: ${stats.completedTasks} (${stats.completionRate}%)\\\\n` +\n  `• In Progress: ${stats.inProgressTasks}\\\\n` +\n  `• Pending: ${stats.pendingTasks}\\\\n` +\n  `• Overdue: ${stats.overdueTasks}\\\\n\\\\n` +\n  \n  `📈 *Performance*\\\\n` +\n  `Task Completion Rate: ${stats.completionRate}%\\\\n` +\n  `On-Time Completion: ${stats.onTimeRate}%\\\\n` +\n  (stats.completionRate >= 80 ? '🎉 Excellent!' : \n   stats.completionRate >= 60 ? '👍 Good' : '⚠️ Needs Improvement');\n\nreturn [{\n  bot_token: config.bot_token,\n  chat_id: config.default_chat_id,\n  text: message,\n  parse_mode: 'Markdown'\n}];"
+            },
+            "id": "format-report",
+            "name": "Format Report",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                900,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "url": "=https://api.telegram.org/bot{{ $json.bot_token }}/sendMessage",
+                "method": "POST",
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ { chat_id: $json.chat_id, text: $json.text, parse_mode: $json.parse_mode } }}",
+                "options": {}
+            },
+            "id": "send-report",
+            "name": "Send Report",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1120,
+                300
+            ]
+        }
+    ],
+    "connections": {
+        "Schedule Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Get Week Messages",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Get Week Tasks",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Week Messages": {
+            "main": [
+                [
+                    {
+                        "node": "Calculate Statistics",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Week Tasks": {
+            "main": [
+                [
+                    {
+                        "node": "Calculate Statistics",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Calculate Statistics": {
+            "main": [
+                [
+                    {
+                        "node": "Format Report",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format Report": {
+            "main": [
+                [
+                    {
+                        "node": "Send Report",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [],
+    "triggerCount": 0,
+    "updatedAt": "2026-01-16T11:40:00.000Z",
+    "versionId": "1"
+}

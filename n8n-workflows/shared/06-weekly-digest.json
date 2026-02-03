@@ -1,0 +1,365 @@
+{
+    "name": "06 - Weekly Digest Generation",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": "runOnceForAllItems",
+                "values": {
+                    "interval": [
+                        {
+                            "field": "cronExpression",
+                            "expression": "0 9 * * 1"
+                        }
+                    ]
+                }
+            },
+            "id": "schedule-weekly",
+            "name": "Schedule Weekly (Monday 9 AM)",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1.2,
+            "position": [
+                250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "const now = new Date();\nconst weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);\nconst weekEnd = now;\n\nreturn [{week_start: weekStart.toISOString(), week_end: weekEnd.toISOString(), report_id: `report-${now.getTime()}`}];"
+            },
+            "id": "calculate-week-range",
+            "name": "Calculate Week Range",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "find",
+                "collection": "messages",
+                "options": {
+                    "queryParameters": "={ \"created_at\": { \"$gte\": new Date($json.week_start), \"$lte\": new Date($json.week_end) } }"
+                }
+            },
+            "id": "get-weekly-messages",
+            "name": "Get Weekly Messages",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                650,
+                300
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "find",
+                "collection": "tasks",
+                "options": {
+                    "queryParameters": "={ \"status\": { \"$in\": [\"pending\", \"in_progress\"] } }"
+                }
+            },
+            "id": "get-pending-tasks",
+            "name": "Get Pending Tasks",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                650,
+                450
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "find",
+                "collection": "tasks",
+                "options": {
+                    "queryParameters": "={ \"status\": \"overdue\" }"
+                }
+            },
+            "id": "get-overdue-tasks",
+            "name": "Get Overdue Tasks",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                650,
+                600
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "find",
+                "collection": "calendar_events",
+                "options": {
+                    "queryParameters": "={ \"start_time\": { \"$gte\": new Date(), \"$lte\": new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) }, \"status\": { \"$in\": [\"scheduled\", \"confirmed\"] } }"
+                }
+            },
+            "id": "get-upcoming-events",
+            "name": "Get Upcoming Events",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                650,
+                750
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const messages = $input.item(0).json;\nconst pendingTasks = $input.item(1).json;\nconst overdueTasks = $input.item(2).json;\nconst upcomingEvents = $input.item(3).json;\n\nconst stats = {total_messages: Array.isArray(messages) ? messages.length : 0, by_priority: {high: 0, medium: 0, low: 0}, by_intent: {}, by_department: {}};\n\nif (Array.isArray(messages)) {\n  for (const msg of messages) {\n    const priority = msg.ai_analysis?.priority || 'low';\n    stats.by_priority[priority] = (stats.by_priority[priority] || 0) + 1;\n    const intent = msg.ai_analysis?.intent || 'unknown';\n    stats.by_intent[intent] = (stats.by_intent[intent] || 0) + 1;\n    const dept = msg.routing?.department || 'Unknown';\n    stats.by_department[dept] = (stats.by_department[dept] || 0) + 1;\n  }\n}\n\nconst lowPriorityMessages = Array.isArray(messages) ? messages.filter(m => m.ai_analysis?.priority === 'low').map(m => m.message_id) : [];\nconst pendingTaskIds = Array.isArray(pendingTasks) ? pendingTasks.map(t => t.task_id) : [];\nconst overdueTaskIds = Array.isArray(overdueTasks) ? overdueTasks.map(t => t.task_id) : [];\nconst upcomingEventIds = Array.isArray(upcomingEvents) ? upcomingEvents.map(e => e.event_id) : [];\n\nconst summary = `📊 WEEKLY DIGEST - ${new Date().toLocaleDateString()}\\n\\n📨 Messages Received: ${stats.total_messages}\\n   • High Priority: ${stats.by_priority.high}\\n   • Medium Priority: ${stats.by_priority.medium}\\n   • Low Priority: ${stats.by_priority.low}\\n\\n📋 Tasks:\\n   • Pending: ${pendingTaskIds.length}\\n   • Overdue: ${overdueTaskIds.length}\\n\\n📅 Upcoming Events: ${upcomingEventIds.length}\\n\\n🏢 Top Departments:\\n` + Object.entries(stats.by_department).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([dept, count]) => `   • ${dept}: ${count} messages`).join('\\n') + `\\n\\n⚠️ Action Required:\\n` + (overdueTaskIds.length > 0 ? `   • ${overdueTaskIds.length} overdue tasks need immediate attention\\n` : '') + (pendingTaskIds.length > 0 ? `   • ${pendingTaskIds.length} pending tasks\\n` : '') + `\\nFor detailed information, please check the dashboard.`;\n\nreturn [{report_id: `report-${Date.now()}`, week_start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), week_end: new Date().toISOString(), summary: stats, low_priority_messages: lowPriorityMessages, pending_tasks: pendingTaskIds, overdue_tasks: overdueTaskIds, upcoming_events: upcomingEventIds, ai_generated_summary: summary, sent_to: ['District Collector', 'Joint Collector'], created_at: new Date().toISOString()}];"
+            },
+            "id": "generate-summary",
+            "name": "Generate Summary",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                850,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "insert",
+                "collection": "weekly_reports",
+                "options": {}
+            },
+            "id": "save-report",
+            "name": "Save Report to DB",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                1050,
+                300
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const report = $input.first().json;\nreturn [{recipients: report.sent_to, message: report.ai_generated_summary, report_id: report.report_id, sent_at: new Date().toISOString()}];"
+            },
+            "id": "send-digest",
+            "name": "Send Weekly Digest",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "assignments": {
+                    "assignments": [
+                        {
+                            "id": "rep_id",
+                            "name": "report_id",
+                            "value": "={{ $('Generate Summary').item.json.report_id }}",
+                            "type": "string"
+                        },
+                        {
+                            "id": "sent",
+                            "name": "sent_at",
+                            "value": "={{ $now.toISO() }}",
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            "id": "prepare-sent-update",
+            "name": "Prepare Sent Update",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.3,
+            "position": [
+                1450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "update",
+                "collection": "weekly_reports",
+                "updateKey": "report_id",
+                "options": {}
+            },
+            "id": "mark-sent",
+            "name": "Mark Report as Sent",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1.1,
+            "position": [
+                1650,
+                300
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "1",
+                    "name": "MongoDB - Gov AI Assistant"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Schedule Weekly (Monday 9 AM)": {
+            "main": [
+                [
+                    {
+                        "node": "Calculate Week Range",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Calculate Week Range": {
+            "main": [
+                [
+                    {
+                        "node": "Get Weekly Messages",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Get Pending Tasks",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Get Overdue Tasks",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Get Upcoming Events",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Weekly Messages": {
+            "main": [
+                [
+                    {
+                        "node": "Generate Summary",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Pending Tasks": {
+            "main": [
+                [
+                    {
+                        "node": "Generate Summary",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Overdue Tasks": {
+            "main": [
+                [
+                    {
+                        "node": "Generate Summary",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Upcoming Events": {
+            "main": [
+                [
+                    {
+                        "node": "Generate Summary",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Generate Summary": {
+            "main": [
+                [
+                    {
+                        "node": "Save Report to DB",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Save Report to DB": {
+            "main": [
+                [
+                    {
+                        "node": "Send Weekly Digest",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Send Weekly Digest": {
+            "main": [
+                [
+                    {
+                        "node": "Prepare Sent Update",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Prepare Sent Update": {
+            "main": [
+                [
+                    {
+                        "node": "Mark Report as Sent",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": true,
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "versionId": "6",
+    "id": "6",
+    "meta": {
+        "instanceId": "gov-ai-assistant"
+    },
+    "tags": []
+}

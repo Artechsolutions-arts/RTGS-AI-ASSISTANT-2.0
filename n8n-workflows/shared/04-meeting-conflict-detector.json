@@ -1,0 +1,187 @@
+{
+    "name": "04-meeting-conflict-detector",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": {
+                    "interval": [
+                        {
+                            "field": "cronExpression",
+                            "expression": "0 * * * *"
+                        }
+                    ]
+                }
+            },
+            "id": "schedule-trigger",
+            "name": "Schedule Trigger",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1.1,
+            "position": [
+                240,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "resource": "event",
+                "operation": "getAll",
+                "calendar": {
+                    "__rl": true,
+                    "value": "primary",
+                    "mode": "list",
+                    "cachedResultName": "Primary"
+                },
+                "returnAll": false,
+                "limit": 50,
+                "options": {
+                    "timeMin": "={{ $now.toISO() }}",
+                    "timeMax": "={{ $now.plus({days: 1}).toISO() }}"
+                }
+            },
+            "id": "get-todays-events",
+            "name": "Get Today's Events",
+            "type": "n8n-nodes-base.googleCalendar",
+            "typeVersion": 1,
+            "position": [
+                460,
+                300
+            ],
+            "credentials": {
+                "googleCalendarOAuth2Api": {
+                    "id": "google-calendar-credentials",
+                    "name": "Google Calendar"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// Get calendar events\nconst events = $input.all().map(item => item.json);\n\n// Sort by start time\nevents.sort((a, b) => new Date(a.start.dateTime) - new Date(b.start.dateTime));\n\nconst conflicts = [];\nconst suggestions = [];\n\n// Check for overlaps\nfor (let i = 0; i < events.length; i++) {\n  for (let j = i + 1; j < events.length; j++) {\n    const event1 = events[i];\n    const event2 = events[j];\n    \n    const start1 = new Date(event1.start.dateTime);\n    const end1 = new Date(event1.end.dateTime);\n    const start2 = new Date(event2.start.dateTime);\n    const end2 = new Date(event2.end.dateTime);\n    \n    // Check for overlap\n    if (start1 < end2 && start2 < end1) {\n      conflicts.push({\n        event1: event1.summary,\n        event2: event2.summary,\n        time1: start1.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),\n        time2: start2.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),\n        date: start1.toLocaleDateString('en-IN')\n      });\n    }\n    \n    // Check for consolidation opportunity (same day, within 1 hour)\n    const sameDay = start1.toDateString() === start2.toDateString();\n    const timeDiff = Math.abs(start2 - end1) / (1000 * 60); // minutes\n    \n    if (sameDay && timeDiff < 60 && timeDiff > 0) {\n      suggestions.push({\n        event1: event1.summary,\n        event2: event2.summary,\n        gap: Math.round(timeDiff),\n        suggestion: 'Consider combining these meetings'\n      });\n    }\n  }\n}\n\nreturn [{\n  json: {\n    conflicts,\n    suggestions,\n    has_conflicts: conflicts.length > 0,\n    has_suggestions: suggestions.length > 0,\n    total_events: events.length\n  }\n}];"
+            },
+            "id": "detect-conflicts",
+            "name": "Detect Conflicts",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                680,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "boolean": [
+                        {
+                            "value1": "={{ $json.has_conflicts || $json.has_suggestions }}",
+                            "value2": true
+                        }
+                    ]
+                }
+            },
+            "id": "check-if-alerts-needed",
+            "name": "Check If Alerts Needed",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                900,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Load Telegram config\nconst fs = require('fs');\nconst configPath = 'd:/AI Assist/n8n-workflows/telegram/telegram_config.json';\nconst config = JSON.parse(fs.readFileSync(configPath, 'utf8'));\n\nconst data = $input.first().json;\n\nlet message = '📅 *Calendar Alert*\\\\n\\\\n';\n\nif (data.has_conflicts) {\n  message += `⚠️ *CONFLICTS DETECTED (${data.conflicts.length})*\\\\n\\\\n`;\n  for (const conflict of data.conflicts) {\n    message += `❌ *${conflict.date}*\\\\n`;\n    message += `   ${conflict.event1} (${conflict.time1})\\\\n`;\n    message += `   overlaps with\\\\n`;\n    message += `   ${conflict.event2} (${conflict.time2})\\\\n\\\\n`;\n  }\n}\n\nif (data.has_suggestions) {\n  message += `💡 *SUGGESTIONS (${data.suggestions.length})*\\\\n\\\\n`;\n  for (const suggestion of data.suggestions) {\n    message += `• ${suggestion.event1}\\\\n`;\n    message += `  + ${suggestion.event2}\\\\n`;\n    message += `  Gap: ${suggestion.gap} minutes\\\\n`;\n    message += `  → ${suggestion.suggestion}\\\\n\\\\n`;\n  }\n}\n\nmessage += `\\\\n📊 Total events today: ${data.total_events}`;\n\nreturn [{\n  bot_token: config.bot_token,\n  chat_id: config.default_chat_id,\n  text: message,\n  parse_mode: 'Markdown'\n}];"
+            },
+            "id": "format-alert",
+            "name": "Format Alert",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1120,
+                200
+            ]
+        },
+        {
+            "parameters": {
+                "url": "=https://api.telegram.org/bot{{ $json.bot_token }}/sendMessage",
+                "method": "POST",
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ { chat_id: $json.chat_id, text: $json.text, parse_mode: $json.parse_mode } }}",
+                "options": {}
+            },
+            "id": "send-alert",
+            "name": "Send Alert",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1340,
+                200
+            ]
+        }
+    ],
+    "connections": {
+        "Schedule Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Get Today's Events",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Today's Events": {
+            "main": [
+                [
+                    {
+                        "node": "Detect Conflicts",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Detect Conflicts": {
+            "main": [
+                [
+                    {
+                        "node": "Check If Alerts Needed",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Check If Alerts Needed": {
+            "main": [
+                [
+                    {
+                        "node": "Format Alert",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format Alert": {
+            "main": [
+                [
+                    {
+                        "node": "Send Alert",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [],
+    "triggerCount": 0,
+    "updatedAt": "2026-01-16T11:40:00.000Z",
+    "versionId": "1"
+}

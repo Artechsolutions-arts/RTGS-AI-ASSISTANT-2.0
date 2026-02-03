@@ -1,0 +1,104 @@
+{
+  "id": "X6QuleMMGA2OSyBY",
+  "name": "09 - Calendar Sync Service",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": "runOnceForAllItems",
+        "values": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sync-calendar-force",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [250, 500],
+      "webhookId": "sync-calendar-force"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "artechnical707@gmail.com",
+          "mode": "id"
+        },
+        "timeMin": "={{ $now.set({ hour: 0, minute: 0, second: 0 }).toISO() }}",
+        "timeMax": "={{ $now.plus({ days: 7 }).toISO() }}",
+        "options": {
+          "fields": "items(id,summary,start,end,location,description,hangoutLink,conferenceData)",
+          "orderBy": "startTime"
+        }
+      },
+      "id": "fetch-google-calendar",
+      "name": "Fetch Google Calendar",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "9OFA49clggNMm5lk",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const items = $input.all();\n  if (!Array.isArray(items) || items.length === 0) return [];\n  \n  const results = [];\n  for (const item of items) {\n    if (!item || !item.json) continue;\n    results.push({\n      json: {\n        event_id: item.json.id,\n        title: item.json.summary || 'Untitled Event',\n        start_time: item.json.start?.dateTime || item.json.start?.date,\n        end_time: item.json.end?.dateTime || item.json.end?.date,\n        location: item.json.location || 'Unknown',\n        description: item.json.description || '',\n        meeting_link: item.json.hangoutLink || '',\n        district: 'ntr-district',\n        status: 'confirmed',\n        updated_at: new Date().toISOString()\n      }\n    });\n  }\n  return results;\n} catch (e) {\n  return [];\n}"
+      },
+      "id": "format-for-db",
+      "name": "Format for DB",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "collection": "calendar_events",
+        "updateKey": "event_id",
+        "options": {
+          "upsert": true
+        }
+      },
+      "id": "upsert-to-mongodb",
+      "name": "Upsert to MongoDB",
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1,
+      "position": [850, 300],
+      "credentials": {
+        "mongoDb": {
+          "id": "YJ4wyhn68TKaChpn",
+          "name": "MongoDB account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": { "main": [[{ "node": "Fetch Google Calendar", "type": "main", "index": 0 }]] },
+    "Webhook Trigger": { "main": [[{ "node": "Fetch Google Calendar", "type": "main", "index": 0 }]] },
+    "Fetch Google Calendar": { "main": [[{ "node": "Format for DB", "type": "main", "index": 0 }]] },
+    "Format for DB": { "main": [[{ "node": "Upsert to MongoDB", "type": "main", "index": 0 }]] }
+  },
+  "active": true,
+  "settings": { "executionOrder": "v1" }
+}
