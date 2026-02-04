@@ -1,50 +1,47 @@
 import subprocess
-import time
+import json
 
-print("=== NUCLEAR OPTION: Delete ALL Dashboard API workflows ===\n")
+def get_workflows():
+    res = subprocess.run(["docker", "exec", "-u", "node", "ai-assist-n8n", "n8n", "list:workflow"], capture_output=True, text=True)
+    lines = res.stdout.strip().split('\n')
+    workflows = []
+    for line in lines:
+        if '|' in line:
+            parts = line.split('|')
+            workflows.append({"id": parts[0].strip(), "name": parts[1].strip()})
+    return workflows
 
-# Get all Dashboard API workflow IDs
-result = subprocess.run(
-    ["docker", "exec", "-u", "node", "ai-assist-n8n", "n8n", "list:workflow"],
-    capture_output=True,
-    text=True
-)
+def nuclear_cleanup():
+    # Keep list (IDs)
+    KEEP_NAMES = [
+        "01 - Telegram Message Intake",
+        "Dashboard API-FINAL",
+        "09 - Calendar Sync Service - FIXED",
+        "03 - Rule-Based Routing",
+        "04 - Task Creation and Follow-up",
+        "03-task-reminders",
+        "04-meeting-conflict-detector"
+    ]
+    
+    workflows = get_workflows()
+    print(f"Found {len(workflows)} workflows.")
+    
+    for wf in workflows:
+        if wf['name'] not in KEEP_NAMES:
+            print(f"Deleting duplicate/old workflow: {wf['name']} ({wf['id']})")
+            subprocess.run(["docker", "exec", "-u", "node", "ai-assist-n8n", "n8n", "remove:workflow", f"--id={wf['id']}"], capture_output=True)
+        else:
+            # Check if there are multiple with the same name, keep only one
+            same_name = [w for w in workflows if w['name'] == wf['name']]
+            if len(same_name) > 1:
+                # Keep the one with the highest ID or longest ID (rough heuristic)
+                to_keep = sorted(same_name, key=lambda x: len(x['id']), reverse=True)[0]
+                if wf['id'] != to_keep['id']:
+                    print(f"Deleting duplicate name workflow: {wf['name']} ({wf['id']})")
+                    subprocess.run(["docker", "exec", "-u", "node", "ai-assist-n8n", "n8n", "remove:workflow", f"--id={wf['id']}"], capture_output=True)
 
-lines = result.stdout.strip().split('\n')
-dashboard_api_ids = []
+    print("Cleanup complete. Restarting n8n...")
+    subprocess.run(["docker", "restart", "ai-assist-n8n"], capture_output=True)
 
-for line in lines:
-    if '08 - Dashboard API' in line:
-        wf_id = line.split('|')[0].strip()
-        dashboard_api_ids.append(wf_id)
-
-print(f"Found {len(dashboard_api_ids)} Dashboard API workflows")
-
-# Delete ALL of them
-for wf_id in dashboard_api_ids:
-    print(f"Deleting {wf_id}...")
-    subprocess.run(
-        ["docker", "exec", "-u", "node", "ai-assist-n8n", "n8n", "remove:workflow", f"--id={wf_id}"],
-        capture_output=True
-    )
-
-print("\nStopping n8n...")
-subprocess.run(["docker", "stop", "ai-assist-n8n"], capture_output=True)
-
-print("Waiting 5 seconds...")
-time.sleep(5)
-
-print("Starting n8n...")
-subprocess.run(["docker", "start", "ai-assist-n8n"], capture_output=True)
-
-print("\nWaiting 30 seconds for n8n to start...")
-time.sleep(30)
-
-print("\nNow importing the clean workflow...")
-subprocess.run(
-    ["docker", "exec", "-u", "node", "ai-assist-n8n", "n8n", "import:workflow", "--input=/workflows/shared/08-dashboard-api.json"],
-    capture_output=True
-)
-
-print("\nDone! Check the n8n UI - there should be only ONE Dashboard API workflow now.")
-print("Open it and click Publish.")
+if __name__ == "__main__":
+    nuclear_cleanup()

@@ -14,9 +14,10 @@ interface Message {
 interface AIChatBotProps {
   messages: N8nMessage[];
   calendar: N8nCalendarEvent[];
+  appointments: N8nCalendarEvent[];
 }
 
-export const AIChatBot: React.FC<AIChatBotProps> = ({ messages, calendar }) => {
+export const AIChatBot: React.FC<AIChatBotProps> = ({ messages, calendar, appointments }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [userInput, setUserInput] = useState('');
   const [chatHistory, setChatHistory] = useState<Message[]>([
@@ -31,53 +32,79 @@ export const AIChatBot: React.FC<AIChatBotProps> = ({ messages, calendar }) => {
   const district = useDistrictStore((state) => state.district);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const getHighPriorityDetails = () => {
-    const high = messages.filter(m => m.priority?.toLowerCase() === 'high');
-    if (high.length === 0) return "SITUATION REPORT:\nNo high-priority operational bottlenecks identified at this time.";
-    
-    let response = `HIGH PRIORITY ANALYSIS:\nI have identified ${high.length} urgent matters requiring immediate executive intervention:\n\n`;
-    high.forEach((m, i) => {
-      const time = new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      response += `${i + 1}. [${m.department || 'GEN'}] ${m.summary}\n   • Status: ${m.status?.toUpperCase() || 'OPEN'}\n   • Logged: ${time}\n\n`;
+  const getFilteredOperationalMessages = () => {
+    return messages.filter(m => {
+      const summary = (m.summary || '').toLowerCase();
+      const isMeetingRequest = summary.includes('meeting') || summary.includes('today meetings');
+      const isAppointmentRequest = summary.includes('appointment') || summary.includes('/approve_') || summary.includes('/reject_');
+      const hasNameReason = (summary.includes('name:') && summary.includes('reason:')) || 
+                           summary.includes('full name:');
+      
+      // Filter out technical/scheduling clutter to isolate real grievances
+      return !isMeetingRequest && !isAppointmentRequest && !hasNameReason;
     });
+  };
+
+  const getOperationalCommDetails = () => {
+    const filtered = getFilteredOperationalMessages();
+    if (filtered.length === 0) return "OPERATIONAL COMMUNICATIONS:\nNo active grievances identified in the current queue.";
+    
+    let response = `OPERATIONAL COMMUNICATIONS:\nYou have ${filtered.length} active administrative matters:\n\n`;
+    filtered.slice(0, 5).forEach((m, i) => {
+      response += `${i + 1}. [${m.department || 'GEN'}] FROM: ${m.from}\n   • SUMMARY: ${m.summary}\n   • PRIORITY: ${m.priority?.toUpperCase() || 'NORMAL'}\n\n`;
+    });
+    if (filtered.length > 5) response += `... and ${filtered.length - 5} more items.`;
     return response.trim();
   };
 
-  const getPendingTaskDetails = () => {
-    const pending = messages.filter(m => m.status !== 'closed' && m.status !== 'resolved');
-    if (pending.length === 0) return "SITUATION REPORT:\nNo pending tasks identified. Your operational queue is clear.";
-    
-    let response = `PENDING ACTIONS REPORT:\nI have identified ${pending.length} tasks awaiting resolution:\n\n`;
-    pending.forEach((m, i) => {
-      response += `${i + 1}. [${m.department || 'GEN'}] ${m.summary}\n   • Priority: ${m.priority || 'NORMAL'}\n   • Current Status: ${m.status?.toUpperCase()}\n\n`;
+  const getTodayMeetingsDetails = () => {
+    const now = new Date();
+    const todayStr = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+    const todayEvents = calendar.filter(e => {
+        const d = new Date(e.start).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+        return d === todayStr;
     });
-    return response.trim();
-  };
 
-  const getScheduleDetails = () => {
-    if (calendar.length === 0) return "CALENDAR OVERVIEW:\nThere are no administrative briefings or meetings scheduled for the remainder of today.";
+    if (todayEvents.length === 0) return "TODAY'S MEETINGS:\nNo high-level meetings or briefings scheduled for today.";
     
-    let response = `DAILY BRIEFING SCHEDULE:\nYou have ${calendar.length} events on today's agenda:\n\n`;
-    calendar.forEach((e, i) => {
+    let response = `TODAY'S MEETINGS:\nYou have ${todayEvents.length} sessions scheduled:\n\n`;
+    todayEvents.forEach((e, i) => {
       const start = new Date(e.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      response += `${i + 1}. ${e.title}\n   • Time: ${start}\n   • Location: ${e.location || 'Collectorate Hall'}\n\n`;
+      response += `${i + 1}. ${e.title}\n   • TIME: ${start}\n   • LOC: ${e.location || 'Collectorate'}\n\n`;
     });
     return response.trim();
   };
 
-  const getOperationalReport = () => {
-    const total = messages.length;
-    const pending = messages.filter(m => m.status !== 'closed' && m.status !== 'resolved').length;
-    const high = messages.filter(m => m.priority?.toLowerCase() === 'high').length;
+  const getPendingMeetingsDetails = () => {
+    const now = new Date();
+    const pending = calendar.filter(e => new Date(e.start) > now);
+
+    if (pending.length === 0) return "PENDING MEETINGS:\nThere are no upcoming meetings scheduled beyond the current session.";
     
-    return `DISTRICT OPERATIONAL OVERVIEW:\n\n1. TOTAL COMMUNICATIONS: ${total}\n2. PENDING ACTIONS: ${pending}\n3. HIGH PRIORITY TASKS: ${high}\n4. ACTIVE BRIEFINGS: ${calendar.length}\n\nAll systems are operating within normal parameters. Recommend addressing high-priority items immediately.`;
+    let response = `PENDING MEETINGS (UPCOMING):\nI have identified ${pending.length} future meetings in the pipeline:\n\n`;
+    pending.slice(0, 5).forEach((e, i) => {
+      const date = new Date(e.start).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+      response += `${i + 1}. ${e.title}\n   • DATE: ${date}\n   • TIME: ${new Date(e.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}\n\n`;
+    });
+    return response.trim();
+  };
+
+  const getAppointmentDetails = () => {
+    if (appointments.length === 0) return "APPROVED APPOINTMENTS:\nNo citizen appointments have been confirmed for the current reporting period.";
+    
+    let response = `APPROVED APPOINTMENTS (CITIZEN):\nYou have ${appointments.length} approved appointments:\n\n`;
+    appointments.forEach((a, i) => {
+      const start = new Date(a.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      response += `${i + 1}. APPLICANT: ${a.title}\n   • REASON: ${a.description || 'Grievance Review'}\n   • TIME: ${start}\n\n`;
+    });
+    return response.trim();
   };
 
   const preBuiltQuestions = [
-    { q: "District Status Report", a: getOperationalReport() },
-    { q: "Pending Tasks List", a: getPendingTaskDetails() },
-    { q: "High Priority Briefing", a: getHighPriorityDetails() },
-    { q: "Today's Schedule", a: getScheduleDetails() }
+    { q: "Operational Communications", a: getOperationalCommDetails() },
+    { q: "Today's Meetings", a: getTodayMeetingsDetails() },
+    { q: "Pending Meetings", a: getPendingMeetingsDetails() },
+    { q: "Approved Appointments", a: getAppointmentDetails() }
   ];
 
   useEffect(() => {
@@ -89,13 +116,12 @@ export const AIChatBot: React.FC<AIChatBotProps> = ({ messages, calendar }) => {
   const processResponse = (input: string) => {
     const query = input.toLowerCase();
     
-    if (query.includes('status') || query.includes('report') || query.includes('total')) return preBuiltQuestions[0].a;
-    if (query.includes('pending') || query.includes('list')) return preBuiltQuestions[1].a;
-    if (query.includes('priority') || query.includes('high') || query.includes('urgent')) return preBuiltQuestions[2].a;
-    if (query.includes('schedule') || query.includes('calendar') || query.includes('meeting') || query.includes('today')) return preBuiltQuestions[3].a;
-    if (query.includes('population') || query.includes('people')) return "POPULATION DATA (2025 Prediction):\nNTR District: 2,218,591 residents.";
+    if (query.includes('comm') || query.includes('operational') || query.includes('message')) return preBuiltQuestions[0].a;
+    if (query.includes('today') || query.includes('schedule') || query.includes('now')) return preBuiltQuestions[1].a;
+    if (query.includes('pending') || query.includes('future') || query.includes('upcoming')) return preBuiltQuestions[2].a;
+    if (query.includes('appointment') || query.includes('citizen') || query.includes('approved')) return preBuiltQuestions[3].a;
     
-    return "I'm sorry, I don't have specific data on that. Please use the recommended queries or ask about 'status', 'pending tasks', 'priority', or 'schedule'.";
+    return "I am configured to only provide details on: Operational Communications, Today's Meetings, Pending Meetings, and Approved Appointments. Please use the recommended queries above.";
   };
 
   const handleSend = (text: string, isFromPrebuilt = false) => {

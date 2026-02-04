@@ -639,6 +639,7 @@ export default function HomePage() {
       <AIChatBot 
         messages={messages}
         calendar={calendar}
+        appointments={appointments}
       />
     </>
   );
