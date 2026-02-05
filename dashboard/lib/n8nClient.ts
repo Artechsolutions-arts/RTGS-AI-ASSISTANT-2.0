@@ -33,6 +33,13 @@ export interface CalendarEvent {
   attendees?: string[];
 }
 
+export interface Department {
+  id: string;
+  name: string;
+  messageCount: number;
+  pendingTasks: number;
+}
+
 class N8nClient {
   private async fetch(endpoint: string, district?: DistrictContext, date?: string): Promise<any> {
     try {
@@ -143,6 +150,16 @@ class N8nClient {
       location: item.location || '',
       department: item.department || '',
       description: item.reason || ''
+    }));
+  }
+
+  async getDepartments(district: DistrictContext): Promise<Department[]> {
+    const data = await this.fetch('/api/departments', district);
+    return data.map((item: any) => ({
+      id: item.id || item.name || Math.random().toString(),
+      name: item.name || 'Unknown Department',
+      messageCount: item.messageCount || 0,
+      pendingTasks: item.pendingTasks || 0
     }));
   }
 }
