@@ -30,6 +30,7 @@ export interface CalendarEvent {
   location?: string;
   department?: string;
   description?: string;
+  attendees?: string[];
 }
 
 class N8nClient {

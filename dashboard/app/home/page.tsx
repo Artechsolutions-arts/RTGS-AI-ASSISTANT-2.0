@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDistrictStore } from '@/store/districtStore';
 import { n8nClient, N8nMessage, N8nCalendarEvent } from '@/lib/n8nClient';
@@ -63,7 +63,7 @@ export default function HomePage() {
     }
   }, [router]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (!district) return;
     try {
       const districtContext = { district: district.name, slug: district.id };
@@ -85,7 +85,7 @@ export default function HomePage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [district]);
 
   useEffect(() => {
     if (!district) return;
