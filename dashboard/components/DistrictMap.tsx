@@ -47,6 +47,7 @@ export function DistrictMap({ districtName }: DistrictMapProps) {
         script.parentNode.removeChild(script);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [districtName, apiKey]);
 
   const initMap = () => {

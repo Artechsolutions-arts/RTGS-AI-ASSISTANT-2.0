@@ -92,7 +92,7 @@ export default function HomePage() {
     fetchData();
     const interval = setInterval(fetchData, 30000); // 30s polling to reduce n8n executions
     return () => clearInterval(interval);
-  }, [district, selectedDate]);
+  }, [district, selectedDate, fetchData]);
 
   const filteredMessages = useMemo(() => {
     return messages.filter(m => {
@@ -196,7 +196,7 @@ export default function HomePage() {
       { id: 'meetings_completed', label: 'Completed Meetings', value: completedMeetings, border: 'border-emerald-600', color: 'text-emerald-600' },
       { id: 'appointments_approved', label: 'Approved Appointments', value: approvedAppointments, border: 'border-purple-600', color: 'text-purple-600' },
     ];
-  }, [filteredMessages, filteredCalendar, selectedDate]);
+  }, [filteredMessages, filteredCalendar, selectedDate, appointments, selectedHour]);
 
   const listItems = useMemo(() => {
     const now = new Date();
@@ -226,7 +226,7 @@ export default function HomePage() {
       return filteredCalendar.filter(e => isPastDate || (isCurrentDate && new Date(e.end) < now));
     }
     return filteredMessages;
-  }, [activeFilter, filteredMessages, filteredCalendar, selectedDate]);
+  }, [activeFilter, filteredMessages, filteredCalendar, selectedDate, appointments, selectedHour]);
 
   if (!isInitialized || !district) return null;
 
@@ -653,7 +653,7 @@ export default function HomePage() {
 
             <div className="col-span-12 lg:col-span-5 xl:col-span-3 space-y-6">
               <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
-                 <h2 className="text-[10px] font-black text-black uppercase tracking-widest mb-6">Today's Schedule</h2>
+                 <h2 className="text-[10px] font-black text-black uppercase tracking-widest mb-6">Today&apos;s Schedule</h2>
                   <div className="space-y-6 border-l border-slate-100 pl-6 ml-1">
                      {unifiedSchedule.length > 0 ? unifiedSchedule.map((item: any) => (
                       <div key={item.id} className="relative group cursor-pointer" onClick={() => handleShowDetail(item, item.type === 'event' ? 'event' : 'message', 'Schedule Detail')}>
