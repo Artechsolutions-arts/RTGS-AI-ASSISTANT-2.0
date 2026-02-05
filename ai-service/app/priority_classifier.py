@@ -10,9 +10,10 @@ class PriorityClassifier:
         # High priority keywords
         self.high_priority_keywords = [
             r'\b(urgent|emergency|immediate|critical|asap|priority)\b',
-            r'\b(disaster|flood|cyclone|fire|accident|casualty)\b',
-            r'\b(alert|warning|evacuate|rescue)\b',
-            r'\b(అత్యవసర|తక్షణ|ముఖ్యమైన)\b',  # Telugu: emergency, immediate, important
+            r'\b(disaster|flood|cyclone|fire|accident|casualty|fatal)\b',
+            r'\b(alert|warning|evacuate|rescue|restock|failure|dangerous)\b',
+            r'\b(ventilator|dialysis|oxygen|transformer failure|power cut)\b',
+            r'\b(అత్యవసర|తక్షణ|ముఖ్యమైన|ప్రమాదం|జాగ్రత్త)\b',  # Telugu: emergency, immediate, important, danger, caution
         ]
         
         # Low priority keywords

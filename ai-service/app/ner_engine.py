@@ -17,6 +17,25 @@ class NEREngine:
         self.villages = self._load_dictionary("villages.json")
         self.departments = self._load_dictionary("departments.json")
         
+        # Dept Keywords for better routing
+        self.dept_keywords = {
+            "Health Department": [
+                "phc", "hospital", "primary health center", "medical", "doctor", "nurse", "patient", 
+                "dialysis", "icu", "ventilator", "flu", "medicine", "health camp", "ambulance", "pharmacy",
+                "ఆరోగ్య", "వైద్య", "ఆసుపత్రి", "వైద్యులు", "చிகிత్స", "మెడికల్"
+            ],
+            "Energy Department": [
+                "power", "electricity", "current", "transformer", "voltage", "substation", "grid", 
+                "load shedding", "fluctuation", "smart meter", "thermal plant", "energy waste",
+                "విద్యుత్", "కరెంటు", "వైర్లు", "పవర్"
+            ],
+            "Disaster Management": [
+                "flood", "heavy rain", "cyclone", "disaster", "evacuate", "rescue", "fire safety",
+                "relief material", "heat wave", "storm", "earthquake", "emergency", "warning",
+                "వరద", "తుఫాను", "గాలివాన", "అగ్ని", "ప్రమాదం", "సహాయక చర్యల", "ముంపు", "కొండచరియలు", "అప్రమత్తం", "కృష్ణా నది", "గట్టు"
+            ]
+        }
+        
         # Build regex patterns
         self.district_pattern = self._build_pattern(self.districts)
         self.mandal_pattern = self._build_pattern(self.mandals)
@@ -169,6 +188,21 @@ class NEREngine:
                     start=match.start(1),
                     end=match.end(1)
                 ))
+
+        # Extract departments from keywords if not found exactly
+        if not entities["department"]:
+            for dept, keywords in self.dept_keywords.items():
+                for kw in keywords:
+                    # More lenient matching for keywords
+                    if kw.lower() in text.lower():
+                        entities["department"].append(Entity(
+                            type="department",
+                            value=dept,
+                            confidence=0.8,
+                            start=text.lower().find(kw.lower()),
+                            end=text.lower().find(kw.lower()) + len(kw)
+                        ))
+                        break # Only one keyword per dept is enough
         
         return entities
         

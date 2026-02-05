@@ -10,33 +10,33 @@ class IntentClassifier:
         # Define keyword patterns for each intent
         self.patterns = {
             Intent.DISASTER_ALERT: [
-                r'\b(urgent|emergency|alert|warning|disaster|flood|cyclone|earthquake|fire|accident)\b',
-                r'\b(immediate|critical|evacuate|rescue|casualty|casualties|damage)\b',
-                r'\b(వరద|తుఫాన|హెచ్చరిక|అత్యవసర)\b',  # Telugu: flood, cyclone, alert, emergency
+                r'\b(urgent|emergency|alert|warning|disaster|flood|cyclone|earthquake|fire|accident|storm|rain alert|heat wave|outage|failure)\b',
+                r'\b(immediate|critical|evacuate|rescue|casualty|casualties|damage|relief material|safety audit|restock)\b',
+                r'(వరద|తుఫాను|హెచ్చరిక|అత్యవసర|కొండచరియలు|ముంపు|గాలివాన|అగ్ని ప్రమాదం|అప్రమత్తం|ప్రమాదకర)',  # Telugu: flood, cyclone, alert, emergency, landslide, submerged, storm, fire accident, warn, dangerous
             ],
             Intent.MEETING: [
                 r'\b(meeting|conference|discussion|session|agenda|attend)\b',
                 r'\b(schedule|scheduled|timing|venue|location|zoom|teams)\b',
-                r'\b(మీటింగ్|సమావేశం|చర్చ)\b',  # Telugu: meeting, conference, discussion
+                r'(మీటింగ్|సమావేశం|చర్చ)',  # Telugu: meeting, conference, discussion
                 r'\b(on|at|@)\s*\d{1,2}[:\s]?\d{0,2}\s*(am|pm|AM|PM)?\b',  # Time patterns
                 r'\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b',  # Date patterns
             ],
             Intent.INSTRUCTION: [
-                r'\b(please|kindly|request|submit|prepare|complete|action|implement)\b',
-                r'\b(task|assignment|work|duty|responsibility|deadline|by)\b',
-                r'\b(చేయండి|సిద్ధం|పూర్తి|సమర్పించండి)\b',  # Telugu: do, prepare, complete, submit
+                r'\b(please|kindly|request|submit|prepare|complete|action|implement|infrastructure|repairs|fix|install)\b',
+                r'\b(task|assignment|work|duty|responsibility|deadline|by|audit|check|verify)\b',
+                r'(చేయండి|సిద్ధం|పూర్తి|సమర్పించండి|బాగు చేయాలి)',  # Telugu: do, prepare, complete, submit, fix it
                 r'\b(ensure|make sure|verify|check|review|approve)\b',
             ],
             Intent.STATUS_UPDATE: [
                 r'\b(status|update|progress|completed|done|finished|ongoing)\b',
                 r'\b(report|reporting|reported|statistics|data|numbers)\b',
-                r'\b(స్థితి|నివేదిక|పూర్తయింది)\b',  # Telugu: status, report, completed
+                r'(స్థితి|నివేదిక|పూర్తయింది)',  # Telugu: status, report, completed
                 r'\b(\d+%|percent|percentage)\b',
             ],
             Intent.FYI: [
                 r'\b(fyi|for your information|note|noted|inform|information)\b',
                 r'\b(circular|notification|notice|announcement|memo)\b',
-                r'\b(సమాచారం|నోటీసు|ప్రకటన)\b',  # Telugu: information, notice, announcement
+                r'(సమాచారం|నోటీసు|ప్రకటన)',  # Telugu: information, notice, announcement
                 r'\b(attached|attachment|please find|pfa)\b',
             ],
             Intent.VIEW_CALENDAR: [
@@ -44,8 +44,8 @@ class IntentClassifier:
                 r'\b(what.*meetings?|show.*schedule|any.*appointments?|view.*calendar)\b',
                 r'\b(what|show|view|display|get|list).*\b(my|our).*\b(schedule|meetings?|calendar|appointments?)\b',
                 r'\b(my|our).*\b(schedule|meetings?|calendar|appointments?)\b',
-                r'\b(షెడ్యూల్|కాలెండర్|సమావేశాలు|ఈరోజు|రేపు|ఎజెండా)\b',  # Telugu: schedule, calendar, meetings, today, tomorrow, agenda
-                r'\b(చూపించు|ఏమిటి|ఉన్నాయా)\b.*\b(షెడ్యూల్|సమావేశాలు|అపాయింట్మెంట్)\b',  # Telugu: show/what/any + schedule/meetings/appointment
+                r'(షెడ్యూల్|కాలెండర్|సమావేశాలు|ఈరోజు|రేపు|ఎజెండా)',  # Telugu: schedule, calendar, meetings, today, tomorrow, agenda
+                r'(చూపించు|ఏమిటి|ఉన్నాయా).*(షెడ్యూల్|సమావేశాలు|అపాయింట్మెంట్)',  # Telugu: show/what/any + schedule/meetings/appointment
                 r'\b(today|tomorrow|this week).*\b(schedule|meetings?|appointments?)\b',
                 r'\b(schedule|meetings?|appointments?).*\b(today|tomorrow|this week)\b',
             ],
@@ -53,7 +53,7 @@ class IntentClassifier:
                 r'\b(appointment|meeting).*\b(collector|dm|magistrate|officer)\b',
                 r'\b(want|need|request).*\b(meet|see).*\b(collector|dm|magistrate)\b',
                 r'\b(book|schedule|fix).*\b(slot|appointment|time)\b',
-                r'\b(అపాయింట్మెంట్|కలవాలి|సమయం కావాలి)\b', # Telugu: appointment, want to meet, want time
+                r'(అపాయింట్మెంట్|కలవాలి|సమయం కావాలి)', # Telugu: appointment, want to meet, want time
                 r'\b(appointment|meeting).*\b(request|booking)\b',
             ],
         }
