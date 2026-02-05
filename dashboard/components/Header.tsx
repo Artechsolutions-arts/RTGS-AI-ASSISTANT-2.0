@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 import { useDistrictStore } from '@/store/districtStore';
 
 export function Header() {
@@ -48,9 +49,21 @@ export function Header() {
 
           <div className="h-10 w-[1px] bg-slate-700"></div>
 
-          <div className="flex flex-col items-end">
-             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">Administrative Role</p>
-             <p className="text-sm font-bold text-blue-300">District Collector</p>
+          <div className="flex items-center gap-4">
+             <div className="flex flex-col items-end">
+                <h2 className="text-lg font-black text-white uppercase tracking-tight leading-none">Dr. G. Lakshmisha, IAS</h2>
+                <p className="text-[10px] font-black text-blue-300 uppercase tracking-[0.2em] leading-none mt-1">District Collector</p>
+             </div>
+             <div className="w-12 h-12 rounded-full border-2 border-slate-600 overflow-hidden relative shadow-lg">
+                <Image 
+                  src="/collector_logo.jpg?v=2" 
+                  alt="District Collector" 
+                  fill 
+                  className="object-cover"
+                  priority
+                  unoptimized // Bypass optimization to ensure raw file is loaded if needed
+                />
+             </div>
           </div>
         </div>
       </div>

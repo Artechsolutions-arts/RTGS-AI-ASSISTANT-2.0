@@ -33,9 +33,12 @@ export interface CalendarEvent {
 }
 
 class N8nClient {
-  private async fetch(endpoint: string, district?: DistrictContext): Promise<any> {
+  private async fetch(endpoint: string, district?: DistrictContext, date?: string): Promise<any> {
     try {
-      const proxyUrl = `/api/proxy?endpoint=${encodeURIComponent(endpoint)}${district ? `&district=${encodeURIComponent(district.slug)}` : ''}`;
+      let proxyUrl = `/api/proxy?endpoint=${encodeURIComponent(endpoint)}${district ? `&district=${encodeURIComponent(district.slug)}` : ''}`;
+      if (date) {
+        proxyUrl += `&date=${encodeURIComponent(date)}`;
+      }
       
       const response = await fetch(proxyUrl, {
         method: 'GET',
@@ -51,32 +54,62 @@ class N8nClient {
     }
   }
 
+  private getDepartmentFallback(summary: string): string {
+    const text = (summary || '').toLowerCase();
+    
+    // Electricity
+    if (text.includes('power') || text.includes('current') || text.includes('vidyut') || 
+        text.includes('కరెంటు') || text.includes('విద్యుత్') || text.includes('వైర్')) return 'Electricity';
+    
+    // Health
+    if (text.includes('doctor') || text.includes('hospital') || text.includes('ambulance') || 
+        text.includes('వైద్య') || text.includes('ఆరోగ్య') || text.includes('చికిత్స') || 
+        text.includes('మెడికల్')) return 'Health Department';
+    
+    // Disaster
+    if (text.includes('flood') || text.includes('fire') || text.includes('varada') || 
+        text.includes('వరద') || text.includes('వర్షం') || text.includes('గాలివాన')) return 'Disaster Management';
+    
+    // Infrastructure
+    if (text.includes('road') || text.includes('bridge') || text.includes('building') || 
+        text.includes('రోడ్డు') || text.includes('వంతెన') || text.includes('రోడ్')) return 'Infrastructure';
+    
+    // Water
+    if (text.includes('water') || text.includes('drainage') || text.includes('నీరు') || 
+        text.includes('మంచినీరు')) return 'Water & Sanitation';
+        
+    return 'General Administration';
+  }
+
   private mapMessage(raw: any): Message {
+    const summary = raw.summary || raw.message_text || '';
+    const dept = raw.department || this.getDepartmentFallback(summary);
+    
     return {
       id: raw.id || raw._id,
-      summary: raw.summary || raw.message_text || '',
+      summary: summary,
       from: raw.from || raw.sender_name || 'Citizen',
-      location: raw.location || '',
-      forwardedDepartment: raw.department || raw.forwarded_from || '',
+      location: raw.location || (raw.ai_analysis?.entities?.location?.[0]?.value) || 'Unknown',
+      forwardedDepartment: dept,
       timestamp: raw.timestamp || raw.created_at || '',
-      priority: (raw.priority || 'medium').toLowerCase() as any,
-      department: raw.department || '',
+      priority: (raw.priority || raw.ai_analysis?.priority || 'medium').toLowerCase() as any,
+      department: dept,
       status: raw.status || 'active',
       _raw: raw
     };
   }
 
-  async getMessages(district: DistrictContext): Promise<Message[]> {
-    const data = await this.fetch('/api/messages', district);
-    return data.map(m => this.mapMessage(m));
+  async getMessages(district: DistrictContext, date?: string): Promise<Message[]> {
+    const data = await this.fetch('/api/messages-v2', district, date);
+    return data.map((m: any) => this.mapMessage(m));
   }
 
-  async getCalendar(district: DistrictContext): Promise<CalendarEvent[]> {
-    const data = await this.fetch('/api/calendar', district);
+  async getCalendar(district: DistrictContext, date?: string): Promise<CalendarEvent[]> {
+    const data = await this.fetch('/api/calendar', district, date);
     return data.map((item: any) => ({
       id: item.id || item._id,
-      title: item.title || '',
-      start: item.start || item.start_time || '', // REMOVED Dynamic Fallback
+      title: item.title || item.summary || 'Untitled Event',
+      start: item.start || item.start_time || '',
       end: item.end || item.end_time || '',
       location: item.location || '',
       department: item.department || '',
@@ -84,8 +117,23 @@ class N8nClient {
     }));
   }
 
-  async getAppointments(district: DistrictContext): Promise<CalendarEvent[]> {
-    const data = await this.fetch('/api/appointments', district);
+  async getCalendarByDateRange(district: DistrictContext, start: string, end: string): Promise<CalendarEvent[]> {
+    // For now, repurpose getCalendar or use a dedicated endpoint if available.
+    // Given the request constraints and existing unified API:
+    const data = await this.fetch(`/api/calendar?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`, district);
+    return data.map((item: any) => ({
+      id: item.id || item._id,
+      title: item.title || item.summary || 'Untitled Event',
+      start: item.start || item.start_time || '',
+      end: item.end || item.end_time || '',
+      location: item.location || '',
+      department: item.department || '',
+      description: item.description || ''
+    }));
+  }
+
+  async getAppointments(district: DistrictContext, date?: string): Promise<CalendarEvent[]> {
+    const data = await this.fetch('/api/appointments', district, date);
     return data.map((item: any) => ({
       id: item.id || item._id,
       title: item.citizen_name || 'Citizen',

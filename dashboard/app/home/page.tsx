@@ -92,7 +92,7 @@ export default function HomePage() {
     fetchData();
     const interval = setInterval(fetchData, 30000); // 30s polling to reduce n8n executions
     return () => clearInterval(interval);
-  }, [district]);
+  }, [district, selectedDate]);
 
   const filteredMessages = useMemo(() => {
     return messages.filter(m => {
@@ -105,34 +105,56 @@ export default function HomePage() {
       const hourMatch = selectedHour === 'all' || hour === selectedHour;
       
       // Exclude meeting and appointment requests from Operational Communications
+      // Exclude meeting and appointment requests from Operational Communications
+      // Removed simple 'am'/'pm' checks to avoid false positives (e.g. 'damage', 'program')
       const summary = (m.summary || '').toLowerCase();
-      const isMeetingRequest = summary.includes('meeting') || summary.includes('today meetings') || summary.includes('tomorrow meetings');
-      const isAppointmentRequest = summary.includes('appointment') || summary.includes('/approve_') || summary.includes('/reject_');
+      const isMeetingRequest = summary.includes('meeting') || summary.includes('schedule') || 
+                               summary.includes('calendar') || summary.includes('today schedule') || 
+                               summary.includes('tomorrow schedule') || 
+                               /\b(am|pm)\b/.test(summary) || // Only match whole words 'am' or 'pm'
+                               summary.includes('tomorrow') ||
+                               summary.includes('/approve') || summary.includes('/reject');
+      const isAppointmentRequest = summary.includes('appointment') || summary.includes('book') || 
+                                    summary.includes('/approve_') || summary.includes('/reject_');
       
       // Also exclude appointment details (Name: X, Reason: Y format)
       const hasNameReason = (summary.includes('name:') && summary.includes('reason:')) || 
                            (summary.includes('name') && summary.includes('raason')) || // typo variant
-                           summary.includes('full name:');
+                           summary.includes('full name:') || summary.includes('reason for');
       
+      // Exclude time-only or date-only messages (often from calendar interactions)
+      const isMetaQuery = /^\d{1,2}:\d{2}\s*(am|pm)?$/i.test(summary.trim()) || 
+                          /^\d{2}\/\d{2}\/\d{4}$/.test(summary.trim()) ||
+                          summary.includes('today schedule');
+
       // Only show messages that are NOT meeting/appointment requests or appointment details
-      return dateMatch && hourMatch && !isMeetingRequest && !isAppointmentRequest && !hasNameReason;
+      return dateMatch && hourMatch && !isMeetingRequest && !isAppointmentRequest && !hasNameReason && !isMetaQuery;
     });
   }, [messages, selectedDate, selectedHour]);
 
   const filteredCalendar = useMemo(() => {
     return calendar.filter(e => {
-      // Parse ISO string and get the date part in IST
       const eventDate = new Date(e.start);
-      // We want to compare what day this is in IST
       const day = eventDate.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
       const hour = eventDate.getHours().toString();
-      
       const dateMatch = day === selectedDate;
       const hourMatch = selectedHour === 'all' || hour === selectedHour;
-      
       return dateMatch && hourMatch;
-    });
+    }).sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
   }, [calendar, selectedDate, selectedHour]);
+
+  const unifiedSchedule = useMemo(() => {
+    const unified = [
+      ...filteredCalendar.map(e => ({ ...e, type: 'event' as const })),
+      ...appointments.filter(a => {
+        const apptDate = new Date(a.start);
+        const day = apptDate.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+        const hour = apptDate.getHours().toString();
+        return day === selectedDate && (selectedHour === 'all' || hour === selectedHour);
+      }).map(a => ({ ...a, type: 'appointment' as const }))
+    ];
+    return unified.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+  }, [filteredCalendar, appointments, selectedDate, selectedHour]);
 
   const stats = useMemo(() => {
     const now = new Date();
@@ -178,7 +200,7 @@ export default function HomePage() {
 
   const listItems = useMemo(() => {
     const now = new Date();
-    const msgDateStr = new Date().toLocaleDateString('en-CA');
+    const msgDateStr = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
     const isPastDate = selectedDate < msgDateStr;
     const isFutureDate = selectedDate > msgDateStr;
     const isCurrentDate = selectedDate === msgDateStr;
@@ -213,15 +235,19 @@ export default function HomePage() {
       <div className="min-h-screen bg-[#F1F5F9] pb-12 animate-fade-in">
         {/* Government Header */}
         <header className="bg-gradient-to-r from-[#003366] to-[#004080] text-white shadow-2xl sticky top-0 z-[100] border-b-4 border-[#FF9933]">
-          <div className="max-w-[1600px] mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="max-w-[1800px] mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
               {/* Left: Government Branding */}
               <div 
                 className="flex items-center space-x-3 cursor-pointer hover:opacity-90 transition-all active:scale-95"
-                onClick={() => handleShowDetail({
-                  label: 'Platform Information',
-                  value: 'RTGS AI v2.4',
-                  details: 'The Real-Time Governance Society AI Assistant is a state-of-the-art decision support system designed for high-ranking government officials in Andhra Pradesh.'
-                }, 'stat', 'Platform Overview')}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleShowDetail({
+                    label: 'Platform Information',
+                    value: 'RTGS AI v2.4',
+                    details: 'The Real-Time Governance Society AI Assistant is a state-of-the-art decision support system designed for high-ranking government officials in Andhra Pradesh.'
+                  }, 'stat', 'Platform Overview');
+                }}
               >
               <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 relative flex items-center justify-center">
@@ -246,12 +272,16 @@ export default function HomePage() {
               <div className="hidden lg:flex items-center space-x-5">
                 <div 
                   className="hidden xl:flex items-center space-x-3 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/30 cursor-pointer hover:bg-white/20 transition-all shadow-sm"
-                  onClick={() => handleShowDetail({
-                    label: 'District Profile',
-                    value: district?.name || 'NTR District',
-                    details: `Currently monitoring ${district?.name || 'NTR District'}. Headquarters: Vijayawada. Population: 2,218,591.`,
-                    bgImage: "/prakasam-barrage.jpg"
-                  }, 'stat', 'District Profile')}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleShowDetail({
+                      label: 'District Profile',
+                      value: district?.name || 'NTR District',
+                      details: `Currently monitoring ${district?.name || 'NTR District'}. Headquarters: Vijayawada. Population: 2,218,591.`,
+                      bgImage: "/prakasam-barrage.jpg"
+                    }, 'stat', 'District Profile');
+                  }}
                 >
                   <div className="text-right">
                     <p className="text-[9px] font-black text-blue-100 uppercase leading-none mb-1">District</p>
@@ -281,9 +311,9 @@ export default function HomePage() {
                       <p className="text-sm font-black text-white uppercase leading-none text-right mb-1">Dr. G. Lakshmisha, IAS</p>
                       <p className="text-[10px] font-black text-blue-100 uppercase tracking-widest">District Collector</p>
                     </div>
-                    <div className="w-10 h-10 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center shadow-inner">
-                       <div className="w-5 h-5 rounded-full bg-white/30"></div>
-                    </div>
+                     <div className="w-14 h-14 rounded-full bg-white/20 border-2 border-white/30 overflow-hidden relative shadow-inner ml-2">
+                        <Image src="/collector_avatar.jpg" alt="Collector" fill className="object-cover" priority />
+                     </div>
                   </div>
 
                   <div className="h-8 w-[1px] bg-white/30"></div>
@@ -309,13 +339,35 @@ export default function HomePage() {
 
             {/* Mobile Menu */}
             {isMobileMenuOpen && (
-              <div className="lg:hidden p-4 bg-[#003366] border-t border-white/10 space-y-3">
-                 <button onClick={() => { useDistrictStore.getState().logout(); router.push('/login'); }} className="w-full h-10 bg-red-500 text-white rounded-lg text-[10px] font-black uppercase">Logout Session</button>
+              <div className="lg:hidden p-6 bg-[#003366] border-t border-white/10 space-y-6 animate-slide-down">
+                 <div className="space-y-4">
+                    <div className="bg-white/10 p-4 rounded-2xl border border-white/10">
+                       <p className="text-[10px] font-black text-blue-200 uppercase tracking-widest mb-1">Active District</p>
+                       <p className="text-base font-black text-white">{district?.name || 'NTR District'}</p>
+                    </div>
+                    
+                    <div className="flex items-center space-x-5 bg-white/10 p-5 rounded-2xl border border-white/10">
+                       <div className="w-16 h-16 rounded-full bg-white/20 border-2 border-white/30 overflow-hidden relative flex-shrink-0">
+                          <Image src="/collector_avatar.jpg" alt="Collector" fill className="object-cover" />
+                       </div>
+                       <div>
+                          <p className="text-base font-black text-white uppercase leading-tight">Dr. G. Lakshmisha, IAS</p>
+                          <p className="text-[10px] font-black text-blue-200 uppercase tracking-widest">District Collector</p>
+                       </div>
+                    </div>
+                 </div>
+                 
+                 <button 
+                  onClick={() => { useDistrictStore.getState().logout(); router.push('/login'); }} 
+                  className="w-full h-12 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg transition-all active:scale-95"
+                 >
+                   Logout Session
+                 </button>
               </div>
             )}
         </header>
 
-        <main className="max-w-[1600px] mx-auto p-4 md:p-6 lg:p-8 space-y-6">
+        <main className="max-w-[1800px] mx-auto p-4 md:p-6 lg:p-8 space-y-8 min-h-[1200px]">
           {/* KPI Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {stats.map((stat) => (
@@ -323,7 +375,6 @@ export default function HomePage() {
                 key={stat.id} 
                 onClick={() => {
                   setActiveFilter(stat.id as any);
-                  document.getElementById('operational-center')?.scrollIntoView({ behavior: 'smooth' });
                 }}
                 className={`bg-white border border-slate-200 border-l-4 ${stat.border} p-4 rounded-xl cursor-pointer hover:shadow-lg transition-all ${activeFilter === stat.id ? 'ring-2 ring-blue-500/20 bg-blue-50/5' : ''}`}
               >
@@ -399,7 +450,7 @@ export default function HomePage() {
                       <p className="text-[8px] font-black text-slate-300 uppercase tracking-tighter">Navigate Operations</p>
                       <button onClick={() => { 
                         const today = new Date();
-                        setSelectedDate(today.toLocaleDateString('en-CA')); 
+                        setSelectedDate(today.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' })); 
                         setViewDate(today);
                         setIsDatePickerOpen(false); 
                       }} className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full hover:bg-blue-600 hover:text-white transition-all">TODAY</button>
@@ -420,9 +471,9 @@ export default function HomePage() {
                       {Array.from({ length: getDaysInMonth(viewDate.getMonth(), viewDate.getFullYear()) }).map((_, i) => {
                         const dayNum = i + 1;
                         const dateObj = new Date(viewDate.getFullYear(), viewDate.getMonth(), dayNum);
-                        const dateStr = dateObj.toLocaleDateString('en-CA');
+                        const dateStr = dateObj.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
                         const isActive = selectedDate === dateStr;
-                        const isCurrentDay = new Date().toLocaleDateString('en-CA') === dateStr;
+                        const isCurrentDay = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }) === dateStr;
 
                         return (
                           <button 
@@ -518,7 +569,7 @@ export default function HomePage() {
 
           {/* Centerpiece */}
           <div className="grid grid-cols-12 gap-6 lg:gap-8">
-            <div className="col-span-12 lg:col-span-7 xl:col-span-8 space-y-6">
+            <div className="col-span-12 lg:col-span-7 xl:col-span-9 space-y-6">
               {/* Communication Center moved to top primary position */}
               <div id="operational-center" className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden scroll-mt-[200px]">
                  <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
@@ -600,18 +651,28 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="col-span-12 lg:col-span-5 xl:col-span-4 space-y-6">
+            <div className="col-span-12 lg:col-span-5 xl:col-span-3 space-y-6">
               <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
                  <h2 className="text-[10px] font-black text-black uppercase tracking-widest mb-6">Today's Schedule</h2>
                   <div className="space-y-6 border-l border-slate-100 pl-6 ml-1">
-                    {filteredCalendar.length > 0 ? filteredCalendar.map((item) => (
-                      <div key={item.id} className="relative group cursor-pointer" onClick={() => handleShowDetail(item, 'event', 'Schedule Detail')}>
-                        <div className="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-white border-2 border-slate-200 group-hover:border-blue-500 group-hover:bg-blue-50 transition-all"></div>
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{new Date(item.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                        <h4 className="text-xs font-black text-slate-800 group-hover:text-blue-600 transition-colors text-ellipsis overflow-hidden line-clamp-1">{item.title}</h4>
+                     {unifiedSchedule.length > 0 ? unifiedSchedule.map((item: any) => (
+                      <div key={item.id} className="relative group cursor-pointer" onClick={() => handleShowDetail(item, item.type === 'event' ? 'event' : 'message', 'Schedule Detail')}>
+                        <div className={`absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-white border-2 transition-all ${
+                          item.type === 'appointment' ? 'border-purple-400 group-hover:bg-purple-50' : 'border-slate-200 group-hover:border-blue-500 group-hover:bg-blue-50'
+                        }`}></div>
+                        <div className="flex items-center space-x-2 mb-1">
+                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{new Date(item.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                          {item.type === 'appointment' && (
+                            <span className="text-[8px] font-black bg-purple-50 text-purple-600 px-1.5 rounded uppercase border border-purple-100 italic">Appt</span>
+                          )}
+                        </div>
+                        <h4 className="text-xs font-black text-slate-800 group-hover:text-blue-600 transition-colors text-ellipsis overflow-hidden line-clamp-1">
+                          {item.title || item.citizen_name || 'Meeting'}
+                        </h4>
+                        {item.description && <p className="text-[10px] text-slate-400 line-clamp-1 mt-0.5">{item.description}</p>}
                       </div>
                     )) : (
-                      <p className="text-[10px] font-bold text-slate-300 uppercase italic">No meetings for selected time</p>
+                      <p className="text-[10px] font-bold text-slate-300 uppercase italic">No schedule for selected day</p>
                     )}
                   </div>
               </div>
@@ -619,7 +680,7 @@ export default function HomePage() {
               {/* Map shifted here below schedule */}
               <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-200">
                 <div className="p-4 border-b border-slate-100 bg-slate-50/50">
-                  <h2 className="text-[10px] font-black text-black uppercase tracking-widest">Geospatial Awareness</h2>
+                  <h2 className="text-[10px] font-black text-black uppercase tracking-widest">DISTRICT MAP</h2>
                 </div>
                 <div className="h-[300px] relative w-full">
                   <DistrictMap districtName={district?.id || 'ntr-district'} />

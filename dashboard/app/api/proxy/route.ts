@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const endpoint = searchParams.get('endpoint');
   const district = searchParams.get('district');
+  const date = searchParams.get('date');
   
   if (!endpoint) {
     return NextResponse.json({ error: 'Missing endpoint parameter' }, { status: 400 });
@@ -31,6 +32,9 @@ export async function GET(request: NextRequest) {
       const finalUrl = new URL(url);
       if (district) {
         finalUrl.searchParams.append('district', district);
+      }
+      if (date) {
+        finalUrl.searchParams.append('date', date);
       }
 
       console.log(`[Proxy] Routing request to: ${finalUrl.toString()}`);

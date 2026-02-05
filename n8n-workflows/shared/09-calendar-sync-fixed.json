@@ -42,8 +42,8 @@
           "value": "artechnical707@gmail.com",
           "mode": "id"
         },
-        "timeMin": "={{ $now.set({ hour: 0, minute: 0, second: 0 }).toISO() }}",
-        "timeMax": "={{ $now.plus({ days: 7 }).toISO() }}",
+        "timeMin": "={{ $now.minus({ days: 30 }).set({ hour: 0, minute: 0, second: 0 }).toISO() }}",
+        "timeMax": "={{ $now.plus({ days: 30 }).toISO() }}",
         "options": {
           "fields": "items(id,summary,start,end,location,description,hangoutLink,conferenceData)",
           "orderBy": "startTime",
