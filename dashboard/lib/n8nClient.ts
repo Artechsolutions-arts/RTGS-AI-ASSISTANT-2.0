@@ -112,6 +112,11 @@ class N8nClient {
     return data.map((m: any) => this.mapMessage(m));
   }
 
+  async getMessagesByDepartment(district: DistrictContext, department: string): Promise<Message[]> {
+    const data = await this.fetch(`/api/messages-v2?department=${encodeURIComponent(department)}`, district);
+    return data.map((m: any) => this.mapMessage(m));
+  }
+
   async getCalendar(district: DistrictContext, date?: string): Promise<CalendarEvent[]> {
     const data = await this.fetch('/api/calendar', district, date);
     return data.map((item: any) => ({
