@@ -67,3 +67,14 @@ backup/
 !railway.toml
 !RAILWAY_DEPLOYMENT.md
 !RAILWAY_QUICKSTART.md
+
+# Additional exclusions for smaller repo
+dashboard/package-lock.json
+test_*.py
+setup_*.py
+setup_*.bat
+seed_*.py
+quick_start.bat
+add_*.py
+*.csv
+*.json.backup
