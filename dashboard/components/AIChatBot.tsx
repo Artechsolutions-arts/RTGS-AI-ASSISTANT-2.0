@@ -343,8 +343,8 @@ export const AIChatBot: React.FC<AIChatBotProps> = ({ messages, calendar, appoin
           {/* Header */}
           <div className="bg-gradient-to-r from-[#003366] to-[#004080] p-4 text-white flex justify-between items-center">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center overflow-hidden relative border border-white/30">
-                <Image src="/bot_new.jpg" alt="AI" fill className="object-cover" />
+              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden relative border border-white/30">
+                <Image src="/bot_logo.jpg" alt="AI Agent" fill className="object-cover" priority />
               </div>
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-blue-200">RTGS AI Agent</p>
@@ -429,9 +429,9 @@ export const AIChatBot: React.FC<AIChatBotProps> = ({ messages, calendar, appoin
         {isOpen ? (
           <span className="text-white text-xl">✕</span>
         ) : (
-          <div className="relative w-full h-full p-1">
-             <Image src="/bot_new.jpg" alt="AI Agent" fill className="object-cover rounded-full" priority />
-             <div className="absolute top-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white animate-pulse"></div>
+          <div className="relative w-full h-full">
+             <Image src="/bot_logo.jpg" alt="AI Agent" fill className="object-cover rounded-full" priority />
+             <div className="absolute top-0 right-0 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white animate-pulse"></div>
           </div>
         )}
       </button>
