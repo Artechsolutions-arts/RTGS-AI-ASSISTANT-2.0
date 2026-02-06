@@ -17,6 +17,9 @@ const sreeKrushnadevaraya = Sree_Krushnadevaraya({
 export const metadata: Metadata = {
   title: 'Andhra Pradesh Government Dashboard',
   description: 'Official dashboard for Andhra Pradesh Government districts',
+  icons: {
+    icon: '/favicon.png',
+  },
 }
 
 export default function RootLayout({
